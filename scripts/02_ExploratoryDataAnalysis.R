@@ -12,6 +12,7 @@ library(stringr)
 library(dplyr)
 library(readxl)
 library(openxlsx)
+library(lubridate)
 
 --------------------------------------------------------------------------------
   
@@ -21,15 +22,189 @@ df_total <- read_excel("C:/Users/Victor/Desktop/ML1/data/data_cleaned/data_total
 head(df_total)
 colnames(df_total)
 
+--------------------------------------------------------------------------------
+
+# - Count of number of properties in different cantons
+
+# Counting properties per Canton and arranging them from highest to lowest
+properties_per_canton <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Count = n()) %>%
+  arrange(desc(Count)) # Arrange in descending order of count
+
+# Creating the vertical bar chart with smaller data labels
+ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  geom_text(aes(label = Count), vjust = -0.5, color = "black", size = 2.2) + # Data labels above bars
+  labs(title = "Properties per Canton", x = "Canton", y = "Count of Properties") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), # Rotate x-axis labels for better readability
+        plot.title = element_text(hjust = 0.5)) # Center the plot title
+
+--------------------------------------------------------------------------------
+  
 # - What is the distribution of rental prices in different cantons?
+
+canton_order <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(desc(Average_Price_Gross)) %>%
+  .$Canton
+
+# Adjust the factor levels of Canton based on the calculated order
+df_total$Canton <- factor(df_total$Canton, levels = canton_order)
+
+# Plot with cantons ordered by average rental price
+ggplot(df_total, aes(x = Canton, y = Price_Gross)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black") +
+  labs(title = "Average Rental Price per Canton", x = "Canton", y = "Average Rental Price (CHF)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+--------------------------------------------------------------------------------
+  
 # - Is there a correlation between the size of the property (in m2) and the rental price?
+  
+# We sleect the Top Ten Cantons
+top_10_cantons <- c("ZH", "VD", "AG", "SG", "BE", "TI", "LU", "TG", "BS", "ZG")
+top_5_cantons <- c("ZH", "VD", "AG", "SG", "BE")
+
+# Filter the dataset to include only the top cantons
+df_top_10_cantons <- df_total %>%
+  filter(Canton %in% top_10_cantons) %>%
+  filter(Price_Gross <= 500000, Size_m2 <= 300) # Apply filters for Price_Gross and Size_m2
+
+# Filter the dataset to include only the top cantons
+df_top_5_cantons <- df_total %>%
+  filter(Canton %in% top_5_cantons) %>%
+  filter(Price_Gross <= 500000, Size_m2 <= 300) # Apply filters for Price_Gross and Size_m2
+
+# Create a manual pastel color palette
+pastel_colors <- c("ZH" = "#bdb2ff",  # Pastel blue
+                   "VD" = "#ffd6a5",  # Lighter pastel blue
+                   "AG" = "#b4f8c8",  # Pastel cyan
+                   "SG" = "#ade8f4",  # Lighter pastel cyan
+                   "BE" = "#ffafcc",  # Pastel red
+                   "TI" = "#bde0fe",  # Pastel orange
+                   "LU" = "#90e0ef",  # Pastel green
+                   "TG" = "#a0c4ff",  # Another shade of pastel blue
+                   "BS" = "#a1c9f4",  # Pastel purple
+                   "ZG" = "#ffc6ff") # Pastel pink
+
+# Scatter Plot TOP 10
+ggplot(df_top_10_cantons, aes(x = Size_m2, y = Price_Gross)) +
+  geom_point(aes(color = Canton), size = 0.8, alpha = 0.8) + # Smaller points with size 1
+  scale_color_manual(values = pastel_colors) +
+  geom_smooth(method = "lm", color = "red", size = 0.5, se = FALSE) +
+  labs(title = "Correlation Between Property Size and Rental Price", x = "Size (m²)", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  scale_y_log10(labels = scales::comma) # Apply logarithmic scale to y-axis
+
+# Scatter Plot TOP 5
+ggplot(df_top_5_cantons, aes(x = Size_m2, y = Price_Gross)) +
+  geom_point(aes(color = Canton), size = 0.8, alpha = 0.8) + # Smaller points with size 1
+  scale_color_manual(values = pastel_colors) +
+  geom_smooth(method = "lm", color = "red", size = 0.5, se = FALSE) +
+  labs(title = "Correlation Between Property Size and Rental Price", x = "Size (m²)", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  scale_y_log10(labels = scales::comma) # Apply logarithmic scale to y-axis
+
+--------------------------------------------------------------------------------
+  
 # - How does the number of rooms affect the rental price?
+
+# Apply filters to remove extreme prices for better visualization
+  df_filtered <- df_total %>%
+  filter(Price_Gross <= 500000) %>%
+  mutate(Nr_rooms = as.factor(Nr_rooms)) # Treat number of rooms as a factor
+
+# Create the scatter plot without differentiating by canton
+ggplot(df_filtered, aes(x = Nr_rooms, y = Price_Gross)) +
+  geom_point(alpha = 0.6, size = 1, color = "skyblue") +
+  geom_smooth(method = "lm", color = "red", se = FALSE, size = 0.5) +
+  labs(title = "Effect of Number of Rooms on Rental Price", x = "Number of Rooms", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  scale_y_log10() # Apply logarithmic scale to y-axis
+
+--------------------------------------------------------------------------------
+  
 # - What is the trend in rental prices over time (based on FirstDay_Online)?
+
+  library(ggplot2)
+library(dplyr)
+library(lubridate)
+
+# Ensure FirstDay_Online is a Date
+df_total$FirstDay_Online <- as.Date(df_total$FirstDay_Online)
+
+# Extract the Year-Month from the FirstDay_Online
+df_total$Month_Year <- format(df_total$FirstDay_Online, "%Y-%m")
+
+# Convert Month_Year to a date so that ggplot2 orders it correctly
+df_total$Month_Year <- as.Date(paste0(df_total$Month_Year, "-01"))
+
+# Filter the dataset for the timeframe 2021-01 to 2023-12
+df_filtered <- df_total %>%
+  filter(FirstDay_Online >= as.Date("2021-01-01") & FirstDay_Online <= as.Date("2023-12-31"))
+
+# Create a summarized dataset with average price per month
+df_monthly_avg <- df_filtered %>%
+  group_by(Month_Year) %>%
+  summarise(Average_Price = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(Month_Year) # Make sure the data is sorted by date
+
+# Now create the Year and Month variables
+df_total <- df_total %>%
+  mutate(Year = year(FirstDay_Online),
+         Month = month(FirstDay_Online, label = TRUE, abbr = TRUE))
+
+# Plot the time series with lines for each year
+ggplot(df_total, aes(x = Month, y = Price_Gross, group = Year, color = as.factor(Year))) +
+  geom_line() +
+  scale_x_discrete(limits = month.abb) +  # Display abbreviated month names
+  scale_color_manual(values = c("2021" = "blue", "2022" = "green", "2023" = "orange")) + # Manually set colors for each year
+  labs(title = "Trend in Rental Prices Over Time",
+       x = "Month",
+       y = "Average Gross Price (CHF)",
+       color = "Year") +
+  theme_minimal() +
+  theme(legend.position = "bottom")  # Place the legend at the bottom
+
+--------------------------------------------------------------------------------
+  
 # - Are there differences in rental prices between different customer segments?
+  
+ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross)) +
+geom_boxplot() +
+labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
+theme_minimal()
+
+--------------------------------------------------------------------------------
+  
 # - How does the GDP per capita of a canton relate to the average rental price in that canton?
+
+  df_total$GDP_per_Capita <- as.factor(df_total$GDP_per) # Assuming GDP_per refers to GDP per capita
+ggplot(df_total, aes(x = GDP_per_Capita, y = Price_Gross)) +
+  geom_point(aes(color = Canton)) +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "GDP per Capita vs. Average Rental Price", x = "GDP per Capita", y = "Gross Price (CHF)") +
+  theme_minimal()
+
+
+--------------------------------------------------------------------------------
+  
 # - Is there a correlation between the population density of a canton and rental prices?
+
+--------------------------------------------------------------------------------
+  
 # - What are the most common types of properties listed for rent?
+
+--------------------------------------------------------------------------------
+  
 # - How do rental prices vary between flats and houses?
+
+  --------------------------------------------------------------------------------
+  
 # - Are there differences in the length of time properties remain online between different cantons or property categories?
   
 --------------------------------------------------------------------------------
