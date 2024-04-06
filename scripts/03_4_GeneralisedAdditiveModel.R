@@ -24,10 +24,10 @@ colnames(df_total)
 
 --------------------------------------------------------------------------------
   
-  # Assuming df_total is your data frame and it's already loaded
+# Assuming df_total is your data frame and it's already loaded
   
   # Convert dates to numerical format (e.g., days since a reference date)
-  df_total$FirstDay_Online <- as.numeric(as.Date(df_total$FirstDay_Online) - as.Date('2000-01-01'))
+df_total$FirstDay_Online <- as.numeric(as.Date(df_total$FirstDay_Online) - as.Date('2000-01-01'))
 df_total$LastDay_Online <- as.numeric(as.Date(df_total$LastDay_Online) - as.Date('2000-01-01'))
 
 # Handle categorical variables
