@@ -115,6 +115,13 @@ ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross)) +
   theme_minimal() +
   theme(legend.position = "none")
 
+--------------------------------------------------------------------------------
+  
+  # Histogram for Price_Gross
+  ggplot(df_total, aes(x = Price_Gross)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Rental Prices", x = "Gross Price (CHF)", y = "Frequency") +
+  theme_minimal()
 
 --------------------------------------------------------------------------------
   
@@ -204,58 +211,86 @@ ggplot(df_filtered, aes(x = Nr_rooms, y = Price_Gross)) +
 
 --------------------------------------------------------------------------------
   
-# - How does the GDP per capita of a canton relate to the average rental price in that canton?
-
-# Separate the data into top 10 and others
-df_others <- df_total %>%
-  filter(!(Canton %in% top_10_cantons))
-
-# Plot with top 10 highlighted and others in the background
-ggplot() +
-  geom_point(data = df_others, aes(x = GDP_per_Capita, y = Price_Gross), color = "grey") +
-  geom_point(data = df_top_10_cantons, aes(x = GDP_per_Capita, y = Price_Gross, color = Canton)) +
-  geom_smooth(data = df_top_10_cantons, aes(x = GDP_per_Capita, y = Price_Gross, group = 1), method = "lm", color = "red") +
-  scale_color_manual(values = c("ZH" = "blue", "VD" = "green", "AG" = "red", "SG" = "purple", "BE" = "orange", 
-                                "TI" = "brown", "LU" = "pink", "TG" = "grey", "BS" = "cyan", "ZG" = "black")) +
-  labs(title = "GDP per Capita vs. Average Rental Price with Top 10 Cantons Highlighted",
-       x = "GDP per Capita",
-       y = "Gross Price (CHF)",
-       color = "Canton") +
-  theme_minimal()
-
-
-
---------------------------------------------------------------------------------
-  
-# - Is there a correlation between the population density of a canton and rental prices?
-
---------------------------------------------------------------------------------
-  
-# - What are the most common types of properties listed for rent?
-
---------------------------------------------------------------------------------
-  
-# - How do rental prices vary between flats and houses?
-
-  --------------------------------------------------------------------------------
-  
-# - Are there differences in the length of time properties remain online between different cantons or property categories?
-  
---------------------------------------------------------------------------------
-  
-# Histogram for Price_Gross
-ggplot(df_total, aes(x = Price_Gross)) +
-  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
-  labs(title = "Distribution of Rental Prices", x = "Gross Price (CHF)", y = "Frequency") +
-  theme_minimal()
-
---------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------
-  
 # Histogram for Nr_rooms
 ggplot(df_total, aes(x = Nr_rooms)) +
   geom_histogram(bins = 30, fill = "skyblue", color = "black") +
   labs(title = "Distribution of Number of Rooms", x = "Number of Rooms", y = "Frequency") +
   theme_minimal()
+
+--------------------------------------------------------------------------------
+  
+# - How does the GDP per capita of a canton relate to the average rental price in that canton?
+
+# Plot with top 5 cantons highlighted
+ggplot(df_top_5_cantons, aes(x = GDP_per_Capita, y = Price_Gross)) +
+  geom_point(aes(color = Canton), size = 2) +  # Use a smaller point size for clarity
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # Add a linear model without the confidence interval
+  scale_color_manual(values = pastel_colors) +  # Corrected this line by removing the extra parenthesis
+  scale_y_continuous(trans = 'log10', labels = scales::comma) +  # Use log10 transformation if the range is wide
+  labs(title = "GDP per Capita vs. AVG Rental Price",
+       x = "GDP per Capita",
+       y = "Gross Price (CHF)",
+       color = "Canton") +
+  theme_minimal()
+
+--------------------------------------------------------------------------------
+
+  ### Population ###
+  
+--------------------------------------------------------------------------------
+  
+# - Is there a correlation between the population density of a canton and rental prices?
+
+ggplot(df_total, aes(x = Population, y = Price_Gross)) +
+  geom_point(alpha = 0.5) +  # Set transparency to see overlapping points
+  scale_x_log10() +  # Log-transform the X axis
+  scale_y_log10() +  # Log-transform the Y axis
+  geom_smooth(method = "lm", se = FALSE) +  # Linear model without confidence interval
+  labs(title = "Correlation between Population Density and Rental Prices",
+       x = "Population",
+       y = "Rental Price (CHF)") +
+  theme_minimal()
+
+--------------------------------------------------------------------------------
+  
+# Define your thresholds for what you consider an outlier
+population_density_threshold <- quantile(df_total$Population, 0.95, na.rm = TRUE)
+rental_price_threshold <- quantile(df_total$Price_Gross, 0.95, na.rm = TRUE)
+
+# Filter out extreme outliers
+df_filtered <- df_total %>%
+  filter(Population <= population_density_threshold, Price_Gross <= rental_price_threshold)
+
+# Now create the plot with filtered data
+ggplot(df_filtered, aes(x = Population, y = Price_Gross)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +  # Linear model without confidence interval
+  labs(title = "Correlation between Population Density and Rental Prices",
+       x = "Population Density",
+       y = "Rental Price (CHF)") +
+  theme_minimal()
+
+--------------------------------------------------------------------------------
+  
+# Population per Canton
+
+canton_order <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Population = mean(Population, na.rm = TRUE)) %>%
+  arrange(desc(Population)) %>%
+  .$Canton
+
+# Adjust the factor levels of Canton based on the calculated order
+df_total$Canton <- factor(df_total$Canton, levels = canton_order)
+
+# Plot with cantons ordered by average rental price
+ggplot(df_total, aes(x = Canton, y = Population)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black") +
+  labs(title = "Population per Canton", x = "Canton", y = "Population") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+
+
 
