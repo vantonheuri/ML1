@@ -10,6 +10,7 @@ library(ggplot2)
 library(stringr)
 library(dplyr)
 library(readxl)
+library(openxlsx)
 
 --------------------------------------------------------------------------------
 
@@ -40,3 +41,18 @@ df_total <- df_total[df_total$Type == "Rent" & (df_total$Category == "House" | d
 dim(df_total)
 # > dim(df_total)
 # [1] 2141   23
+
+--------------------------------------------------------------------------------
+  
+#Export file to a xlsx 
+path <- "C:/Users/Victor/Desktop/ML1/data/data_cleaned/"
+file_name <- "data_total.xlsx"
+
+# Combine path and file name
+full_path <- paste0(path, file_name)
+
+# Export DataFrame to Excel file
+write.xlsx(df_total, full_path, row.names = FALSE)
+
+# Confirmation message
+cat("File exported successfully to:", full_path)
