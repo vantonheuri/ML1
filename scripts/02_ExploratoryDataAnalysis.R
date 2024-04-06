@@ -129,55 +129,52 @@ ggplot(df_filtered, aes(x = Nr_rooms, y = Price_Gross)) +
 --------------------------------------------------------------------------------
   
 # - What is the trend in rental prices over time (based on FirstDay_Online)?
+# Filter per year 2021 and 2022
+df_filtered_2021_2022 <- df_total %>%
+  filter(Year %in% c(2021, 2022))
 
-  library(ggplot2)
-library(dplyr)
-library(lubridate)
-
-# Ensure FirstDay_Online is a Date
-df_total$FirstDay_Online <- as.Date(df_total$FirstDay_Online)
-
-# Extract the Year-Month from the FirstDay_Online
-df_total$Month_Year <- format(df_total$FirstDay_Online, "%Y-%m")
-
-# Convert Month_Year to a date so that ggplot2 orders it correctly
-df_total$Month_Year <- as.Date(paste0(df_total$Month_Year, "-01"))
-
-# Filter the dataset for the timeframe 2021-01 to 2023-12
-df_filtered <- df_total %>%
-  filter(FirstDay_Online >= as.Date("2021-01-01") & FirstDay_Online <= as.Date("2023-12-31"))
-
-# Create a summarized dataset with average price per month
-df_monthly_avg <- df_filtered %>%
-  group_by(Month_Year) %>%
+# Create an Average Price Gross of 2021 and 2022
+df_monthly_avg_2021_2022 <- df_filtered_2021_2022 %>%
+  group_by(Year, Month_Year) %>%
   summarise(Average_Price = mean(Price_Gross, na.rm = TRUE)) %>%
-  arrange(Month_Year) # Make sure the data is sorted by date
+  arrange(Year, Month_Year)
 
-# Now create the Year and Month variables
-df_total <- df_total %>%
-  mutate(Year = year(FirstDay_Online),
-         Month = month(FirstDay_Online, label = TRUE, abbr = TRUE))
-
-# Plot the time series with lines for each year
-ggplot(df_total, aes(x = Month, y = Price_Gross, group = Year, color = as.factor(Year))) +
+# Plot
+ggplot(df_monthly_avg_2021_2022, aes(x = Month_Year, y = Average_Price, group = Year, color = as.factor(Year))) +
   geom_line() +
-  scale_x_discrete(limits = month.abb) +  # Display abbreviated month names
-  scale_color_manual(values = c("2021" = "blue", "2022" = "green", "2023" = "orange")) + # Manually set colors for each year
-  labs(title = "Trend in Rental Prices Over Time",
+  scale_x_date(date_breaks = "1 month", date_labels = "%B") +
+  scale_color_manual(values = c("2021" = "skyblue", "2022" = "darkblue")) +
+  labs(title = "Over Time in Rental Prices ",
        x = "Month",
        y = "Average Gross Price (CHF)",
        color = "Year") +
   theme_minimal() +
-  theme(legend.position = "bottom")  # Place the legend at the bottom
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
+        legend.position = "bottom")
+
 
 --------------------------------------------------------------------------------
   
 # - Are there differences in rental prices between different customer segments?
   
+# Option 1
+ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
+  geom_boxplot(outlier.size = 1.5, alpha = 0.7) + 
+  scale_fill_brewer(palette = "Pastel1") + 
+  coord_cartesian(ylim = c(0, quantile(df_total$Price_Gross, 0.95, na.rm = TRUE))) + 
+  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  theme(legend.position = "none") 
+
+# Option 2
 ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross)) +
-geom_boxplot() +
-labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
-theme_minimal()
+  geom_boxplot(outlier.size = 1, aes(fill = Customer_Segment)) + 
+  scale_y_log10(limits = c(100, NA)) + 
+  scale_fill_brewer(palette = "Pastel1", guide = FALSE) + 
+  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
 
 --------------------------------------------------------------------------------
   
