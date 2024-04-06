@@ -43,6 +43,10 @@ ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count)) +
 
 --------------------------------------------------------------------------------
   
+  ### Prizes ###
+  
+--------------------------------------------------------------------------------
+  
 # - What is the distribution of rental prices in different cantons?
 
 canton_order <- df_total %>%
@@ -63,6 +67,61 @@ ggplot(df_total, aes(x = Canton, y = Price_Gross)) +
 
 --------------------------------------------------------------------------------
   
+# - What is the trend in rental prices over time (based on FirstDay_Online)?
+  
+# Filter per year 2021 and 2022
+df_filtered_2021_2022 <- df_total %>%
+filter(Year %in% c(2021, 2022))
+
+# Create an Average Price Gross of 2021 and 2022
+df_monthly_avg_2021_2022 <- df_filtered_2021_2022 %>%
+  group_by(Year, Month_Year) %>%
+  summarise(Average_Price = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(Year, Month_Year)
+
+# Plot
+ggplot(df_monthly_avg_2021_2022, aes(x = Month_Year, y = Average_Price, group = Year, color = as.factor(Year))) +
+  geom_line() +
+  scale_x_date(date_breaks = "1 month", date_labels = "%B") +
+  scale_color_manual(values = c("2021" = "skyblue", "2022" = "darkblue")) +
+  labs(title = "Over Time in Rental Prices ",
+       x = "Month",
+       y = "Average Gross Price (CHF)",
+       color = "Year") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
+        legend.position = "bottom")
+
+
+--------------------------------------------------------------------------------
+  
+  # - Are there differences in rental prices between different customer segments?
+  
+  # Option 1
+  ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
+  geom_boxplot(outlier.size = 1.5, alpha = 0.7) + 
+  scale_fill_brewer(palette = "Pastel1") + 
+  coord_cartesian(ylim = c(0, quantile(df_total$Price_Gross, 0.95, na.rm = TRUE))) + 
+  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  theme(legend.position = "none") 
+
+# Option 2
+ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross)) +
+  geom_boxplot(outlier.size = 1, aes(fill = Customer_Segment)) + 
+  scale_y_log10(limits = c(100, NA)) + 
+  scale_fill_brewer(palette = "Pastel1", guide = FALSE) + 
+  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+
+--------------------------------------------------------------------------------
+  
+  ### Property Size ###
+  
+--------------------------------------------------------------------------------
+
 # - Is there a correlation between the size of the property (in m2) and the rental price?
   
 # We sleect the Top Ten Cantons
@@ -110,6 +169,23 @@ ggplot(df_top_5_cantons, aes(x = Size_m2, y = Price_Gross)) +
   scale_y_log10(labels = scales::comma) # Apply logarithmic scale to y-axis
 
 --------------------------------------------------------------------------------
+
+# Histogram for Size_m2
+ggplot(df_total, aes(x = Size_m2)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Property Size", x = "Size (m²)", y = "Frequency") +
+  theme_minimal()
+
+ggplot(df_total, aes(x = Size_m2, y = Price_Gross)) +
+  geom_point(aes(color = Category)) + # Color code by property category
+  labs(title = "Price vs. Size of Property", x = "Size (m²)", y = "Gross Price (CHF)") +
+  theme_minimal()
+
+--------------------------------------------------------------------------------
+  
+  ### Number of rooms ###
+
+--------------------------------------------------------------------------------
   
 # - How does the number of rooms affect the rental price?
 
@@ -128,64 +204,25 @@ ggplot(df_filtered, aes(x = Nr_rooms, y = Price_Gross)) +
 
 --------------------------------------------------------------------------------
   
-# - What is the trend in rental prices over time (based on FirstDay_Online)?
-# Filter per year 2021 and 2022
-df_filtered_2021_2022 <- df_total %>%
-  filter(Year %in% c(2021, 2022))
-
-# Create an Average Price Gross of 2021 and 2022
-df_monthly_avg_2021_2022 <- df_filtered_2021_2022 %>%
-  group_by(Year, Month_Year) %>%
-  summarise(Average_Price = mean(Price_Gross, na.rm = TRUE)) %>%
-  arrange(Year, Month_Year)
-
-# Plot
-ggplot(df_monthly_avg_2021_2022, aes(x = Month_Year, y = Average_Price, group = Year, color = as.factor(Year))) +
-  geom_line() +
-  scale_x_date(date_breaks = "1 month", date_labels = "%B") +
-  scale_color_manual(values = c("2021" = "skyblue", "2022" = "darkblue")) +
-  labs(title = "Over Time in Rental Prices ",
-       x = "Month",
-       y = "Average Gross Price (CHF)",
-       color = "Year") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
-        legend.position = "bottom")
-
-
---------------------------------------------------------------------------------
-  
-# - Are there differences in rental prices between different customer segments?
-  
-# Option 1
-ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
-  geom_boxplot(outlier.size = 1.5, alpha = 0.7) + 
-  scale_fill_brewer(palette = "Pastel1") + 
-  coord_cartesian(ylim = c(0, quantile(df_total$Price_Gross, 0.95, na.rm = TRUE))) + 
-  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
-  theme_minimal() +
-  theme(legend.position = "none") 
-
-# Option 2
-ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross)) +
-  geom_boxplot(outlier.size = 1, aes(fill = Customer_Segment)) + 
-  scale_y_log10(limits = c(100, NA)) + 
-  scale_fill_brewer(palette = "Pastel1", guide = FALSE) + 
-  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-
---------------------------------------------------------------------------------
-  
 # - How does the GDP per capita of a canton relate to the average rental price in that canton?
 
-  df_total$GDP_per_Capita <- as.factor(df_total$GDP_per) # Assuming GDP_per refers to GDP per capita
-ggplot(df_total, aes(x = GDP_per_Capita, y = Price_Gross)) +
-  geom_point(aes(color = Canton)) +
-  geom_smooth(method = "lm", color = "red") +
-  labs(title = "GDP per Capita vs. Average Rental Price", x = "GDP per Capita", y = "Gross Price (CHF)") +
+# Separate the data into top 10 and others
+df_others <- df_total %>%
+  filter(!(Canton %in% top_10_cantons))
+
+# Plot with top 10 highlighted and others in the background
+ggplot() +
+  geom_point(data = df_others, aes(x = GDP_per_Capita, y = Price_Gross), color = "grey") +
+  geom_point(data = df_top_10_cantons, aes(x = GDP_per_Capita, y = Price_Gross, color = Canton)) +
+  geom_smooth(data = df_top_10_cantons, aes(x = GDP_per_Capita, y = Price_Gross, group = 1), method = "lm", color = "red") +
+  scale_color_manual(values = c("ZH" = "blue", "VD" = "green", "AG" = "red", "SG" = "purple", "BE" = "orange", 
+                                "TI" = "brown", "LU" = "pink", "TG" = "grey", "BS" = "cyan", "ZG" = "black")) +
+  labs(title = "GDP per Capita vs. Average Rental Price with Top 10 Cantons Highlighted",
+       x = "GDP per Capita",
+       y = "Gross Price (CHF)",
+       color = "Canton") +
   theme_minimal()
+
 
 
 --------------------------------------------------------------------------------
@@ -208,29 +245,17 @@ ggplot(df_total, aes(x = GDP_per_Capita, y = Price_Gross)) +
   
 # Histogram for Price_Gross
 ggplot(df_total, aes(x = Price_Gross)) +
-  geom_histogram(bins = 30, fill = "darkblue", color = "black") +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
   labs(title = "Distribution of Rental Prices", x = "Gross Price (CHF)", y = "Frequency") +
   theme_minimal()
 
 --------------------------------------------------------------------------------
-# SIZE
-  
-# Histogram for Size_m2
-ggplot(df_total, aes(x = Size_m2)) +
-  geom_histogram(bins = 30, fill = "darkblue", color = "black") +
-  labs(title = "Distribution of Property Size", x = "Size (m²)", y = "Frequency") +
-  theme_minimal()
-
-ggplot(df_total, aes(x = Size_m2, y = Price_Gross)) +
-  geom_point(aes(color = Category)) + # Color code by property category
-  labs(title = "Price vs. Size of Property", x = "Size (m²)", y = "Gross Price (CHF)") +
-  theme_minimal()
 
 --------------------------------------------------------------------------------
   
 # Histogram for Nr_rooms
 ggplot(df_total, aes(x = Nr_rooms)) +
-  geom_histogram(bins = 30, fill = "darkblue", color = "black") +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
   labs(title = "Distribution of Number of Rooms", x = "Number of Rooms", y = "Frequency") +
   theme_minimal()
 
