@@ -6,6 +6,7 @@ library(dplyr)
 library(naniar)
 library(ggplot2)
 library(heatmaply)
+library(caret)
 
 data_total <- read_excel("data/data_cleaned/data_total.xlsx")
 
@@ -62,5 +63,38 @@ data <- data[!is.na(data$Size_m2),]
 # Analyze missing data
 colMeans(is.na(data))
 
+# Encoding Categorical Data
+encoded_data <- transform(data,
+                     Canton_num=as.numeric(
+                       factor(Canton,
+                              levels=unique(data$Canton))
+                     ),
+                     Type_num=as.numeric(
+                       factor(Type,
+                              levels=unique(data$Type))
+                     ),
+                     Customer_Segment_num=as.numeric(
+                       factor(Customer_Segment,
+                              levels=unique(data$Customer_Segment))
+                     ),
+                     Category_num=as.numeric(
+                       factor(Category,
+                              levels=unique(data$Category))
+                     ),
+                     Package_Product_num=as.numeric(
+                       factor(Package_Product,
+                              levels=unique(data$Package_Product))
+                     )
+)
+
+encoded_order <- c("Canton_num", "FirstDay_Online", "LastDay_Online", "Type_num",
+                   "Customer_Segment_num", "Category_num", "Nr_rooms",
+                   "Package_Product_num", "GDP_2020_21", "GDP_per", "Population",
+                   "Area_km2", "Density", "Size_m2",
+                   "Price_Gross")
+final_data <- encoded_data %>%
+  select(encoded_order)  # Specify the desired order
+str(final_data)
+
 # Save file to local repo
-write.csv(data, "data/data_cleaned/data_total_model.csv")
+write.csv(final_data, "data/data_cleaned/data_total_model.csv")
