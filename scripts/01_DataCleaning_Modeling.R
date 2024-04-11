@@ -56,13 +56,11 @@ colSums(is.na(data))
 summary(is.na(data))
 summary(data)
 
+# Drop rows with NA values in Size_m2
+data <- data[!is.na(data$Size_m2),]
+
 # Analyze missing data
-missing_prop <- colMeans(is.na(data))
-ggplot(data.frame(variable=names(data), missing_prop=missing_prop))+
-  aes(x=variable, y=missing_prop) +
-  geom_col(aes(fill=missing_prop), stat="identity") + #color based on missingness proportion
-  labs(title="Missing Value Heatmap", x="Variable", y="Proportion Missing") +
-  scale_fill_gradient(low="white", high="red")
-heatmaply_na(data[1:30,],
-             showtickables=c(TRUE,FALSE))
-length(data)
+colMeans(is.na(data))
+
+# Save file to local repo
+write.csv(data, "data/data_cleaned/data_total_model.csv")
