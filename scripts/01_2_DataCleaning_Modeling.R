@@ -1,12 +1,16 @@
 # Data Cleaning for Model Training
 # Target Variable: Price_Gross
 
+#-------------------------------------------------------------------------------
+# Required libraries
 library(readxl)
+library(writexl)
 library(dplyr)
 library(naniar)
 library(ggplot2)
 library(heatmaply)
 library(caret)
+#-------------------------------------------------------------------------------
 
 data_total <- read_excel("data/data_cleaned/data_total.xlsx")
 
@@ -22,7 +26,6 @@ data_total <- data_total %>%
   filter(Category %in% categories)
 data_total <- data_total %>%
   filter(Canton %in% cantons)
-
 str(data_total)
 summary(data_total)
 
@@ -39,7 +42,7 @@ length(unique(data_total$Official_Language_1))
 columns_to_drop <- c("Official_Language_1","Official_Language_2",
                      "Official_Language_3","Property_ID",
                      "Customer_ID", "Package_ID",
-                     "Canton_Name", "Canton_Capital")
+                     "Canton_Name", "Canton_Capital", "Type")
 data <- data_total[, !names(data_total) %in% columns_to_drop]
 
 # Rearrange data to have target variable at far right column
@@ -61,17 +64,14 @@ summary(data)
 data <- data[!is.na(data$Size_m2),]
 
 # Create a column for Difference in Time
-data$Days_Difference <- difftime(data$LastDay_Online, data$FirstDay_Online, units = "days")
+data$Days_Difference <- difftime(data$LastDay_Online,
+                                 data$FirstDay_Online, units = "days")
 
 # Encoding Categorical Data
 encoded_data <- transform(data,
                      Canton_num=as.numeric(
                        factor(Canton,
                               levels=unique(data$Canton))
-                     ),
-                     Type_num=as.numeric(
-                       factor(Type,
-                              levels=unique(data$Type))
                      ),
                      Customer_Segment_num=as.numeric(
                        factor(Customer_Segment,
@@ -87,7 +87,7 @@ encoded_data <- transform(data,
                      )
 )
 
-encoded_order <- c("Canton_num", "Days_Difference", "Type_num",
+encoded_order <- c("Canton_num", "Days_Difference",
                    "Customer_Segment_num", "Category_num", "Nr_rooms",
                    "Package_Product_num", "GDP_2020_21", "GDP_per", "Population",
                    "Area_km2", "Density", "Size_m2",
@@ -97,7 +97,6 @@ final_data <- encoded_data %>%
 
 # Typecasting encoded columns as categorical values
 final_data$Canton_num <- factor(final_data$Canton_num)
-final_data$Type_num <- factor(final_data$Type_num)
 final_data$Customer_Segment_num <- factor(final_data$Customer_Segment_num)
 final_data$Category_num <- factor(final_data$Category_num)
 final_data$Nr_rooms <- factor(final_data$Nr_rooms)
@@ -105,4 +104,4 @@ final_data$Package_Product_num <- factor(final_data$Package_Product_num)
 str(final_data)
 
 # Save file to local repo
-write.csv(final_data, "data/data_cleaned/data_total_model.csv")
+write_xlsx(final_data, "data/data_cleaned/data_total_model.xlsx")
