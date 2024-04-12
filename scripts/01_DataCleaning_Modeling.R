@@ -60,8 +60,8 @@ summary(data)
 # Drop rows with NA values in Size_m2
 data <- data[!is.na(data$Size_m2),]
 
-# Analyze missing data
-colMeans(is.na(data))
+# Create a column for Difference in Time
+data$Days_Difference <- difftime(data$LastDay_Online, data$FirstDay_Online, units = "days")
 
 # Encoding Categorical Data
 encoded_data <- transform(data,
@@ -87,7 +87,7 @@ encoded_data <- transform(data,
                      )
 )
 
-encoded_order <- c("Canton_num", "FirstDay_Online", "LastDay_Online", "Type_num",
+encoded_order <- c("Canton_num", "Days_Difference", "Type_num",
                    "Customer_Segment_num", "Category_num", "Nr_rooms",
                    "Package_Product_num", "GDP_2020_21", "GDP_per", "Population",
                    "Area_km2", "Density", "Size_m2",
