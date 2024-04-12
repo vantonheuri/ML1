@@ -1,0 +1,112 @@
+---
+title: "ZugEstates Business Case"
+author: "Anton, Victor"
+date: "2024-04-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Zug Estates focuses on developing, managing, and marketing properties in the Zug region, Switzerland. They prioritize centrally located sites for sustainable, multi-use development. Their portfolio is concentrated in Zug and Risch Rotkreuz, featuring a mix of residential, office, retail, hotel, and service spaces. The company aims for long-term property retention and development, driving value creation through sustainable designs and active management 
+
+Zug Estates, a major real estate player in Zug, Switzerland, might be looking to invest in other parts of the country for several reasons. Here's a comprehensive breakdown: 
+
+* __Risk Reduction:__ 
+The real estate market can be volatile. By spreading their investments across different cantons (Swiss states), Zug Estates reduces the risk associated with a downturn in Zug's market. They might target areas with strong growth potential or a different property mix to complement their Zug portfolio. This diversification provides a buffer and ensures a more stable income stream. 
+
+* __Saturated Market:__ 
+Perhaps the Zug market is saturated, meaning there are limited opportunities for profitable investments. Expanding to other areas allows Zug Estates to tap into new markets with higher potential returns. They might find regions with a greater need for the kind of development they specialize in, offering exciting growth possibilities. 
+
+* __Connecting the Landscape:__ 
+Zug Estates' investments might have a strategic element beyond just individual properties. They could be acquiring properties near transportation hubs or in developing commercial centers. This could be a way to connect different areas of Switzerland through their investments, potentially influencing the overall development landscape. 
+
+* __Reputation and Knowledge:__ 
+Over time, Zug Estates has likely built a strong reputation for high-quality development and property management within Zug. Expanding to other cantons allows them to leverage this reputation. They can attract partnerships with local developers or win contracts for projects in new areas based on their proven track record. Essentially, they bring their successful model to other parts of Switzerland. 
+
+* __Capitalizing on Demand:__ 
+Zug Estates might be strategically responding to broader market trends across Switzerland. Perhaps there's a growing demand for specific property types, like student housing or retirement communities, in certain regions. By investing in these areas, they can capitalize on these trends and meet those demands, ensuring their portfolio remains relevant and profitable. 
+
+```{r, echo=FALSE}
+library(readr)
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(readxl)
+library(openxlsx)
+library(lubridate)
+
+df_total <- read_excel("C:/Users/Victor/Desktop/ML1/data/data_cleaned/data_total.xlsx")
+colnames(df_total)
+```
+
+## Exploratory Data Analysis
+
+### Properties per Canton
+
+```{r Properties per Canton, echo=FALSE}
+# Counting properties per Canton and arranging them from highest to lowest
+properties_per_canton <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Count = n()) %>%
+  arrange(desc(Count)) # Arrange in descending order of count
+
+# Creating the vertical bar chart with smaller data labels
+ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  geom_text(aes(label = Count), vjust = -0.5, color = "black", size = 2.2) + # Data labels above bars
+  labs(title = "Properties per Canton", x = "Canton", y = "Count of Properties") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), # Rotate x-axis labels for better readability
+        plot.title = element_text(hjust = 0.5))
+```
+
+Interpreta
+
+### Average Rental Price per Canton
+
+```{r Average Rental Price per Canton, echo=FALSE}
+canton_order <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(desc(Average_Price_Gross)) %>%
+  .$Canton
+
+# Adjust the factor levels of Canton based on the calculated order
+df_total$Canton <- factor(df_total$Canton, levels = canton_order)
+
+# Plot with cantons ordered by average rental price
+ggplot(df_total, aes(x = Canton, y = Price_Gross)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black") +
+  labs(title = "Average Rental Price per Canton", x = "Canton", y = "Average Rental Price (CHF)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+Interpreta
+
+### Differences in rental prices between different customer segment
+
+```{r Differences in rental prices between different customer segment, echo=FALSE}
+  # - Are there differences in rental prices between different customer segments?
+  # Option 1
+  ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
+  geom_boxplot(outlier.size = 1.5, alpha = 0.7) + 
+  scale_fill_brewer(palette = "Pastel1") + 
+  coord_cartesian(ylim = c(0, quantile(df_total$Price_Gross, 0.95, na.rm = TRUE))) + 
+  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  theme(legend.position = "none") 
+
+# Option 2
+ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross)) +
+  geom_boxplot(outlier.size = 1, aes(fill = Customer_Segment)) + 
+  scale_y_log10(limits = c(100, NA)) + 
+  scale_fill_brewer(palette = "Pastel1", guide = FALSE) + 
+  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
