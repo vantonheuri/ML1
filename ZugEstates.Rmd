@@ -45,9 +45,13 @@ colnames(df_total)
 
 ## Exploratory Data Analysis
 
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
 ### Properties per Canton
 
-```{r Properties per Canton, echo=FALSE}
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+```{r Properties per Canton, echo=FALSE, warning = FALSE}
 # Counting properties per Canton and arranging them from highest to lowest
 properties_per_canton <- df_total %>%
   group_by(Canton) %>%
@@ -64,11 +68,11 @@ ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count)) +
         plot.title = element_text(hjust = 0.5))
 ```
 
-Interpreta
-
 ### Average Rental Price per Canton
 
-```{r Average Rental Price per Canton, echo=FALSE}
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+```{r Average Rental Price per Canton, echo=FALSE, warning = FALSE}
 canton_order <- df_total %>%
   group_by(Canton) %>%
   summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
@@ -86,11 +90,11 @@ ggplot(df_total, aes(x = Canton, y = Price_Gross)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-Interpreta
-
 ### Differences in rental prices between different customer segment
 
-```{r Differences in rental prices between different customer segment, echo=FALSE}
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+```{r Differences in rental prices between different customer segment, echo=FALSE, warning = FALSE}
   # - Are there differences in rental prices between different customer segments?
   # Option 1
   ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
@@ -110,3 +114,139 @@ ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross)) +
   theme_minimal() +
   theme(legend.position = "none")
 ```
+
+### TITULO
+
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+```{r Correlation Between Property Size and Rental Price, echo=FALSE, warning = FALSE}
+# - Is there a correlation between the size of the property (in m2) and the rental price?
+  
+# We sleect the Top Ten Cantons
+top_10_cantons <- c("ZH", "VD", "AG", "SG", "BE", "TI", "LU", "TG", "BS", "ZG")
+top_5_cantons <- c("ZH", "VD", "AG", "SG", "BE")
+
+# Filter the dataset to include only the top cantons
+df_top_10_cantons <- df_total %>%
+  filter(Canton %in% top_10_cantons) %>%
+  filter(Price_Gross <= 500000, Size_m2 <= 300) # Apply filters for Price_Gross and Size_m2
+
+# Filter the dataset to include only the top cantons
+df_top_5_cantons <- df_total %>%
+  filter(Canton %in% top_5_cantons) %>%
+  filter(Price_Gross <= 500000, Size_m2 <= 300) # Apply filters for Price_Gross and Size_m2
+
+# Create a manual pastel color palette
+pastel_colors <- c("ZH" = "#bdb2ff",  # Pastel blue
+                   "VD" = "#ffd6a5",  # Lighter pastel blue
+                   "AG" = "#b4f8c8",  # Pastel cyan
+                   "SG" = "#ade8f4",  # Lighter pastel cyan
+                   "BE" = "#ffafcc",  # Pastel red
+                   "TI" = "#bde0fe",  # Pastel orange
+                   "LU" = "#90e0ef",  # Pastel green
+                   "TG" = "#a0c4ff",  # Another shade of pastel blue
+                   "BS" = "#a1c9f4",  # Pastel purple
+                   "ZG" = "#ffc6ff") # Pastel pink
+
+# Scatter Plot TOP 5
+ggplot(df_top_5_cantons, aes(x = Size_m2, y = Price_Gross)) +
+  geom_point(aes(color = Canton), size = 0.8, alpha = 0.8) + # Smaller points with size 1
+  scale_color_manual(values = pastel_colors) +
+  geom_smooth(method = "lm", color = "darkblue", size = 0.5, se = FALSE) +
+  labs(title = "Correlation Between Property Size and Rental Price", x = "Size (m²)", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  scale_y_log10(labels = scales::comma) # Apply logarithmic scale to y-axis
+```
+
+### Distribution of Property Size
+
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+```{r Distribution of Property Size, echo=FALSE, warning = FALSE}
+# Histogram for Size_m2
+ggplot(df_total, aes(x = Size_m2)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Property Size", x = "Size (m²)", y = "Frequency") +
+  theme_minimal()
+```
+
+### Distribution of Number of Rooms
+
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+```{r Distribution of Number of Rooms, echo=FALSE, warning = FALSE}
+# Histogram for Nr_rooms
+ggplot(df_total, aes(x = Nr_rooms)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Number of Rooms", x = "Number of Rooms", y = "Frequency") +
+  theme_minimal()
+```
+
+_Interpreta el grafico_
+
+### Effect of Number of Rooms on Rental Price
+
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+```{r Effect of Number of Rooms on Rental Price, echo=FALSE, warning = FALSE}
+# - How does the number of rooms affect the rental price?
+
+# Apply filters to remove extreme prices for better visualization
+  df_filtered <- df_total %>%
+  filter(Price_Gross <= 500000) %>%
+  mutate(Nr_rooms = as.factor(Nr_rooms)) # Treat number of rooms as a factor
+
+# Create the scatter plot without differentiating by canton
+ggplot(df_filtered, aes(x = Nr_rooms, y = Price_Gross)) +
+  geom_point(alpha = 0.6, size = 1, color = "skyblue") +
+  labs(title = "Effect of Number of Rooms on Rental Price", x = "Number of Rooms", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  scale_y_log10() # Apply logarithmic scale to y-axis
+```
+
+### Titulo
+
+```{r , echo=FALSE}
+```
+
+_Interpreta el grafico_
+
+### Titulo
+
+```{r , echo=FALSE}
+```
+
+_Interpreta el grafico_
+
+### Titulo
+
+```{r , echo=FALSE}
+```
+
+_Interpreta el grafico_
+
+### Titulo
+
+```{r , echo=FALSE}
+```
+
+_Interpreta el grafico_
+
+### Titulo
+
+```{r , echo=FALSE}
+```
+
+_Interpreta el grafico_
+
+
+## Data Modelling
+
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+### Titulo
+
+```{r , echo=FALSE}
+```
+
+_Interpreta el grafico_
