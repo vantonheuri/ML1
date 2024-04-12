@@ -94,6 +94,14 @@ encoded_order <- c("Canton_num", "Days_Difference", "Type_num",
                    "Price_Gross")
 final_data <- encoded_data %>%
   select(encoded_order)  # Specify the desired order
+
+# Typecasting encoded columns as categorical values
+final_data$Canton_num <- factor(final_data$Canton_num)
+final_data$Type_num <- factor(final_data$Type_num)
+final_data$Customer_Segment_num <- factor(final_data$Customer_Segment_num)
+final_data$Category_num <- factor(final_data$Category_num)
+final_data$Nr_rooms <- factor(final_data$Nr_rooms)
+final_data$Package_Product_num <- factor(final_data$Package_Product_num)
 str(final_data)
 
 # Save file to local repo
