@@ -1,10 +1,14 @@
 # Linear Model
 # Target Variable: Price_Gross
-
+#-------------------------------------------------------------------------------
 # Required Packages
+
+#-------------------------------------------------------------------------------
 
 # Reading in data
 enc_data <- read.csv("data/data_cleaned/data_total_model.csv")
+enc_data <- enc_data[, !(names(enc_data) %in% "X"), drop = TRUE]
+
 str(enc_data)
 #Splitting the data into training and testing
 split_ratio <- 0.8
@@ -63,10 +67,13 @@ scatter.smooth(new_lm_predictions)
 
 
 rmse <- sqrt(mean((lm_predictions - test_set$Price_Gross)^2))
-rmse
-
 mae <- mean(abs(lm_predictions - test_set$Price_Gross))
 mae
+rmse
 
+new_rmse <- sqrt(mean((new_lm_predictions - test_set$Price_Gross)^2))
+new_mae <- mean(abs(new_lm_predictions - rel_test_set$Price_Gross))
+new_mae
+new_rmse
 
 
