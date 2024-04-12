@@ -1,10 +1,12 @@
 ---
-title: "ZugEstates Pricing Estimator"
+title: |
+  ![](LogoZugEstates.png){width=4in}   
+  Real Estate Pricing
 author: "Victor Anton, Rodrigo Gonzalez & Carlos Leon"
 date: "Machine Learning 1 - 05 June 2024"
 output: 
   prettydoc::html_pretty:
-    theme: cayman
+    theme: hpstr
     highlight: github
     #highlight: tango
     toc: yes
@@ -57,21 +59,21 @@ Over time, Zug Estates has likely built a strong reputation for high-quality dev
 * __Capitalizing on Demand:__ 
 Zug Estates might be strategically responding to broader market trends across Switzerland. Perhaps there's a growing demand for specific property types, like student housing or retirement communities, in certain regions. By investing in these areas, they can capitalize on these trends and meet those demands, ensuring their portfolio remains relevant and profitable. .
 
-## Dataset "Homegate"
+## Dataset "Homegate..."
 
-... Rodrigo has
+... Rodrigo ...
 
 ## Motivation and Goal
 
-Our motivation is to identify patterns, correlations, and influencing factors to predict attrition by applying machine learning techniques. The challenge lies in selecting the right features to make accurate predictions and to disentangle combinations of factors. The higher goal is to enable companies having similar data to take preventive measures to retain employees before they decide to leave. The importance to do so has been outlined above. Predictive models allow such strategies to be tailored to the needs of individual organizations. Overall, we are motivated to make a practical contribution to solving a real-world issue in the workplace that could benefit companies and employees.
+... Rodrigo ...
 
 ## Project Structure
 
-Our project aims to create a model that identifies employees likely to leave a company prematurely. We start with exploratory data analysis to understand data characteristics and potential correlations with attrition. We then test various machine learning models, aligned with our curriculum, to predict attrition. This includes a Linear Model for initial insights, Generalized Linear Models with Poisson and Binomial families for regression and binary classification, a Generalized Additive Model for non-linear analysis, Neural Networks for deep learning pattern recognition, and Support Vector Machines (SVM) for advanced classification. We conclude with a comparative analysis of each model's performance, focusing on their practical use in addressing attrition. Finally, we'll recommend the most effective model for predicting employee attrition, aiding companies like IBM in developing strategies to minimize it.
+... Rodrigo ...
 
 ## Navigating the Report: Understanding the Hidden R Code
 
-This report is based on R code used to explore the data, train and test various models. For ease of reading, much of this code is hidden within the document. However, at the reader's request, this code can be made visible for thorough review. This feature not only helps to maintain a clean and accessible format, but also ensures the reproducibility of our analysis.
+This report is based on R code that was used to explore, train, and test various models on the data. To maintain a clean and accessible format, much of this code is hidden within the document. However, upon request, the code can be made visible for thorough review. This feature not only helps ensure the reproducibility of our analysis but also facilitates ease of reading.
 
 # Data Preperation
 
@@ -88,140 +90,18 @@ In this report the following libraries are used.
 ```{r libraries, class.source = "fold-show"}
 # used libraries
 library(readr)
-library(dplyr)
 library(ggplot2)
-library(corrplot)
-library(gridExtra)
-library(tidyr)
-library(cowplot)
-library(forcats)
-library(plotrix)
-library(plotly)
-library(car)
-library(mgcv)
-library(caret)  
-library(reshape2)
-library(tidyverse)
-library(e1071)
-library(nnet)         
-library(gamlss.add)   
-library(ROCR)
-library(multcomp)
-library(data.table)
-library(heatmaply)
+library(stringr)
+library(dplyr)
+library(readxl)
+library(openxlsx)
+library(lubridate)
 ```
 
 </details> 
 
 <br>
 
-## Loading and Reducing the Dataset
-
-The "IBM HR Analytics Employee Attrition & Performance" data set has 1470 observations and 35 variables.
-
-<details>
-
-<summary>*Click to see the full dataset*</summary>
-
-```{r loading_data, out.width='50%'}
-#set working directory to source file location
-d.full.attrition <- read.csv("../data/WA_Fn-UseC_-HR-Employee-Attrition.csv")
-str(d.full.attrition)
-```
-
-</details>
-
-For the sake of simplicity and after reviewing the summary of the dataset, our team opted to work with a subset of these variables.
-
-These included *EmployeeCount* and *StandardHours*, both of which contained only a single value. In addition, the *EmployeeNumber* column, which serves as an identification number for IBM employees, was deemed irrelevant for our prediction purposes. A more detailed examination was performed to identify columns with less than two unique values:
-
-```{r}
-# Identifying columns with less than two unique values
-less_than_2_unique <- sapply(d.full.attrition, function(x) {
-  if(is.factor(x) | is.character(x)) {
-    length(unique(x)) < 2
-  } else {
-    FALSE
-  }
-})
-
-# Displaying the names of columns with less than two unique values
-names(less_than_2_unique[less_than_2_unique])
-```
-
-Subsequently, based on this preliminary review, it was decided to remove the following columns: *EmployeeNumber*, *Over18*, *EmployeeCount*, and *StandardHours*.
-
-The decision to exclude further variables was based on an initial exploration of their relationships with the *attrition* variable. After conducting preliminary analyses, it became evident that some variables had no discernible impact on attrition. To maintain this report short (especially the graphical analysis), we will not delve into the specific details of this data filtering process at this point.
-
-Deleted Variables: *DailyRate, Education, EnvironmentSatisfaction, HourlyRate, MonthlyRate, PercentSalaryHike, RelationshipSatisfaction,WorkLifeBalance, YearsSinceLastPromotion*.
-
-Finally, the dataset to work on contains 22 variables, which will be explored and later on used in various models.
-
-<details>
-
-<summary>*Click to see the final dataset*</summary>
-
-```{r variable_drop}
-d.attrition <- d.full.attrition %>% 
-  dplyr::select(-c("EmployeeCount","EmployeeNumber", "Over18", "StandardHours", "DailyRate", "Education", "EnvironmentSatisfaction", "HourlyRate", "MonthlyRate", "PercentSalaryHike", "RelationshipSatisfaction","WorkLifeBalance", "YearsSinceLastPromotion"))
-
-str(d.attrition)
-```
-
-</details>
-
-<br> 
-
-## Missing Values
-
-The following code checks for the presence of missing values within the dataset and it confirms that there are no missing values in any of the 22 variables.
-
-<details>
-
-<br>
-
-<summary>*Click to see the code and result for missing values*</summary>
-
-```{r missing_values, out.width='50%'}
-
-#check for missing values 
-missing_values <- sapply(d.attrition, function(x) sum(is.na(x)))
-
-#print variables and their number of missing values
-missing_values
-
-```
-
-</details>
-
-<br>
-
-## Defining Factors
-
-In the final step, we converted all character variables that represent categorical data into factors. This adjustment ensures accurate representation and analysis of these categorical types within our dataset.
-
-<details>
-
-<summary>*Click to see the code*</summary>
-
-```{r setting_factors, out.width='50%'}
-# Define columns with factors
-cols_to_factor <- c("Attrition", "BusinessTravel", "Department",
-                    "EducationField", "Gender",  "JobLevel", "JobRole",  
-                    "MaritalStatus", "OverTime")
-
-# Loop through the columns and convert them to factors
-for (col in cols_to_factor) {
-  d.attrition[, col] <- factor(d.attrition[, col])
-}
-
-str(d.attrition[,cols_to_factor])
-
-```
-
-</details>
-
-<br>
 
 # Exploratory Graphical Analysis
 
@@ -229,297 +109,169 @@ This chapter delves into an in-depth exploration of the dataset to gain a compre
 
 A critical observation from our initial analysis is the notable imbalance in the response variable. The data reveals that a significant majority of the workforce, amounting to over 80%, have not experienced attrition. Specifically, out of the total number of employees in the dataset, 1233 remain employed, while 237 have left the company (marked as 'attrition = yes'). This disproportionate representation poses a potential challenge in the context of predictive modeling. Models developed under these conditions may inherently exhibit a bias towards the majority class, in this case, the employees who have stayed.
 
-```{r distribution_attrition, out.width='50%'}
-table(d.attrition$Attrition)
+
+```{r, echo=FALSE}
+df_total <- read_excel("C:/Users/Victor/Desktop/ML1/data/data_cleaned/data_total.xlsx")
+colnames(df_total)
 ```
 
-## Correlation Matrix
+### Properties per Canton
 
-In a next steps the relationships between variables are investigated by using a correlation matrix. This will be particularly beneficial in understanding how different factors contribute to or associate with employee attrition.
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
 
-```{r correlation_matrix, echo=FALSE}
-# create a numerical encoded data frame
-d.attrition.encoded <- d.attrition
-d.attrition.encoded$Attrition <- ifelse(d.attrition$Attrition == "Yes", 1, 0)
-d.attrition.encoded$BusinessTravel <- as.integer(factor(d.attrition.encoded$BusinessTravel))
-d.attrition.encoded$Department <- as.integer(factor(d.attrition.encoded$Department))
-d.attrition.encoded$EducationField <- as.integer(factor(d.attrition.encoded$EducationField))
-d.attrition.encoded$Gender <- as.integer(factor(d.attrition.encoded$Gender))
-d.attrition.encoded$JobLevel <- as.integer(factor(d.attrition.encoded$JobLevel))
-d.attrition.encoded$JobRole <- as.integer(factor(d.attrition.encoded$JobRole))
-d.attrition.encoded$MaritalStatus <- as.integer(factor(d.attrition.encoded$MaritalStatus))
-d.attrition.encoded$OverTime <- as.integer(factor(d.attrition.encoded$OverTime))
+```{r Properties per Canton, echo=FALSE, warning = FALSE}
+# Counting properties per Canton and arranging them from highest to lowest
+properties_per_canton <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Count = n()) %>%
+  arrange(desc(Count)) # Arrange in descending order of count
 
-# Calculate the correlation matrix
-cor_matrix <- cor(d.attrition.encoded)
-
-# Create a heatmap
-melted_cor <- melt(cor_matrix)
-ggplot(data = melted_cor, aes(x = Var1, y = Var2, fill = value)) +
-  geom_tile() +
-  scale_fill_gradient2(low = "#ca0020", high = "#1c9099", mid = "white", limits = c(-1, 1)) +
+# Creating the vertical bar chart with smaller data labels
+ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  geom_text(aes(label = Count), vjust = -0.5, color = "black", size = 2.2) + # Data labels above bars
+  labs(title = "Properties per Canton", x = "Canton", y = "Count of Properties") +
   theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) +
-  labs(title = "Heatmap Pearson Correlation Coefficients")
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), # Rotate x-axis labels for better readability
+        plot.title = element_text(hjust = 0.5))
 ```
 
-The color intensity and the color itself indicate the strength and the direction of the correlation.
+### Average Rental Price per Canton
 
-We can see that *PerformanceRating*, *Gender*, *EducationField* and *JobInvolvement* have barely a correlation with any other variable. The relationship among variables like *YearsAtCompany*, *YearsInCurrentRole*, *YearsWith Manager*, *TotalWorkingYears* and *Age* can be justified through their inherent connections.
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
 
-In examining *Attrition* as the key response variable in this project, initial observations suggest that there are no strong correlations with most variables, except for potential associations with *OverTime* and *MartialStatus*. This first observation already suggest that employee turnover is multifaceted and influenced by probably various combinations of variables. To gain a clearer understanding of these relationships, it is essential to delve into the correlation coefficients in more detail. We thus calculated the correlations of all variables with *Attrition*.
+```{r Average Rental Price per Canton, echo=FALSE, warning = FALSE}
+canton_order <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(desc(Average_Price_Gross)) %>%
+  .$Canton
 
-<details>
+# Adjust the factor levels of Canton based on the calculated order
+df_total$Canton <- factor(df_total$Canton, levels = canton_order)
 
-<summary>*Click to view code for correlation coefficients*</summary>
-
-```{r correlation_coefficients, out.width='80%'}
-# Create a data frame to store the correlation coefficients
-correlation_data <- data.frame(Variable = character(0), Correlation = numeric(0))
-
-# Loop through all variables and calculate the point-biserial correlation manually
-for (variable in names(d.attrition.encoded)) {
-  if (variable != "Attrition") {  # Exclude the response variable
-    correlation_coeff <- cor(d.attrition.encoded$Attrition, d.attrition.encoded[[variable]], method = "spearman")
-    correlation_data <- rbind(correlation_data, data.frame(Variable = variable, Correlation = correlation_coeff))
-  }
-}
-
-# Sort the data frame by absolute correlation coefficient
-correlation_data <- correlation_data[order(abs(correlation_data$Correlation), decreasing = TRUE), ]
-
-# Print the correlation coefficients
-print(correlation_data)
-```
-
-</details>
-
-The analysis reveals that only 12 variables have correlation coefficients above 0.1 or below -0.1. Moving forward, we will closely examine these variables to better understand their association with employee attrition.
-
-```{r}
-print(correlation_data$Variable[1:12])
-```
-
-*Remark of the team: While we recognize that our current methodology may not be entirely suited to the diverse data types in our dataset, since correlation coefficients often necessitate distinct approaches, this preliminary analysis nonetheless provided us a framework to choose which variables warrant closer examination.*
-
-## Key Variables
-
-In this section we want to further investigate the variables that exhibit a greater correlation coefficient in relation to our main response variable, Attrition. In order to this more efficiently a potting template was created.
-
-<details>
-
-<summary>*Click to view code for the plot templates*</summary>
-
-```{r barchart_template}
-# template to plot attrition vs. categorical variables
-p.barchart.categorical <- ggplot(d.attrition, aes(fill = Attrition)) +
-  geom_bar(position = "stack", width = 0.6) +
-  scale_fill_manual(values = c("Yes" = "#1c9099", "No" = "#1c909917"),
-                    labels = c("Yes" = "left", "No" = "stayed"))+
-  labs(y = "Number of Employees") +
-  theme_minimal()+
-  theme(
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank()
-  )
-
-# template to plot attriton vs. numerical variables
-p.chart.numerical <- ggplot(data = d.attrition.encoded, aes(y = Attrition))+
-  geom_point(alpha = 0.6)+
-  geom_smooth(method = "loess", se = FALSE, color = "#1c9099") +
-  scale_color_manual(values = c("Yes" = "#1c9099", "No" = "#1c909920")) +
-  labs(x = "Numerical Variable", y = "Attrition (0 = stayed, 1 = left)") +
-  scale_y_continuous(breaks = c(0, 1)) +
+# Plot with cantons ordered by average rental price
+ggplot(df_total, aes(x = Canton, y = Price_Gross)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black") +
+  labs(title = "Average Rental Price per Canton", x = "Canton", y = "Average Rental Price (CHF)") +
   theme_minimal() +
-  theme(
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank()
-  )
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-</details>
+### Differences in rental prices between different customer segment
 
-<br>
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
 
-### Over Time Status
-
-```{r distribution_OverTime, out.width='60%', echo = FALSE}
-
-p.barchart.OverTime <- p.barchart.categorical + aes(x=OverTime) +
-  labs(x= "Overtime Status", title = "Employee Attrition in Relation to Overtime Hours")
-p.barchart.OverTime
-```
-
-Employees who work overtime tend to resign more frequently than those who do not. This trend indicate that it might be important to manage workloads and to offer sufficient rest opportunities. Understanding and addressing the factors that lead to excessive overtime can be key in improving employee retention.
-
-### Monthly Income
-
-```{r plot_MonthlyIncome, out.width='80%', echo = FALSE}
-
-p.chart.monthlyincome <- p.chart.numerical + aes(x=MonthlyIncome)+
-  labs(x= "Monthly Income", title = "Attrition by Monthly Income")
-
-histogram_monthly_income <- d.attrition %>% 
-  ggplot(aes(x = MonthlyIncome, fill = Attrition)) +
-  labs(y = "Number of Employees", x = "Monthly Income", title = "Distribution of Monthly Income\nby Attrition") +
-  geom_histogram(position = "stack", bins = 30) +
-  scale_fill_manual(values = c("Yes" = "#1c9099", "No" = "#1c909917")) +
+```{r Differences in rental prices between different customer segment, echo=FALSE, warning = FALSE}
+  # - Are there differences in rental prices between different customer segments?
+  # Option 1
+  ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
+  geom_boxplot(outlier.size = 1.5, alpha = 0.7) + 
+  scale_fill_brewer(palette = "Pastel1") + 
+  coord_cartesian(ylim = c(0, quantile(df_total$Price_Gross, 0.95, na.rm = TRUE))) + 
+  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
   theme_minimal() +
-  theme(
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank()
-  )
+  theme(legend.position = "none") 
 
-grid.arrange(p.chart.monthlyincome, histogram_monthly_income, ncol = 2)
-
-d.attrition %>%
-  mutate(IncomeGroup = ifelse(MonthlyIncome <= 5000, "Up to 5000", "Above 5000")) %>%
-  group_by(IncomeGroup) %>%
-  summarize(
-    Total = n(),
-    AttritionCount = sum(Attrition == "Yes"),
-    AttritionRate = AttritionCount / Total
-  )
-
-```
-
-Employees with a low income are more likely to quit their job. However, the left graph suggests that after reaching an income threshold of 5000 pounds, the rate of employee turnover remains relatively stable. The histogram on the right indicates that the share of employees receiving under 5000 is higher. We thus calculated the relative shares. Indeed, the attrition rate for those receiving under 5000 is higher (0.218 vs. 0.103). This finding underscores the importance of compensation strategies, particularly for lower-income brackets. It further highlights the need for a holistic approach to employee retention beyond financial incentives as other factors become more influential after the threshold.
-
-### Job Level
-
-```{r distribution_JobLevel, out.width='60%', echo = FALSE}
-
-p.barchart.JobL <- p.barchart.categorical + aes(x=JobLevel) +
-  labs(x= "JobLevel", title = "Attrition by Job Level")
-p.barchart.JobL
-
-```
-
-Employees on Job Level 1 tend to quit more frequently than on other levels. This trend could be indicative of various underlying factors, such as job satisfaction, growth opportunities, compensation, or work-life balance, which might be differentially experienced by employees at this entry-level position.
-
-### Temporal Variables
-
-Next, we plotted the year-related variables against *Attrition*.
-
-```{r plot_Years, echo = FALSE}
-
-p.chart.totalworkingyeas <- p.chart.numerical + aes(x=TotalWorkingYears)+
-  labs(x= "TotalWorkingYears")
-
-p.chart.YearsInCurrentRole <- p.chart.numerical + aes(x=YearsInCurrentRole)+
-  labs(x= "YearsInCurrentRole")
-
-p.chart.YearsAtCompany <- p.chart.numerical + aes(x=YearsAtCompany)+
-  labs(x= "YearsAtCompany")
-
-p.chart.YearsWithCurrManager <- p.chart.numerical + aes(x=YearsWithCurrManager)+
-  labs(x= "YearsWithCurrManager")
-
-grid.arrange(p.chart.totalworkingyeas, p.chart.YearsInCurrentRole, p.chart.YearsAtCompany, p.chart.YearsWithCurrManager, ncol = 2,  top = "Attrition by Temporal variables")
-```
-
-For *TotalWorkingYears* and *YearsAtCompany* we see similar patterns: As employees accumulate experience in the workforce or at the company, they exhibit a reduced tendency to resign from their positions. But it seems like after 20 to 30 years, the probability of a resignment is increasing again.
-
-For both *YearsInCurrentRole* and *YearWithCurrManager*, a similar trend can be observed: after two years, the probability of quitting decreases to almost zero. There is a slight increase seen between 5-7 years, but after this point, employees are less likely to quit.
-
-### Stock Option Level
-
-```{r StockOptionLevel_Attrition_plot, out.width='60%', echo = FALSE}
-
-p.barchart.StockOptionLevel <- p.barchart.categorical + aes(x=StockOptionLevel) +
-  labs(x= "StockOptionLevel", title = "Attrition by StockOptionLevel")
-p.barchart.StockOptionLevel
-```
-
-Employees who do not have stock options (at level 0) are observed to leave their positions with greater frequency. This trend could be attributed to potentially lower loyalty towards the company, as they might feel less invested without a share in the company's stock ownership.
-
-### Age
-
-```{r exploringAge, echo = FALSE}
-age_box <- ggplot(data = d.attrition, aes(x = Attrition, y = Age, fill = Attrition)) +
-  geom_boxplot() +
-  labs(x = "Attrition", y = "Age") +
-  scale_fill_manual(values = c("Yes" = "#1c9099", "No" = "#1c909917"))+
+# Option 2
+ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross)) +
+  geom_boxplot(outlier.size = 1, aes(fill = Customer_Segment)) + 
+  scale_y_log10(limits = c(100, NA)) + 
+  scale_fill_brewer(palette = "Pastel1", guide = FALSE) + 
+  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
   theme_minimal() +
-  theme(
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    legend.position = "none"
-  )
-
-
-age_stacked <- d.attrition %>% 
-  ggplot(aes(x = Age, fill = Attrition)) +
-  labs(y = "Number of Employees")+
-  geom_histogram(position = "stack") +
-  scale_fill_manual(values = c("Yes" = "#1c9099", "No" = "#1c909917")) +
-  theme_minimal()+
-  theme(
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank()
-  )
-
-grid.arrange(age_stacked, age_box, ncol = 2, top = "Age Distribution in Relation to Employee Attrition")
+  theme(legend.position = "none")
 ```
 
-Examining the relationship between age and attrition shows that those who are quitting tend to be younger than those not quitting. They may be exploring different companies to find the best fit for their skills and interests or seek new opportunities to advance their careers or increase their earning potential. 
+### TITULO
 
-The histogram suggests that attrition ('Yes') occurs across all age groups but with varying frequencies. The majority of observations are concentrated in the age range of approximately 25 to 45 years old. There is imbalance between the number of observations for 'Attrition = No' compared to 'Attrition = Yes'. This suggests that there are many more instances where employees have stayed with the organization rather than leaving.
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
 
-### Marital Status
+```{r Correlation Between Property Size and Rental Price, echo=FALSE, warning = FALSE}
+# - Is there a correlation between the size of the property (in m2) and the rental price?
+  
+# We sleect the Top Ten Cantons
+top_10_cantons <- c("ZH", "VD", "AG", "SG", "BE", "TI", "LU", "TG", "BS", "ZG")
+top_5_cantons <- c("ZH", "VD", "AG", "SG", "BE")
 
-```{r distribution_MaritalStatus, out.width='60%', echo = FALSE}
+# Filter the dataset to include only the top cantons
+df_top_10_cantons <- df_total %>%
+  filter(Canton %in% top_10_cantons) %>%
+  filter(Price_Gross <= 500000, Size_m2 <= 300) # Apply filters for Price_Gross and Size_m2
 
-p.barchart.Marital <- p.barchart.categorical + aes(x=MaritalStatus) +
-  labs(x= "MartialStatus", title = "Attrition by Marital Status")
-p.barchart.Marital
+# Filter the dataset to include only the top cantons
+df_top_5_cantons <- df_total %>%
+  filter(Canton %in% top_5_cantons) %>%
+  filter(Price_Gross <= 500000, Size_m2 <= 300) # Apply filters for Price_Gross and Size_m2
 
+# Create a manual pastel color palette
+pastel_colors <- c("ZH" = "#bdb2ff",  # Pastel blue
+                   "VD" = "#ffd6a5",  # Lighter pastel blue
+                   "AG" = "#b4f8c8",  # Pastel cyan
+                   "SG" = "#ade8f4",  # Lighter pastel cyan
+                   "BE" = "#ffafcc",  # Pastel red
+                   "TI" = "#bde0fe",  # Pastel orange
+                   "LU" = "#90e0ef",  # Pastel green
+                   "TG" = "#a0c4ff",  # Another shade of pastel blue
+                   "BS" = "#a1c9f4",  # Pastel purple
+                   "ZG" = "#ffc6ff") # Pastel pink
+
+# Scatter Plot TOP 5
+ggplot(df_top_5_cantons, aes(x = Size_m2, y = Price_Gross)) +
+  geom_point(aes(color = Canton), size = 0.8, alpha = 0.8) + # Smaller points with size 1
+  scale_color_manual(values = pastel_colors) +
+  geom_smooth(method = "lm", color = "darkblue", size = 0.5, se = FALSE) +
+  labs(title = "Correlation Between Property Size and Rental Price", x = "Size (m²)", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  scale_y_log10(labels = scales::comma) # Apply logarithmic scale to y-axis
 ```
 
-Comparing the job attrition based marital status, we can observe that employees, who are single tend to quit their job more frequently.
+### Distribution of Property Size
 
-### Job Involvement
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
 
-```{r distribution_JobInvolvement, out.width='60%', echo = FALSE}
-
-p.barchart.JobInvolvement <- p.barchart.categorical + aes(x=JobInvolvement) +
-  labs(x= "JobInvolvement", title = "Distribution of Attrition by Job Involvement")
-p.barchart.JobInvolvement
-
-d.attrition %>%
-  group_by(JobInvolvement) %>%
-  summarize(
-    Total = n(),
-    AttritionCount = sum(Attrition == "Yes"),
-    AttritionRate = round(AttritionCount / Total*100,1)
-  ) 
-
+```{r Distribution of Property Size, echo=FALSE, warning = FALSE}
+# Histogram for Size_m2
+ggplot(df_total, aes(x = Size_m2)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Property Size", x = "Size (m²)", y = "Frequency") +
+  theme_minimal()
 ```
 
-The plot indicates that employees with the lowest level of job involvement (level 1) are more likely to leave, while those with higher job involvement (levels 3 and 4) tend to stay with the company. This is confirmed by the attrition rates. 
+### Distribution of Number of Rooms
 
-### Job Satisfaction
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
 
-```{r distribution_JobSatisfaction, out.width='60%', echo = FALSE}
-
-p.barchart.JobSatisfaction <- p.barchart.categorical + aes(x=JobSatisfaction) +
-  labs(x= "JobSatisfaction", title = "Distribution of Attrition by Job Satisfaction")
-p.barchart.JobSatisfaction
-
-d.attrition %>%
-  group_by(JobSatisfaction) %>%
-  summarize(
-    Total = n(),
-    AttritionCount = sum(Attrition == "Yes"),
-    AttritionRate = round(AttritionCount / Total * 100, 1) 
-  ) 
-
+```{r Distribution of Number of Rooms, echo=FALSE, warning = FALSE}
+# Histogram for Nr_rooms
+ggplot(df_total, aes(x = Nr_rooms)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Number of Rooms", x = "Number of Rooms", y = "Frequency") +
+  theme_minimal()
 ```
 
-With a decrease in job satisfaction, there is a greater probability of employees resigning. This is supported by the fact that the largest percentage (22.8% for job satisfaction level 1) have quit their employment.
+_Interpreta el grafico_
+
+### Effect of Number of Rooms on Rental Price
+
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+```{r Effect of Number of Rooms on Rental Price, echo=FALSE, warning = FALSE}
+# - How does the number of rooms affect the rental price?
+
+# Apply filters to remove extreme prices for better visualization
+  df_filtered <- df_total %>%
+  filter(Price_Gross <= 500000) %>%
+  mutate(Nr_rooms = as.factor(Nr_rooms)) # Treat number of rooms as a factor
+
+# Create the scatter plot without differentiating by canton
+ggplot(df_filtered, aes(x = Nr_rooms, y = Price_Gross)) +
+  geom_point(alpha = 0.6, size = 1, color = "skyblue") +
+  labs(title = "Effect of Number of Rooms on Rental Price", x = "Number of Rooms", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  scale_y_log10() # Apply logarithmic scale to y-axis
+```
+
 
 # Linear Model
 
@@ -528,1252 +280,6 @@ Our initial strategy to predict attrition involved utilizing a linear model. How
 ## Linear Regression Analysis for "Years at Company"
 
 We have chosen "Years at Company" as our response variable to predict the tenure of employees within the company. This will provide us with valuable insights into retention factors and help us better understand the elements that influence an employee's longevity with the company.
-
-```{r}
-lm.ibm2 <- lm(formula = YearsAtCompany ~ Age+BusinessTravel+Department+
-                DistanceFromHome+EducationField+Gender+JobInvolvement+
-                JobLevel+JobRole+JobSatisfaction+MaritalStatus+MonthlyIncome+
-                NumCompaniesWorked+OverTime+PerformanceRating+StockOptionLevel+
-                TotalWorkingYears+TrainingTimesLastYear+Attrition+
-                YearsInCurrentRole+YearsWithCurrManager, data = d.attrition.encoded)
-
-summary(lm.ibm2)
-```
-
-**Intercept (Intercept Estimate: 2.801e+00):** There is strong evidence that the mean tenure for an employee (i.e. the Intercept) is not equal to zero when all other predictors are set to their reference levels. In this context, it suggests that, on average, the predicted number of years an employee stays with the company is approximately 2.801.
-
-Let's explore selected predictor variables:
-
-**NumCompaniesWorked (coefficient estimate: -3.009e-01):** The coefficient for NumCompaniesWorked shows strong evidence (p-value \< 2e-16) and is negative, suggesting that for each additional company an employee has worked for, there is approximately a 0.3009 decrease in the predicted number of years at the current company. This implies that individuals with a history of working for more companies tend to have a shorter tenure at the current company.
-
-**TotalWorkingYears (Coefficient estimate: 2.522e-01):** The positive coefficient on TotalWorkingYears is strongly evidenced (p-value \< 2e-16), indicating that each additional year of total work experience is associated with an approximately 0.2522 increase in the predicted number of years at the current company. Employees with more total work experience tend to have longer tenure at their current company.
-
-**YearsInCurrentRole (Coefficient estimate: 5.623e-01):** The positive coefficient on YearsInCurrentRole is strongly evidenced (p-value \< 2e-16), indicating that for each additional year an employee stays in their current role, there is an approximately 0.5623 increase in the predicted number of years at the current company. This suggests that stability in the current role is positively associated with longer tenure at the current company.
-
-**YearsWithCurrManager (coefficient estimate: 6.252e-01):** Similar to YearsInCurrentRole, the positive coefficient for YearsWithCurrManager is strongly evidenced (p-value \< 2e-16). It suggests that for each additional year an employee stays with their current manager, there is an associated increase of approximately 0.6252 in the predicted number of years in the current organization. This implies that a stable relationship with the current manager is positively associated with longer tenure at the current firm.
-
-**R-squared Interpretation:** The R-squared value of 0.7654 represents the proportion of variance in the dependent variable (YearsAtCompany) that can be explained by the independent variables included in the model. In this case, the model explains approximately 76.54% of the total variance in the number of years an employee stays at the company. This suggests that the included predictors, especially NumCompaniesWorked, TotalWorkingYears, YearsInCurrentRole, and YearsWithCurrManager, provide strong evidence as contributors to explaining the variation in employee tenure.
-
-In summary, this linear regression model offers valuable insights into the relationships between various predictor variables and employee tenure. The predictors with strong evidence, such as NumCompaniesWorked, TotalWorkingYears, YearsInCurrentRole, and YearsWithCurrManager, are considered significant factors influencing employee tenure. Furthermore, we acknowledge that the linear model might not be the most appropriate approach for this dataset.
-
-**Let's also take a look at predictor variables against the residuals. This can help identify non-linear relationships or outliers:**
-
-```{r, fig.width=12, fig.height=8, out.width="100%", out.height="100%", echo = FALSE}
-par(mfrow = c(4, 6))
-for (variable in names(d.attrition.encoded)[-22]) {
-  plot(d.attrition.encoded[[variable]], residuals(lm.ibm2),
-       xlab = variable,
-       ylab = "Residuals",
-       main = paste("Residuals vs", variable),
-       col = "#1c9099")
-}
-par(mfrow = c(1, 1))
-```
-
-The residuals are the difference between the predicted values of the model and the actual values of the dependent variable. A good linear regression model should have residuals that are randomly distributed around zero. If the residuals are not randomly distributed, it suggests that the model is not a good fit for the data.
-
-The graphs show that the residuals are randomly distributed around zero for most of the predictor variables. However, there are a few variables where the residuals seem to be concentrated in certain areas of the graph. For example, the residuals for the variable *StockOptionLevel* seem to be concentrated in the positive region of the graph. This suggests that the model may not be accounting for all of the variation in the data for this variable.
-
-Overall, the graph suggests that the linear regression model is a good fit for the data. However, there are a few variables where the model may need to be improved. Here are some specific observations from the graph: 
-<ul>
-  <li> The residuals for the variable *Age* are slightly concentrated in the negative region of the graph. This suggests that the model may be overestimating the effect of age on *YearsAtCompany*. </li> 
-  <li> The residuals for the variable *DistanceFromHome* are slightly concentrated in the positive region of the graph. This suggests that the model may be underestimating the effect of distance from home on *YearsAtCompany*. </li>
-  <li>The residuals for the variable *StockOptionLevel* are concentrated in the positive region of the graph. This suggests that the model is not accounting for all of the variation in the data for this variable.</li>
-</ul>
-
-To further explore the impact of removing individual predictor variables from the model, we use the *drop1()* function. Variables with significant effects should be retained to improve predictive power, while those with p-values above the significance level may warrant removal to simplify the model without significant loss of performance:
-
-```{r}
-drop1(lm.ibm2, test = "F")
-```
-
-**Here are some key observations from the output:**.
-
--   The *Age* variable, when excluded, leads to a notable increase in the AIC (from 3240.9 to 3244.4), indicating its contribution to the goodness of fit of the model. The F-test p-value (0.02047) indicates the statistical significance of *Age*.
-
--   Variables such as *BusinessTravel*, *Department*, *DistanceFromHome*, *EducationField*, *Gender*, *JobInvolvement*, *JobLevel*, *JobRole*, *JobSatisfaction*, *MaritalStatus*, *MonthlyIncome*, *NumCompaniesWorked*,, *OverTime*, *PerformanceRating*, *StockOptionLevel*, *TotalWorkingYears*, *TrainingTimesLastYear*, *Attrition*, *YearsInCurrentRole*, and *YearsWithCurrManager* all show significant F-test results (p-values \< 0. 05) when dropped from the model.
-
--   Conversely, *BusinessTravel* stands out as a predictor with a p-value greater than 0.05 when omitted, suggesting its limited contribution to predicting YearsAtCompany in this context.
-
--   *NumCompaniesWorked*, *TotalWorkingYears*, *YearsInCurrentRole*, and *YearsWithCurrManager* stand out as predictors with significant impact, as evidenced by their very low p-values (p-values \< 2e-16) and significant reduction in AIC when included in the model. This underscores the high importance of these variables in explaining the variation in the number of years an employee stays with the company.
-
--   The Attrition variable also has a significant impact, as indicated by its low p-value (0.00279) and the reduction in AIC when included in the model. This suggests that *Attrition* is an important predictor for understanding the number of years an employee stays with the company. *Note: In a real-world scenario, this variable would not be accessible and, consequently, could not be utilized to predict an employee's tenure at the company.*
-
-*Ansam Zedan took the lead in the linear model section.*
-
-# Generalised Linear Model - Poisson
-
-Also in this chapter, we also focus on  employee retention and as well selected *Years at Company* as our response variable. It represents the duration of an employee's commitment to the current organization, making it a key retention metric. Given that *Years at Company* is measured in whole numbers, Poisson or rather quasi-Poisson is an appropriate modeling technique, if we consider the data as count data. It will be interesting to compare these results to the Linear Model, where *Years at Company* is used as a continous variable. The box plot and histogram clearly show a right-skewed distribution in the data, a pattern particularly pronounced among employees who have departed from IBM.
-
-
-```{r, echo = FALSE}
-histo_poisson <- ggplot(data = d.attrition, 
-                        aes(x = YearsAtCompany, fill = Attrition)) +
-  geom_histogram(position = "stack", binwidth = 0.5) +
-  scale_fill_manual(values = c("Yes" = "#1c9099", "No" = "#1c909917"))+
-  theme_minimal() +
-  scale_x_continuous(breaks = seq(0, max(d.attrition$YearsAtCompany)+1, by = 5),
-                     limits = c(-1, max(d.attrition$YearsAtCompany)), 
-                     labels = seq(0, max(d.attrition$YearsAtCompany)+1, by = 5),
-                     name = "Years At Company") +
-  scale_y_continuous(name = "Number of Employees (N = 1470)") + 
-  geom_vline(xintercept = c(0, max(d.attrition$YearsAtCompany)),
-             linetype = "dotted", color = "black")
-
-
-yearsatcom_attrition <- ggplot(data = d.attrition, aes(x = Attrition, y = YearsAtCompany, fill = Attrition)) +
-  geom_boxplot(width = 0.5) + 
-  scale_fill_manual(values = c("Yes" = "#1c9099", "No" = "#1c909917")) +
-  theme_minimal() +
-  theme(legend.position = "none")+
-  labs(x = "Attrition Status", y = "Years At Company") +
-  geom_vline(xintercept = c(0, max(d.attrition$YearsAtCompany)), linetype = "dotted", color = "black")
-
-grid.arrange(histo_poisson, yearsatcom_attrition, ncol = 2, widths = c(2, 1))
-
-
-```
-
-Comparing the distribution of data separated for attrition *Yes* and *No*, we observe a difference in the medians. The lower median for the *Attrition = Yes*  group suggests that people are more likely to leave the company when they have not been with the organization for a long period of time.
-
-## Poisson Model: Predicting Years At Company
-
-In the next step, we fitted a Poisson model to identify factors standing in relation with how many years an employee is staying in the company. We used "quasipoisson as the family parameter. At first, we included all variables in our initial model.
-
-<details>
-
-<summary>*Click to see the GLM poisson model with all variables*</summary>
-
-```{r}
-
-d.attrition[, "JobLevel"] <- factor(d.attrition[, "JobLevel"])
-
-poisson.yearscompany.all <- glm(YearsAtCompany ~ .,
-                             data = d.attrition, 
-                             family = "quasipoisson"
-)
-summary(poisson.yearscompany.all)
-```
-
-</details>
-
-After analyzing the results, we selected a subset of significant predictors for the final model, namely *age*, *number of companies worked for*, *job level* and the *total working years*. Despite *job role* showing some evidence for differing from each other, we decided not to include it as not all roles showed evidence and the predictive value is questionable regarding the amount of roles and  limited size of the dataset. Furthermore, we did not include *YearsInCurrentRole* and *YearsWithCurrManager* despite strong evidence for playing a role. We decided to do so because of the high correlations between *TotalWorkingYears* (included) and the other two (see Graphical Exploratory Analysis).
-
-```{r}
-set.seed(1)
-
-d.attrition[, "JobLevel"] <- factor(d.attrition[, "JobLevel"])
-
-poisson.yearscompany2 <- glm(YearsAtCompany ~
-                               Age +
-                               JobLevel +
-                               NumCompaniesWorked +
-                               TotalWorkingYears,
-                             data = d.attrition, 
-                             family = "quasipoisson"
-)
-summary(poisson.yearscompany2)
-```
-
-The interpretation of the coefficients will be addressed in the following subchapter. Prior to this, the assessment of multicollinearity is crucial, as the correlation between the predictors can distort the estimates of the regression coefficients.
-
-```{r}
-vif(poisson.yearscompany2)
-```
-
-As none of the values exceeds the thresholds of 5, multicollinearity doesn't seem to be a major issue in our model.
-
-## Model Performance
-
-The summary output for the quasipoisson model shows that the residual deviance is smaller than the null deviance. That indicates that the model is better fitting to the data than a model without predictors. To confirm this, we explicitly tested our model against a model without predictors. There is strong evidence that the predictors play an important role (p-value \< 2.2e-16).
-
-```{r}
-
-poisson.yearscompany_none <- glm(YearsAtCompany ~ 1,
-                                    data = d.attrition, 
-                                    family = "quasipoisson")
-
-anova(poisson.yearscompany2, poisson.yearscompany_none, test = "F")
-```
-
-Additionally, we tested for the individual significance of the chosen predictors for the model. This helps to judge how the model fit is changing when one variable is removed. As the variance is not precisely known or depends on the data in the case of Quasi-Poisson models, a Chi-square test is appropriate as it makes fewer assumptions about the variance structure. The results indicate that the removal of the variables each would significantly decrease goodness of model fit.
-
-```{r}
-drop1(poisson.yearscompany2, test = "Chisq")
-```
-
-To gain more knowledge about the model performance, the goal of the next step was to evaluate and compare the performance of the model with the one of a more complex model. We compared two models:
-
-1.  The simple GLM poisson model interpreted above. This model serves as a baseline, assuming a straightforward linear relationship between the predictors and employee tenure.
-
-2.  Model with theoretical interactions: The second model adds interaction terms, chosen based on theoretical rationale:
-- Age and Total Working Years: There may be an interaction between these variables as they could represent different stages of a career. 
-- Job Level and Total Working Years: This interaction is considered because employees with more working years might hold higher positions, and thus their job level might interact with their total working years in influencing their tenure.
-
-To enhance the robustness of our performance estimates and to ensure the models' generalizability on new data, we used cross-validation. We chose to divide the dataset randomly into five folds and repeated the cross validation 50 times. As measure we used the Root Mean Squared Error (RMSE) with a lower RMSE indicating a better performance and the Poisson loss.
-
-<details>
-
-<summary>*Click to see the cross-validation code*</summary>
-
-```{r}
-set.seed(25)
-all_rmse_linear <- numeric(0)
-all_poisson_loss_linear <- numeric(0)
-all_rmse_interaction <- numeric(0)
-all_poisson_loss_interaction <- numeric(0)
-
-for(i in 1:50){
-  n <- nrow(d.attrition)
-  inds.permuted <- sample(c(1:n), replace = FALSE)
-  data.permuted <- d.attrition[inds.permuted,]
-  K <- 5							
-  folds <- cut(seq(1,n), breaks = K, labels = FALSE)		
-  
-  for(k in 1:K){ 
-    ind.test <- which(folds == k)
-    data.test <- data.permuted[ind.test, ]
-    data.train <- data.permuted[-ind.test, ]
-    
-    # calculate smoothers
-    gam.my <- gam(YearsAtCompany ~ s(Age) +  s(NumCompaniesWorked) + 
-                    s(TotalWorkingYears), data = data.train)
-  
-    numcom_smooth <- predict(gam.my, type = "terms", terms = "s(NumCompaniesWorked)")
-    age_smooth <- predict(gam.my, type = "terms", terms = "s(Age)")
-    workingyears_smooth <- predict(gam.my, type = "terms", terms = "s(TotalWorkingYears)")
-    
-    # fit poisson models
-    poisson.yearscompany2 <- glm(YearsAtCompany ~
-                                   Age +
-                                   JobLevel +
-                                   NumCompaniesWorked +
-                                   TotalWorkingYears,
-                                 data = data.train, 
-                                 family = "quasipoisson"
-    )
-    
-    poisson.yearscompany_interaction <- glm(YearsAtCompany ~
-                                          Age +
-                                          JobLevel +
-                                          NumCompaniesWorked + 
-                                          TotalWorkingYears + 
-                                          Age * TotalWorkingYears + 
-                                          JobLevel * TotalWorkingYears,
-                                        data = data.train, 
-                                        family = "quasipoisson"
-    )
-    
-    
-    # Make predictions on test data
-    pred_linear <- predict(poisson.yearscompany2, newdata = data.test)
-    pred_interaction <- predict(poisson.yearscompany_interaction, newdata = data.test)
-    
-    # Calculate RMSE for each model
-    all_rmse_linear <- c(all_rmse_linear, sqrt(mean((data.test$YearsAtCompany - pred_linear)^2)))
-    all_rmse_interaction <- c(all_rmse_interaction, sqrt(mean((data.test$YearsAtCompany - pred_interaction)^2)))
-    
-    # Calculate Poisson loss for each model
-    poisson_loss_linear <- -sum(data.test$YearsAtCompany * log(pred_linear) - pred_linear) / length(data.test$YearsAtCompany)
-    poisson_loss_interaction <- -sum(data.test$YearsAtCompany * log(pred_interaction) - pred_interaction) / length(data.test$YearsAtCompany)
-    
-    all_poisson_loss_linear <- c(all_poisson_loss_linear, poisson_loss_linear)
-    all_poisson_loss_interaction <- c(all_poisson_loss_interaction, poisson_loss_interaction)
-  }
-}
-
-rmse_linear <- data.frame(Model = rep("Linear", 50), RMSE = all_rmse_linear)
-rmse_interaction <- data.frame(Model = rep("Interaction", 50), RMSE = all_rmse_interaction)
-rmse_data <- rbind(rmse_linear, rmse_interaction)
-
-# Data Frame for Poisson Loss
-poisson_loss_linear_df <- data.frame(Model = rep("Linear", 50), PoissonLoss = all_poisson_loss_linear)
-poisson_loss_interaction_df <- data.frame(Model = rep("Interaction", 50), PoissonLoss = all_poisson_loss_interaction)
-
-poisson_loss_data <- rbind(poisson_loss_linear_df, poisson_loss_interaction_df)
-
-
-```
-
-</details>
-
-
-```{r}
-# boxplot for comparison
- poisson_loss <- ggplot(poisson_loss_data, aes(x = Model, y = PoissonLoss)) +
-  geom_boxplot(fill = "#1c909950") +
-  labs(#title = "Poisson Loss",
-       y = "Poisson Loss") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-rmse <- ggplot(rmse_data, aes(x = Model, y = RMSE)) +
-  geom_boxplot(fill = "#1c909950") +
-  labs(#title = "RMSE",
-       y = "RMSE") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-grid.arrange(rmse, poisson_loss, ncol = 2, top = "Model Performance Analysis")
-```
-
-
-There is minimal deviation in performance among the models using both the RMSE and the Poisson Loss. The interaction model seems to perform only marginally better. Hence, due to the benefits of simpliticty, we prefer the less complex model without interactions. The RMSE is about 7.75 and the Poisson Loss around - 3.2.
-
-## Coefficients Interpretation
-
-<details>
-
-<summary>*Click to see the code*</summary>
-
-```{r}
-# Extracting the coefficients and exponentiating them
-intercept <- exp(coef(poisson.yearscompany2)["(Intercept)"])
-num_companies_worked <- exp(coef(poisson.yearscompany2)["NumCompaniesWorked"])
-age <- exp(coef(poisson.yearscompany2)["Age"])
-total_working_years <- exp(coef(poisson.yearscompany2)["TotalWorkingYears"])
-job_level_2 <- exp(coef(poisson.yearscompany2)["JobLevel2"])
-job_level_3 <- exp(coef(poisson.yearscompany2)["JobLevel3"])
-job_level_4 <- exp(coef(poisson.yearscompany2)["JobLevel4"])
-job_level_5 <- exp(coef(poisson.yearscompany2)["JobLevel5"])
-
-# Creating a data frame
-result_table <- data.frame(
-  Variable = c("(Intercept)", "NumCompaniesWorked", "Age", "TotalWorkingYears", 
-               "JobLevel2", "JobLevel3", "JobLevel4", "JobLevel5"),
-  Exponentiated_Coefficient = c(intercept, num_companies_worked, age, total_working_years, 
-                                job_level_2, job_level_3, job_level_4, job_level_5)
-)
-```
-
-</details>
-
-```{r coefficient_poisson}
-
-# Viewing the table
-print(result_table)
-
-```
-
-**NumCompaniesWorked**: An increase in the number of companies at which an employee has worked is associated with an average of 8.4% fewer years at the employee's current company. In other words, having a history of working for more companies is linked to shorter tenures within the organization. From a retention perspective, it emphasizes the importance of attracting and retaining employees with a more stable work history.
-
-**Age**: An increase in the age of the employees by one year is associated with employees being on average 1.8% less years in the current company.
-
-**TotalWorkingYears**: Increasing the total working years by one unit (one year) is associated with an average increase of 7.2% in the number of years employees spend at the company. This suggests that longer overall work experience is positively correlated with longer tenures within the organization. Therefore, to promote retention, organizations may seek to hire and nurture individuals with substantial work experience.
-
-**Job Level**: Employees at higher job levels (e.g., *JobLevel2*) work, on average, 38.8% more years in the company compared to those at the lower job level *JobLevel1*. This trend holds for employees at other higher job levels as well (31.4% to 47.9% more years at the other job levels compared to job level 1. It indicates that individuals at higher job levels tend to have longer tenures within the company. As it is about treatment contrasts, there is no information about the differences between the other levels. From an attrition perspective, it suggests that employees at higher job levels are less likely to leave the organization, potentially due to greater job security or satisfaction. In terms of retention, it underscores the importance of career progression and promotion opportunities to retain talent within the organization.
-
-## Contrast Analysis
-
-We then wanted to have a deeper look at the differences between the job levels. We compared the *Job Level 1* against all others, but also Level 2 and 3 again 4 and 5 as we thought of combining 2 and 3 as the "middle" level and 4 and 5 as the "highest" level. Both contrasts became significant, also after adjusting the p-values for multiple testing with the Benjamin-Hochberg method.
-
-```{r}
-matrix.of.contrasts <- rbind(c(1,-1/4,-1/4,-1/4,-1/4), c(0, 1/2,1/2,-1/2,-1/2))
-colnames(matrix.of.contrasts) <- levels(d.attrition$JobLevel)
-rownames(matrix.of.contrasts) <- c("Level 1 vs. others", 
-                                   "Level 2 & 3 vs. Level 4 & 5")
-glht.contrast <- glht(poisson.yearscompany2, linfct = mcp(JobLevel = matrix.of.contrasts))
-adjusted_p_values <- p.adjust(glht.contrast$pvalues, method = "BH")
-summary(glht.contrast, pvalues = adjusted_p_values)
-
-```
-
-*Annalena Kreischer took the lead in the GLM set to Poisson section.*
-
-# Generalised Linear Model - Binomial
-
-In this chapter, we employ the Generalized Linear Model (GLM) with a binomial approach. This model type is performing exceptionally well for binary predictions, which our main response variable *Attrition* is. The primary objective of this application is to provide valuable insights into the dataset by predicting whether an employee is likely to resign from their position.
-
-## Model Version 1
-
-In the first model, we choose the all variables as predictors.
-
-The summary output indicates that only a subset of variables present evidence suggesting a higher likelihood of employees leaving the company. Additionally, it's noteworthy that the Number of Fisher Scoring iterations is relatively high at 14. This suggests that the model may be overly complex due to the inclusion of numerous variables. So in a next step, we want to fit a simpler model.
-
-<details>
-
-<summary>*Click to see the code and result for GLM binomial with all variables*</summary>
-
-```{r glm_binomial_complex,}
-#create model with all variables
-glm.bi.attrtion <- glm(Attrition ~ . , family = "binomial", data = d.attrition)
-
-#plot summary
-summary(glm.bi.attrtion)
-
-```
-
-</details>
-
-<br>
-
-
-
-## Model Version 2
-
-The following, simplified model, is trained with variables, which shown in the previous chapter evidence to have an impact in the overarching model.
-
-```{r glm_binomial_model2}
-
-# fitting model 2 based on model 1 
-glm.bi.attrition.2 <- glm(Attrition ~ Age + BusinessTravel + DistanceFromHome +
-                            JobInvolvement + JobLevel + JobSatisfaction + 
-                            MaritalStatus + NumCompaniesWorked + OverTime + 
-                            TrainingTimesLastYear + YearsAtCompany + 
-                            YearsInCurrentRole + YearsWithCurrManager, 
-                          family = "binomial", data = d.attrition)
-
-# print summary
-summary(glm.bi.attrition.2)
-```
-
-The summary output indicates that all variables continue to influence the probability of attrition, with only two sub-levels (*JobLevel3* and *MaritalStatusMarried*) showing minimal evidence of influence. The significant decrease in the number of Fisher Scoring iterations by 8 points suggests a reduction in complexity.
-
-### Check for Multicollinearity
-
-```{r glm_bi_mulitcollinearity_complex }
-# check for multicollinearity
-vif(glm.bi.attrition.2)
-```
-
-If we check for multicollinearity with the vif() function, we can see that all variables are within an acceptable range (threshold of 5), indicating no multicollinearity. 
-
-## Coefficients Interpretation
-
-```{r glm_bi_coefficients}
-exp(coef(glm.bi.attrition.2))
-```
-
-Let's look at the interpretation of the models coefficients. We can see that some have much a greater impact than others.
-
--   *Age*: For every additional year of age, the odds of quitting decrease by a factor of 0.96
-
--   *BueinessTravel*: Someone, who travels frequently is 5 times more likely to quit and rare travelers are 2 times more likely to quit than non-travelers.
-
--   *DistanceFromHome*: For each additional km of distance from home, the odds of quitting increase by a factor of 1.04.
-
--   *JobInvolvement*: For each unit increase in job involvement, the odds of quitting decrease by a factor of 0.54. Higher job involvement is associated with a lower likelihood of quitting.
-
--   *JobLevel*: Generally, we can observe that as job level increases, the odds of an employee quitting decrease. For instance, at job level 5, the odds of quitting are approximately 0.27 times lower compared to employees at job level 1.
-
--   *JobSatisfaction*: For each unit increase in job satisfaction, the odds of quitting decrease by a factor of 0.70. Higher job satisfaction is associated with a lower likelihood of quitting.
-
--   *MaritalStatus*: Married individuals have 1.55 times higher odds and singles a 3.7 times higher odd of quitting compared to divorced employees.
-
--   *NumCompaniesWorked*: For each additional company worked, the odds of quitting increase by a factor of 1.17.
-
--   *OverTime*: The probability of a resignment is 4.92 times higher for employees with over time than for employees without.
-
--   *TrainingTimesLastYear*:Wit every additional Trianing in the last year, the probability someone leaves the company is 0.85.
-
--   *YearsAtCompany*: With every additional year working for the company, the attrition-probability increases by 1.01
-
--   *YearsInCurrentRole*: With every additional year working in the current role, the attrition-probability decreases by 0.89.
-
--   *YearsWithCurrManager*: With every year more working under the current manager, the attrition-probability decreases by 0.91.
-
-
-## Measures of fit
-
-```{r glm_bi_measures}
-
-data.frame(Model = c("glm.bi.attrtion", "glm.bi.attrition.2"),
-  AIC_Value = c(AIC(glm.bi.attrtion), AIC(glm.bi.attrition.2)),
-  BIC_Value = c(BIC(glm.bi.attrtion), BIC(glm.bi.attrition.2)))
-
-```
-
-We observe that the AIC favors the model with all predictors, while the BIC indicates better performance for the less complex model. Additionally, the lower number of Fisher Scoring iterations suggests improved model performance. Therefore, the less complex model appears to be the better choice.
-
-## Model Accuracy - Confusion Matrix
-
-The aim of this chatper is to evaluate the model's predictive performance within the training dataset. It's important to note that for a more precise evaluation of accuracy, cross-validation (CV) is generally preferred. Nevertheless, the initial results are being examined to gain insights into the model's predictive capabilities.
-
-```{r confusion_matrix}
-
-AttritionBinary <- ifelse(d.attrition$Attrition == "Yes", 1, 0)
-
-# Step 1: Make predictions using your model
-predicted_values <- predict(glm.bi.attrition.2, type = "response")
-
-# Define a threshold (e.g., 0.5) to convert predicted probabilities to binary class labels
-threshold <- 0.5
-binary_predictions <- ifelse(predicted_values > threshold, 1, 0)
-
-# Create a confusion matrix
-conf_matrix <- confusionMatrix(as.factor(binary_predictions), as.factor(AttritionBinary))
-
-# Display the confusion matrix
-print(conf_matrix)
-
-```
-
-The model achieved an overall accuracy of 86.67%, indicating its ability to correctly classify instances.
-
-The high sensitivity of 97.16% underscores the model's effectiveness in accurately detecting positive cases, which is crucial as our priority is to identify all potential employees who may quit. In contrast the specificity at 32.1% is quiet low and suggests room for improvement.
-
-Compared to the "No Information Rate", the explored model above identifies around 3% more attrition cases, than if we would have a model without any information.
-
-Overall, the model seems to be effective in identifying attrition cases, performing better than random guessing. However, it may benefit from further refinements.
-
-*Mélanie Bigler took the lead in the GLM set to Binomial model section.*
-
-# Generalised Additive Model
-
-Also in this chapter, we forecast the *Attrition* response variable by implementing a Generalised Additive Model (GAM). We achieve this by employing the gam() function from the "mgcv" library, setting the family to "binomial". Initially, we fit two models, one complex and one simpler, before undertaking a 5-fold cross-validation to test the models MSE as measure of fit.
-
-## Complex Model
-
-We start with fitting all predictors to the model. We choose the smoothing terms, based on the graphical analysis, where we assume a non-linear relationship for *Age*, *NumCompaniesWorked*, *YearsAtCompany*, *YearsInCurrentRole*, *TotalWorkingYears*, *YearsWithCurrManager* and *MonthlyIncome*.
-
-<details>
-
-<summary>*Click to see the results of the complex GAM model*</summary>
-
-```{r gam_full_model, class.source = "fold-show"}
-gam_model_all <- gam(Attrition ~ s(Age) + BusinessTravel + 
-                       Department + DistanceFromHome + EducationField + Gender +
-                       JobInvolvement + JobLevel + JobSatisfaction + JobRole + 
-                       MaritalStatus + s(NumCompaniesWorked) + OverTime + 
-                       TrainingTimesLastYear + PerformanceRating + 
-                       s(YearsAtCompany) + s(YearsInCurrentRole) + 
-                       StockOptionLevel + s(TotalWorkingYears) +
-                       s(YearsWithCurrManager)+ s(MonthlyIncome), 
-                  data = d.attrition.encoded,
-                  family = binomial(link = "logit"))
-
-summary(gam_model_all)
-
-  
-```
-
-</details>
-
-<br>
-
-The Generalized Additive Model (GAM) successfully fitted the data using a binomial family. However, before diving into a more detailed interpretation, it's notable that two smoothing terms, namely *TotalWorkingYears* and *YearsInCurrentRole*, have an effective degrees of freedom (edf) of 1. This suggests that these terms exhibit linear relationships and do not require smoothing. Therefore, we decided to refit the model with these terms adapted accordingly.
-
-### Improved complex model
-
-```{r gam_model_complex }
-gam_model_complex <- gam(Attrition ~ s(Age) + BusinessTravel + Department 
-                         + DistanceFromHome + EducationField + Gender + 
-                           JobInvolvement + JobLevel + JobSatisfaction + JobRole + 
-                           MaritalStatus + s(NumCompaniesWorked) + OverTime + 
-                           TrainingTimesLastYear + PerformanceRating + 
-                           s(YearsAtCompany) + YearsInCurrentRole + 
-                           StockOptionLevel + TotalWorkingYears +
-                           s(YearsWithCurrManager)+ s(MonthlyIncome), 
-                  data = d.attrition.encoded,
-                  family = binomial)
-```
-
-<details>
-<summary>*Click to see the full summary of the GAM complex model*</summary>
-```{r}
-summary(gam_model_complex)
-#gam.check(gam_model_complex)
-```
-
-</details>
-
-After updating the model, we can see multiple predictors displaying weak to strong evidence. The model fitting needed 9 iterations (based on the gam.check).
-
-Additionally, all smoothing terms presented evidence of impacting prediction outcomes. The effective degree of freedom (edf) reflects the complexity of the smoothing term and provides insight into how many degrees of freedom a predictor has. The *MonthlyIncome*, for example, has a relatively high edf of 6.
-
-## Simple Model
-
-In this model we have included predictors that have been shown to influence attrition in the complex model from the previous step. The aim is to have a simpler model that requires fewer resources and inputs but gives as good results as the complex model. 
-
-```{r gam_model_simple}
-gam_model_simple <- gam(Attrition ~ s(Age) + Department + DistanceFromHome +
-                    JobInvolvement + JobSatisfaction + MaritalStatus + 
-                    s(NumCompaniesWorked) + OverTime + TrainingTimesLastYear +  
-                    s(YearsAtCompany) + s(YearsWithCurrManager)+ s(MonthlyIncome), 
-                  data = d.attrition.encoded,
-                  family = binomial)
-
-summary(gam_model_simple)
-# gam.check(gam_model_simple)
-```
-
-We observe that still all predictors show at least some evidence to influence the prediction. Particularly for variables like *Overtime* and *MonthlyIncome* we have great evidence.  The model fully converged after 6 iterations (based on gam.check). 
-
-In terms of parametric coefficients, the estimates show how each predictor affects the log-odds of attrition. For instance, the *Department* variable's coefficient is 0.62116, suggesting that changing departments is linked to an increase in the log-odds of leaving the company, when all other variables are held constant.
-
-The smooth terms *Age*, *NumCompaniesWorked*, *YearsatComany*, *YearsWithCurrManager* and *MonthlyIncome* reveal non-linear relationships with attrition, with the estimated degrees of freedom (edf) ranging from 2 to 6, reflecting varying levels of complexity in these relationships.
-
-The adjusted R-squared value of 0.286 indicates that approximately 28.6% of the variability in attrition is explained by the model, which is a moderate fit.
-
-The levels of significance are largely consistent with those from the more complex model, underscoring the robustness of the predictors' effects.
-
-## Simple Validation of Models
-
-<details>
-<summary>*Click to see the code*</summary>
-
-```{r gam_model_simplecheck, out.width='50%'}
-
-# Make predictions for each model
-predicted_values_gam_simple <- predict(gam_model_simple, type = "response")
-predicted_values_gam_complex <- predict(gam_model_complex, type = "response")
-
-
-# Define a threshold to convert predicted probabilities to binary class labels
-threshold <- 0.5
-binary_predictions_gam_simple <- ifelse(
-  predicted_values_gam_simple > threshold, 1, 0)
-
-binary_predictions_gam_complex <- ifelse(
-  predicted_values_gam_complex > threshold, 1, 0)
-
-# Create a confusion matrix
-conf_matrix_gam_simple <- confusionMatrix(as.factor(binary_predictions_gam_simple), 
-                                          as.factor(d.attrition.encoded$Attrition))
-conf_matrix_gam_complex <- confusionMatrix(as.factor(binary_predictions_gam_complex), 
-                                           as.factor(d.attrition.encoded$Attrition))
-
-```
-</details>
-
-
-```{r}
-# Display the confusion matrix
-print(conf_matrix_gam_simple)
-print(conf_matrix_gam_complex)
-```
-
-
-Upon preliminary evaluation of the model, it can be inferred that both models show an accuracy of approximately 88%, which is an acceptable result. Notably, both models outperform the untrained model which exhibits an accuracy of 83% ("No Information Rate"). Furthermore, both models exhibit high sensitivity. Evaluating accuracy in context of the number of predictors, it is observable that the simpler model is more efficient.
-
-## Measures of fit
-
-```{r gam_model_measure}
-
-null_model <- gam(as.factor(Attrition) ~ 1, data = d.attrition.encoded ,family = binomial)
-null_deviance <- deviance(null_model)
-
-
-data.frame(Model = c("gam_model_simple", "gam_model_complex"),
-  AIC_Value = c(AIC(gam_model_simple), AIC(gam_model_complex)),
-  BIC_Value = c(BIC(gam_model_simple), BIC(gam_model_complex)),
-  Deviance = c(deviance(gam_model_simple),deviance(gam_model_complex)),
-  Null_Deviance = c(null_deviance, null_deviance))
-
-```
-
-The AIC shows a preference for the complex model with all predictors, whereas the BIC indicates superior fit for the simpler model. The deviance (compared to the null deviance) suggests that the more complex model performs slightly better, but also the deviance of the simpler model compared to the null deviance indicates that it is not a poor fit. Furthermore, the lower number of iterations indicates that the simpler model (6 iterations) outperforms the more complex one (9 iterations) to some extent. To gain more clarity, we evaluate these results using a 5-fold cross-validation.
-
-## 5-fold cross-validation
-
-After completing 5-fold cross-validation repeated 50 times, the mean squared error (MSE) values for both models were reasonably low, with a median difference of less than 0.001, suggesting comparable performance between them. The simple model shows a slightly lower median MSE, indicating a marginally better average performance over the complex model across the validation sets. However, the overlap in the interquartile range of the MSEs suggests that the complexity of the model does not significantly impact the error rate.
-
-<details>
-<summary>*Click to see the code for cross-validation*</summary>
-
-```{r gam_model_crossval}
-
-set.seed(120)
-
-mse.simple <- c()
-mse.complex <- c()
-
-#define test runs
-for(i in 1:50){
-  #randomly permute the rows
-  n <- nrow(d.attrition.encoded)
-  inds.permuted <- sample(c(1:n), replace = FALSE)
-  d.attrition.permuted <- d.attrition.encoded[inds.permuted,]
-  
-  #create 5 folds
-  K <- 5
-  folds <- cut(seq(1,n),breaks = K, labels = FALSE)
-  
-  #perform K fold cross validation
-  mse.simple.per.fold <- integer(K)
-  mse.complex.per.fold <- integer(K)
-  
-  for(k in 1:K){
-    # take the Kth fold as test and other folds as train
-    ind.test <- which (folds == k)
-    d.attrition.test <- d.attrition.permuted[ind.test, ]
-    d.attrition.train <- d.attrition.permuted[-ind.test, ]
-    
-    #simple model - train
-    gam.simple.train <- gam(formula = formula(gam_model_simple), data = d.attrition.train)
-    #simple model - predict
-    predicted.simple.test <- predict(gam.simple.train, newdata = d.attrition.test)
-    
-    #compute MSE simple
-    mse.simple.per.fold[k] <- mean((d.attrition.test$Attrition - predicted.simple.test)^2)
-    
-    
-    #simple complex - train
-    gam.complex.train <- gam(formula = formula(gam_model_complex), data = d.attrition.train)
-    #simple complex - predict
-    predicted.complex.test <- predict(gam.complex.train, newdata = d.attrition.test)
-    
-    #compute MSE complex
-    mse.complex.per.fold[k] <- mean((d.attrition.test$Attrition - predicted.complex.test)^2)
-  }
-  
-  mse.simple[i] <- mean(mse.simple.per.fold)
-  mse.complex[i] <- mean(mse.complex.per.fold)
-  
-}
-
-mse.total <- data.frame(mse.simple, mse.complex)
-mse.total <- pivot_longer(mse.total, cols = everything(), names_to = "model", values_to = "mse")
-
-
-```
-</details>
-
-```{r}
-ggplot(mse.total, aes(x = model, y = mse)) +
-  geom_boxplot(fill = "#1c909950") +
-  labs(#title = "MSE",
-       y = "MSE", x = "Model") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-In conclusion, we recommend using the simple GAM model because it demonstrates more efficiency and provides comparable accuracy to the complex model.
-
-*Mélanie Bigler took the lead in the GAM model section.*
-
-# Neural Network
-
-In this chapter we want to predict *Attrition* by using a neural network. Neural network models might be biased towards the majority class (here no attrition). It is thus important to use different performance metrics that are less sensitive to class imbalance, such as precision-recall curves, or the area under the receiver operating characteristic curve (AUC-ROC). Accuracy might not be the best metric due to the class imbalance.
-
-## Network with all predictors
-
-As first step, we used one-hot encoding to convert categorical data into a numerical format that neural networks can understand and process effectively.
-
-<details>
-<summary>*Click to see the code for one-hot encoding*</summary>
-
-```{r}
-# One-Hot-Encoding ----
-categorical_vars <- c("BusinessTravel", "Department", "EducationField", "Gender", 
-                      "JobRole", "MaritalStatus", "OverTime")
-
-dummies <- dummyVars(~ BusinessTravel + Department + EducationField + Gender + 
-                       JobRole + MaritalStatus + OverTime, 
-                     data = d.attrition)
-
-d.attrition.hot.selected <- predict(dummies, newdata = d.attrition)
-
-# apply one-hot-encoding to dataframe
-d.attrition.hot.selected <- as.data.frame(d.attrition.hot.selected)
-
-# add non-categorial variables again
-other_vars <- setdiff(names(d.attrition), categorical_vars)
-d.attrition.hot.selected[other_vars] <- d.attrition[other_vars]
-
-# convert Attrition into numerical values
-d.attrition.hot.selected$Attrition <- as.numeric(ifelse(d.attrition.hot.selected$Attrition == "Yes", 1, 
-                                    ifelse(d.attrition.hot.selected$Attrition == "No", 0, 
-                                           d.attrition.hot.selected$Attrition)))
-
-```
-
-</details>
-
-Then, we splitted the dataset into training and testing set using stratified sampling based on the *Attrition* column, ensuring that the proportion of classes in both training and testing sets is representative of the original dataset.
-
-```{r}
-#split the data into test and training sets
-set.seed(13)
-indices <- createDataPartition(d.attrition$Attrition, p=.8, list = FALSE)
-
-train_data <- d.attrition.hot.selected[indices, ]
-test_data <- d.attrition.hot.selected[-indices, ]
-```
-
-After that, a neural network is being trained and evaluated. The network has 16 hidden units.
-
-<details>
-
-<summary>*Click to see the code and results*</summary>
-
-```{r}
-# Network ----
-attrition_net <- nnet(Attrition ~ ., data = train_data, 
-                      size=16, 
-                      maxit=10000, 
-                      range=0.1, 
-                      decay=5e-4) 
-```
-
-</details>
-
-We then checked the performance.
-
-<details>
-
-<summary>*Click to see the code and confusion matrix*</summary>
-
-```{r}
-# Accuracy
-pred_probs <- predict(attrition_net, test_data, type="raw")
-pred_labels <- ifelse(pred_probs > 0.5, 1, 0)
-confusionMatrix(as.factor(pred_labels), as.factor(test_data$Attrition))
-
-
-# prepare plotting of ROC Curve
-pred_raw <- predict(attrition_net, test_data, decision.values=TRUE, type = "raw")
-pred <- ROCR::prediction(pred_raw, test_data$Attrition)
-perf <- ROCR::performance(pred, "tpr", "fpr")
-
-
-# Prepare plotting Precision-Recall Curve
-pred <- prediction(predictions = pred_raw, labels = test_data$Attrition)
-perf_prec_rec <- performance(pred, "prec", "rec")
-
-
-# Calculate AUC
-auc <- performance(pred, measure = "auc")
-auc_value <- as.numeric(auc@y.values[[1]])
-
-```
-</details>
-
-```{r , echo = FALSE}
-par(mfrow = c(1, 2))
-
-plot(perf, lwd=2, col="#1c9099")
-abline(a=0, b=1)
-
-plot(perf_prec_rec, col="#1c9099", lwd=2, ylim=c(0, 1))
-abline(h=0.5, col="black", lty=2)
-
-par(mfrow = c(1, 1))
-
-print(paste("AUC:", auc_value))
-```
-
-As the accuracy, the graphs and the AUC indicate, the performance of the model is very week and not better than random guessing. 
-
-## Network with chosen predictors
-
-Due to the bad perfomance showcased aboved, a second model with less predictors was trained. The choice of predictors is based on the results of the suggested GLM binomial model, as this model showed good results. We followed the same steps as outlined above.
-
-<details>
-
-<summary>*Click to see the code*</summary>
-
-```{r}
-# Variable selection based on binomial model
-d.attrition.selected <- d.attrition %>% dplyr::select(Age, BusinessTravel, DistanceFromHome, JobLevel, JobInvolvement,JobSatisfaction, MaritalStatus, NumCompaniesWorked, OverTime, Attrition, YearsAtCompany, YearsInCurrentRole, YearsWithCurrManager, TrainingTimesLastYear)
-
-```
-
-```{r}
-categorical_vars <- c("BusinessTravel", "MaritalStatus", "OverTime", "JobLevel")
-
-
-dummies <- dummyVars(~ BusinessTravel + MaritalStatus + OverTime + JobLevel, data = d.attrition)
-
-d.attrition.hot.selected <- predict(dummies, newdata = d.attrition.selected)
-
-# apply one-hot-encoding to dataframe
-d.attrition.hot.selected <- as.data.frame(d.attrition.hot.selected)
-
-# add non-categorial variables again
-other_vars <- setdiff(names(d.attrition.selected), categorical_vars)
-d.attrition.hot.selected[other_vars] <- d.attrition[other_vars]
-
-# convert Attrition into numerical values
-d.attrition.hot.selected$Attrition <- as.numeric(ifelse(d.attrition.hot.selected$Attrition == "Yes", 1,
-                                               ifelse(d.attrition.hot.selected$Attrition == "No", 0,
-                                                      d.attrition.hot.selected$Attrition)))
-```
-
-```{r}
-#split the data into test and training sets
-set.seed(15)
-
-indices <- createDataPartition(d.attrition$Attrition, p=.8, list = FALSE)
-
-train_data <- d.attrition.hot.selected[indices, ]
-test_data <- d.attrition.hot.selected[-indices, ]
-```
-
-</details> 
-
-We tried tuning the hyperparameters. For the network, 12 hidden units appeared to be a good setting.
-
-<details>
-
-<summary>*Click to see the code*</summary>
-
-```{r}
-# Network ----
-attrition_net <- nnet(Attrition ~ ., data = train_data, 
-                      size=12, 
-                      maxit=10000, 
-                      range=0.1, 
-                      decay=5e-4) 
-
-```
-
-</details>
-
-```{r}
-# Accuracy
-pred_probs <- predict(attrition_net, test_data, type="raw")
-pred_labels <- ifelse(pred_probs > 0.5, 1, 0)
-confusionMatrix(as.factor(pred_labels), as.factor(test_data$Attrition))
-
-par(mfrow = c(1, 2))
-
-# ROC Curve ----
-pred_raw <- predict(attrition_net, test_data, decision.values=TRUE, type = "raw")
-pred <- ROCR::prediction(pred_raw, test_data$Attrition)
-perf <- ROCR::performance(pred, "tpr", "fpr")
-plot(perf, lwd=2, col="#1c9099")
-abline(a=0, b=1)
-
-# Precision-Recall Curve
-perf_prec_rec <- performance(pred, "prec", "rec")
-plot(perf_prec_rec, col="#1c9099", lwd=2, ylim=c(0, 1))
-abline(h=0.5, col="black", lty=2)
-
-#AUC
-auc <- performance(pred, measure = "auc")
-auc_value <- as.numeric(auc@y.values[[1]])
-print(paste("AUC:", auc_value))
-```
-
-The ROC curve shows that the performance is better than random guessing. Nevertheless, it is not as far in the left corner as desired. The AUC is higher than 0.5 thus better than random guessing. However, it does not have a strong discriminative ability. This goes in line with the weak performance of the ROC.
-
-The Precision-Recall curve is also not indicating a good model. It struggles with correctly identifying true positives (actual attrition cases) without increasing false positives. The Precision-Recall curve is more informative than the ROC as it focuses on the performance of the model in predicting the minority class (here: attrition = "Yes").
-
-Overall, the neural network seems to not be an appropriate model for our case. It can't reliably identify all employees at risk of attrition (high false negatives) and might incorrectly flag employees at risk (high false positives). Transferring to a workplace context, using this model could lead to inefficient resource allocation, missed opportunities for intervention, or unnecessary interventions.
-
-*Annalena Kreischer took the lead in the Neural Network section.*
-
-# Support Vector Machine
-
-In the final chapter, where we apply machine learning models, we aim to predict *Attrition* using a Support Vector Machine (SVM). This method is known for its effectiveness in handling high-dimensional data and its ability to model complex, non-linear decision boundaries, making it an ideal choice for this task. 
-
-Before applying the method, we prepared the dataset to align with SVM's requirements, ensuring optimal model performance.
-
-<details>
-
-<summary>*Click to see the code for data preperation SVM*</summary>
-
-```{r}
-data.attrition <- read.csv("../data/WA_Fn-UseC_-HR-Employee-Attrition.csv")
-
-d.attrition.sub <- data.attrition %>% 
-  dplyr::select(-c("EmployeeCount","EmployeeNumber", "Over18", "StandardHours", "DailyRate", 
-            "Education", "EnvironmentSatisfaction", "HourlyRate", "MonthlyRate", "PercentSalaryHike", 
-            "RelationshipSatisfaction","WorkLifeBalance", "YearsSinceLastPromotion"))
-
-cols_to_factor <- c("Attrition", "BusinessTravel", "Department",
-                    "EducationField", "Gender",  "JobLevel", "JobRole",  
-                    "MaritalStatus", "OverTime")
-
-for (col in cols_to_factor) {
-  d.attrition.sub[, col] <- factor(d.attrition.sub[, col])
-}
-
-cols_to_factor <- c("Attrition", "BusinessTravel", "Department",
-                    "EducationField", "Gender",  "JobLevel", "JobRole",  
-                    "MaritalStatus", "OverTime")
-
-d.attrition.final <- d.attrition.sub
-d.attrition.final$Attrition <- ifelse(d.attrition$Attrition == "Yes", 1, 0)
-d.attrition.final$BusinessTravel <- as.integer(factor(d.attrition.final$BusinessTravel))
-d.attrition.final$Department <- as.integer(factor(d.attrition.final$Department))
-d.attrition.final$EducationField <- as.integer(factor(d.attrition.final$EducationField))
-d.attrition.final$Gender <- as.integer(factor(d.attrition.final$Gender))
-d.attrition.final$JobLevel <- as.integer(factor(d.attrition.final$JobLevel))
-d.attrition.final$JobRole <- as.integer(factor(d.attrition.final$JobRole))
-d.attrition.final$MaritalStatus <- as.integer(factor(d.attrition.final$MaritalStatus))
-d.attrition.final$OverTime <- as.integer(factor(d.attrition.final$OverTime))
-```
-
-</details>
-
-## Linear Kernel
-
-First step is to split the data into test and training sets, then train the model:
-
-```{r}
-set.seed(42)
-indices <- createDataPartition(d.attrition.final$Attrition, p=.8, list = FALSE) #list = False stratify
-
-train <- d.attrition.final %>%
-  slice(indices)
-test_in <- d.attrition.final %>%
-  slice(-indices) %>%
-  dplyr::select(-Attrition)
-test_truth <- d.attrition.final %>%
-  slice(-indices) %>%
-  dplyr::pull(Attrition)
-
-test_truth <- as.factor(test_truth)
-
-attrition_svm <- svm(Attrition ~ ., train, kernel = "linear", scale = TRUE, cost = 10)
-summary(attrition_svm)
-```
-
-The SVM model with linear kernel predicted everything as zero on the test set, resulting in an accuracy of 0.8401. This is likely due to the fact that the model is overfitting the training data.
-
-To enhance the performance of our model, exploring alternative kernel options is a key consideration. The current use of a linear kernel might not be the most suitable for our dataset. 
-Our next step is to try the radial basis function (RBF) kernel. Increase the regularization parameter (cost). This will help to prevent the model from overfitting the training data. 
-Another approach to improve the model is to use a different sampling method. The current sampling method is stratified, which means that the proportion of positive and negative examples in the training and test sets is the same.
-
-```{r}
-test_in$test_pred <- predict(attrition_svm, test_in)
-test_in$pred_label <- as.factor(ifelse(test_in$test_pred >= 0.5, 1, 0))
-test_in$pred_label <- factor(test_in$pred_label, levels = c(0, 1))
-test_truth <- factor(test_truth, levels = c(0, 1))
-
-conf_matrix <- confusionMatrix(test_in$pred_label, test_truth)
-```
-
-<details>
-
-<summary>*Click to see confusion matrix details*</summary>
-
-```{r}
-conf_matrix
-```
-
-</details>
-
-```{r}
-blue_palette <- colorRampPalette(c("#e8f3f4", "#a4d2d6", "#329ba3", "#10565b"))
-
-conf_matrix <- as.matrix(conf_matrix)
-heatmaply(conf_matrix, 
-          main = "Confusion Matrix Heatmap",
-          fontsize_row = 12, fontsize_col = 12,
-          col = blue_palette(10), 
-          notecol = "black", cellnote = round(conf_matrix, 2))
-```
-
-This proves the summary from before the model has a high accuracy, but it has a low sensitivity and specificity. This means that the model is good at predicting examples that are not attrition, but it is not good at predicting attrition.
-
-## Radial basis function (RBF) kernel
-
-```{r}
-attrition_svm2 <- svm(Attrition ~ ., train, kernel = "radial", scale = TRUE, cost = 10)
-summary(attrition_svm2)
-```
-
-```{r}
-test_in$test_pred <- predict(attrition_svm2, test_in)
-test_in$pred_label <- as.factor(ifelse(test_in$test_pred >= 0.5, 1, 0))
-test_in$pred_label <- factor(test_in$pred_label, levels = c(0, 1))
-test_truth <- factor(test_truth, levels = c(0, 1))
-
-conf_matrix <- confusionMatrix(test_in$pred_label, test_truth)
-```
-
-<details>
-
-<summary>*Click to see confusion matrix details*</summary>
-
-```{r}
-conf_matrix
-```
-
-</details>
-
-```{r}
-conf_matrix <- as.matrix(conf_matrix)
-heatmaply(conf_matrix, 
-          main = "Confusion Matrix Heatmap",
-          fontsize_row = 12, fontsize_col = 12,
-          col = blue_palette(10), 
-          notecol = "black", cellnote = round(conf_matrix, 2))
-```
-
-The radial kernel SVM model achieved an accuracy of 0.8571 on the test set, which is slightly higher than the linear kernel SVM model (0.8401). However, the radial model has almost the same sensitivity (0.9636) and higher specificity (0.2979) than the linear kernel SVM model. Overall, the radial kernel SVM model is a slightly better model than the linear kernel SVM model, but it still has some room for improvement.
-
-## Model Tuning
-
-```{r}
-train <- d.attrition.final[ indices,]
-test  <- d.attrition.final[-(indices),]
-
-svm_model <- svm(Attrition ~ ., data = train, kernel = "radial", cost = 10)
-tune_out <- tune(svm, Attrition ~ ., data = train, kernel = "radial",
-                 ranges = list(cost = c(0.1,1,10,100,1000), gamma = c(0.5,1,2,3,4)))
-
-best_model <- tune_out$best.model
-
-predictions <- predict(best_model, newdata = test)
-test$pred_label <- ifelse(predictions >= 0.5, 1, 0)
-test$pred_label <- factor(test$pred_label, levels = c(0, 1))
-test$Attrition <- factor(test$Attrition, levels = c(0, 1))
-
-conf_matrix <- confusionMatrix(test$pred_label, test$Attrition)
-conf_matrix
-```
-
-We tuned the radial kernel SVM model to find the best combination of cost and gamma parameters. The tuned model achieved an accuracy of 0.8401 on the test set, which is the same as the untuned model and same sensitivity and specificity as the Linear model. Overall, the tuned radial kernel SVM model performed a bit worse than the untuned radial kernel SVM model which is surprising.
-
-**5 folds cross validation:**
-
-```{r}
-set.seed(42)
-
-## create 5 sized folds, K = number of folds
-K <- 5
-n <- nrow(d.attrition.final)
-folds <- cut(seq(1,n), breaks = K, labels = FALSE)
-
-accuracy.per.fold <- numeric(K)
-
-for(k in 1:K){
-  ## take the Kth fold as test set and the other folds as training set
-  ind.test <- which(folds == k)
-  d.attrition.final.test <- d.attrition.final[ind.test, ]
-  d.attrition.final.train <- d.attrition.final[-ind.test, ]
-  
-  ## fit the model with train data
-  attrition_svm_1_cv <- svm(Attrition ~ ., d.attrition.final.train, kernel = "radial", scale = TRUE, cost = 10)
-  
-  ## make prediction on the test data
-  predicted.attrition.test <- predict(attrition_svm_1_cv,
-                                      newdata = d.attrition.final.test)
-  d.attrition.final.test$pred_label <- ifelse(predicted.attrition.test >= 0.5, 1, 0)
-  d.attrition.final.test$pred_label <- factor(d.attrition.final.test$pred_label, levels = c(0, 1))
-  d.attrition.final.test$Attrition <- factor(d.attrition.final.test$Attrition, levels = c(0, 1))
-  
-  confusion_mat <- confusionMatrix(d.attrition.final.test$pred_label, d.attrition.final.test$Attrition)
-  accuracy.per.fold[k] <- confusion_mat$overall["Accuracy"]
-  
-}
-## we obtain the estimated test accuracy for the 5-fold CV by averaging the test accuracy on all 5 folds
-accuracy.cv <- mean(accuracy.per.fold)
-
-cat("The accuracies obtained from each fold: ", accuracy.per.fold, "\n", "Average accuracy: ", accuracy.cv)
-```
-
-In conclusion, the SVM model with radial kernel achieved the best results, with an average accuracy of 0.8517 across all folds. This suggests that the radial kernel is a better choice for this dataset than the linear kernel. However, there is still room for improvement, as the model's sensitivity and specificity are not ideal.
-
-Here is a table summarizing the accuracy of each model:
-
-|Model|	                  Accuracy|
-|------------------------|----------|
-|Linear kernel SVM|	      0.8401|
-|Radial kernel SVM|	      0.8571|
-|Tuned radial kernel SVM|	0.8401|
-|5-fold cross validation|	0.8517|
-
-As you can see, the 5-fold cross validation achieved the highest accuracy, suggesting that this is a more reliable estimate of the model's performance than the single-fold cross validation.
-
-*Ansam Zedan took the lead in the SVM section.*
-
-# Comparing Models
-
-In this chapter, we aim to perform a comprehensive comparison of the various models developed throughout this project. It is important to note the distinct objectives and output types of these models. The Linear and Poisson model predicted retention, measured by *Years at Company*  (as continuous variable or count data, respectively), providing insights into factors affecting the length of an employee's tenure. The GLM Binomial Model, GAM, Neural Network, and SVM predicted *Attrition*, thus binary classification, focusing on the likelihood of an employee leaving the organization.
-
-## Performance Metrics
-
-Here, we want to provide an overview of the used metrics with their strengths and limitations. This should serve as basis for deciding the comparability of the models and the importance of the different metrics for our dataset.
-
-- **Accuracy**: The percentage of total predictions that were correct. Universal and straightforward, but can be misleading for imbalanced datasets where one class dominates. A model could appear accurate simply by predicting the majority class (non-attrition) more often. Therefore, accuracy might not be the most reliable metric for our analysis.
-- **Sensitivity/Recall**: This is a crucial metric for our dataset. It measures the proportion of actual attrition cases the model correctly identifies. Given that attrition is the minority class, maximizing sensitivity is important.
-- **Specificity**: While also important, specificity is less of a concern than sensitivity in our scenario. It measures how well the model identifies non-attrition cases, which are more numerous and thus less likely to be missed by the model.
-- **R²(Coefficient of Determination):** Indicates the proportion of the variance in the dependent variable that is predictable from the independent variables, commonly used in linear regression models. Only useful for the linear model.
-- **RMSE (Root Mean Square Error)**: Measures the model's prediction error. Widely used in regression models to measure the magnitude of error, but doesn’t always provide intuitive scale for interpretation. This is more relevant for continuous outcomes and thus only for Years at Company and not for binary predcition (predicting attrition vs. non-attrition).
-- **Poisson Loss**: A specific error metric for Poisson models. Specific to Poisson regression models; useful for count data but not applicable to other model types. Rather useful for comparing different Poisson models with each other (like done).
-- **AIC (Akaike Information Criterion)** and **BIC (Bayesian Information Criterion)**: Measures the quality of each model. Great for model comparison; lower values indicate a better model fit with consideration for complexity. They are relative measures and thus meaningful only as we compare models on the same dataset.
- - **AUC (Area Under Curve)**: AUC is particularly valuable for our analysis. It provides a comprehensive measure of the model's ability to distinguish between employees who will leave (attrition) and those who will stay. A high AUC value indicates that the model has a good balance of sensitivity and specificity across different thresholds.
-
-### Model Performances
-
-**Table of Performance Metrics**
-
-This table shows the key performance metrics of the best-fitting models for each machine learning method investigated in this project.
-
-
-| Model Type                 | Accuracy                 | Sensitivity | Specificity | Other Metrics                     |
-|----------------------------|--------------------------|-------------|-------------|-----------------------------------|
-| Linear Model               | -                        | -           | -           | R²: 0.7654                         |
-| Poisson (simple)           | -                        | -           | -           | RMSE: 7.75, Poisson Loss: - 3.2    |
-| GLM Binomial               | 86.67% (NIR: 83,88%)     | 97.16%      | 32.1%       | AIC: 1002.5, BIC: 1103.032        |
-| GAM (simple)               | 87.55% (NIR: 83.88%)     | 97.57%      | 35.44%      | AIC: 981,64, BIC: 1130,148, MSE: 0.1084 |
-| Neural Network             | 80.89% (Nir: 83.95%)     | 86.18%      | 53.19%      | AUC: 0.7727                        |
-| SVM (untuned Radial kernel)| 85.71% (NIR: 84.01%)     | 96.36%      | 29.79%      | -                                  |
-
-**Retention (Years at Company)**: 
-
-- **Linear Model**: R² of 0.7654 indicates a relatively strong proportion of variance in the dependent variable (employee attrition) explained by the model, thus the model is effective.
-
-- **Poisson Model**: Effectively models retention (Years at Company) as countable events. RMSE of 7.75 and Poisson Loss of -3.2 suggest moderate predictive accuracy.
-
-Both the Linear and Poisson models demonstrate the capacity to identify and interpret the key factors that influence employee tenure. This is evidenced by the substantial overlap in relevant predictors identified by each model, as detailed in chapter 11.2, where a comprehensive comparison of predictors is presented. This consistency reinforces their validity and robustness, despite different methodological approaches, there is a convergence on the factors that are most impactful in determining the length of an employee's tenure. We must note that the models are not directly comparable in terms of measures of fit. Each model employs different metrics that are suited to their respective data treatments (continuous vs. count data). 
-
-**Attrition**:
-
--   **GLM Binomial Model (GLM)**: Highly sensitive in identifying true attrition cases, making it a very suitable model for our unbalanced dataset. The low specificity is acceptable, as people misclassified as leavers could still benefit from potential interventions. 
-
--   **Generalised Additive Model (GAM)**: This model provides a slightly better balance between sensitivity and specificity than GLM. The AIC is slightly worse, but the BIC is comparable with the GLM. The MSE (Mean Squared Error) indicates its robustness. The model thus seems to provide a slightly better model fit than the GLM.
-
--   **Neural Network**: The model used the same predictors to the binomial model.The accuracy is even below the "No Information Rate" and the sensitivity is lower than in all other models predicting attrition. The model thus performs worse. 
-
--   **Support Vector Machine (SVM)**: The sensitivity is on a comparable level with the GLM and GAM, however slightly lower. 
-
-Taking into account the context of binary attrition prediction and that our dataset is unbalanced, the focus should be on sensitivity rather than accuracy, thus on the model's ability to correctly identify actual cases of attrition. The GLM, GAM and SVM provide the highest sensitivity rates. The GAM (Generalized Additive Model) stood out for also offering a better balance with specificity. Specificity, or the true negative rate, is important in reducing false positives. The GAM model also achieved the highest accuracy among the models tested, even though not in the focus. We thus conclude that the GAM performed best in predicting attrition.
-
-# Conclusion
-
-Finally, in this chapter, we give our recommendation, summarize key findings and also reflect on our personal learning from this project.
-
-## Model Recommendations
-
-We gained insight into which models work best with employee attrition data. The Generalised Additive Model (GAM) emerged as the most effective for predicting attrition, closely followed by the GLM Binomial model. Both models showed high sensitivity but struggled with specificity, indicating challenges in correctly identifying cases of no attrition.
-
-It's important to remember that this dataset was developed by Data Scientists at IBM and may not entirely reflect real-world behavior. However, it still provides valuable insights into how future models for attrition prediction could be structured.
-
-## Key Findings on Prediction Variables
-
-Throughout the process of fitting models, we also developed a more profound comprehension of the predictors influencing employee **attrition**. Our findings offer valuable insights that could be instrumental in preventing attrition. Here are our key takeaways:
-
-1. *Job Satisfaction*: In several models, job satisfaction was a significant predictor. Lower levels of satisfaction often correlated with higher attrition rates.
-
-2. *Job Involvement*: Closely linked with job satisfaction, lower job involvement indicated a higher likelihood of employees leaving.
-
-3. *Overtime*: Frequently working overtime emerged as a recurring predictor for higher attrition.
-
-4. *Years at the Company*: This predictor had a complex relationship with attrition. Longer tenure could indicate either lower or higher likelihood of leaving, depending on other factors like job satisfaction and involvement.
-
-5. *Number of Companies Worked*: Employees who had worked at many companies previously were more likely to leave, suggesting a pattern of job-hopping. 
-
-6. *Distance from Home*: The longer the commute, the higher the likelihood of an employee leaving, highlighting work-life balance as a crucial factor.
-
-7. *Marital Status*: Marital status also influenced attrition rates, with single employees showing a higher propensity to leave than married or divorced ones.
-
-8. *Training Times Last Year*: Less training or professional development opportunities were associated with higher attrition rates.
-
-Comparing those results with the initial correlation analysis, both identify overtime, job satisfaction, job involvement, and marital status as significant factors influencing attrition. Factors like the number of companies worked, distance from home, and training times last year, which are not highlighted in the correlation analysis, emerge as significant in the models.
-
-For Years at Company as response variable and metric for **retention**, we can compare the predictors of the Linear Model and the Poisson Model. 
-
-1. *Age*: Negative correlation in both models, indicating older employees tend to have longer tenures.
-
-2. *Number of Companies Worked*: Consistently negative in both, suggesting employees with less history of job-hopping tend to stay longer.
-
-3. *Total Working Years*: Positive in both models, showing employees with more overall work experience tend to have longer tenures at the company.
-
-4. *Years in Current Role* and *Years with Current Manager*: These factors are significant in predicting tenure in both models, indicating that stability in role and management relationship might contribute to longer tenures.
-
-5. *Job Level*: This predictor, significant in the Poisson model, suggests that higher job levels are associated with longer tenures.
-
-6. *Attrition*: Unique in Linear Model as it wasn't included as predictor in the Poisson Model, this predictor shows a correlation with the years an employee stays at the company. The significance is logical, as attrition directly reflects the duration of an employee's stay. Nevertheless, we should not forget, that this data point would always "No", when we try to predict how long a specific employee will stay. So this would not be a feasible predictor.
-
-Thus, both the Poisson and Linear models largely converge on the same predictors – *Age*, *Number of Companies Worked*, *Total Working Years*, *Years in Current Role*, and *Years with Current Manager* (while the three latter are intercorrelating) – highlighting these factors as robust and consistent influencers of employee tenure across different modeling approaches. The exception is *Job Level*, significant only in the Poisson model, perhaps due to differences in how each model processes categorical variables.  
-
-Overall, the number of companies worked is a common factor in both predicting attrition (more companies, more attrition) and retention (more companies, less years at company, thus less retention), indicating its importance in both staying and leaving decisions. The other predictors seem to be unique for attrition and retention, respectively.
 
 ### Practical Implications
 
@@ -1819,12 +325,12 @@ In the end, we're happy with the end result of our report, and even happier with
 
 # References
 
-[^ref1]: About IBM. (2023, September 26). <https://www.ibm.com/about?lnk=fab>
+[^ref1]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>
 
-[^ref2]: Karumuri, V., & Singareddi, S. S. (2014). Employee attrition and retention: A theoretical perspective. Asia Pacific Journal of Research. <https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=8a8ba9c73f3e624032e71c31a3cbf1a94f935905>
+[^ref2]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>
 
-[^ref3]: Mitchell, O. S. (1983). Fringe Benefits and the Cost of Changing Jobs. ILR Review, 37(1), 70--78. <https://doi.org/10.1177/001979398303700105>
+[^ref3]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>
 
-[^ref4]: pavansubhash. (2017). IBM HR Analytics Employee Attrition & Performance [Dataset]. <https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset>
+[^ref4]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>
 
-[^ref5]: Srivastava, D. K., & Nair, P. (2017). Employee Attrition Analysis Using Predictive Techniques. In S. C. Satapathy & A. Joshi (Eds.), Smart Innovation, Systems and Technologies Ser: v.83. Information and Communication Technology for Intelligent Systems (ICTIS 2017) - Volume 1 (Vol. 83, pp. 293--300). Springer International Publishing. <https://doi.org/10.1007/978-3-319-63673-3_35>
+[^ref5]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>

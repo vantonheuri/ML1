@@ -1,0 +1,11 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #87CEEB; /* This is a sky blue color */
+}
+
+a {
+  color: #1E90FF; /* Slightly darker blue for links */
+}
