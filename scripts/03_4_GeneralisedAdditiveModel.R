@@ -50,8 +50,8 @@ test_set$Package_Product_num <- as.numeric(test_set$Package_Product_num)
 # Fit the GAM model
 #gam_model <- gam(Price_Gross ~ s(Nr_rooms) + s(Category_num), data = train_set)
 
-# Fit the GAM model with cubic regression splines
-gam_model <- gam(Price_Gross ~ bs(Nr_rooms, df = 5) + bs(Category_num, df = 5), data = train_set)
+# Fit the GAM model with reduced degrees of freedom
+gam_model <- gam(Price_Gross ~ bs(Nr_rooms, df = 5) + bs(Category_num, df = 3), data = train_set)
 
 # Summary of the GAM model
 summary(gam_model)
@@ -66,10 +66,8 @@ cat("MAE:", gam_mae, "\n")
 cat("RMSE:", gam_rmse, "\n")
 
 # Plotting
-plot(gam_model, select = 1) # plot the smooth terms
+plot(gam_model)
 
-plot(test_set$Price_Gross, gam_predictions, main = "Target Vs. GAM Predictions")
-scatter.smooth(gam_predictions, main = "GAM Predictions vs. Actual")
 
 
 
