@@ -67,7 +67,37 @@ data <- data[!is.na(data$Size_m2),]
 data$Days_Difference <- difftime(data$LastDay_Online,
                                  data$FirstDay_Online, units = "days")
 
-# Encoding Categorical Data
+# One-Hot Encoding Data
+data_ohe <- data
+cols_to_encode <- c("Canton", "Customer_Segment", "Category", "Nr_rooms", 
+                    "Package_Product")
+oh_encoded_order <- c("Canton", "Days_Difference",
+                   "Customer_Segment", "Category", "Nr_rooms",
+                   "Package_Product", "GDP_2020_21", "GDP_per", "Population",
+                   "Area_km2", "Density", "Size_m2",
+                   "Price_Gross")
+data_ohe$Canton <- as.factor(data_ohe$Canton)
+data_ohe$Customer_Segment <- as.factor(data_ohe$Customer_Segment)
+data_ohe$Category <- as.factor(data_ohe$Category)
+data_ohe$Nr_rooms <- as.factor(data_ohe$Nr_rooms)
+data_ohe$Package_Product <- as.factor(data_ohe$Package_Product)
+data_ohe <- data_ohe %>% select(oh_encoded_order)
+str(data_ohe) # So far so good
+
+cont_cols <- names(data_ohe)[!(names(data_ohe) %in% cols_to_encode)]
+
+cat_dat <- data_ohe[, cols_to_encode]
+cont_data <- data_ohe[, cont_cols]
+
+dummies <- dummyVars(" ~ . ", data = cat_dat)
+cat_dat <- data.frame(predict(dummies, newdata = cat_dat))
+
+ohe_data <- cbind(cat_dat, cont_data)
+
+write_xlsx(ohe_data, "data/data_cleaned/data_total_model_one_hot_encoded.xlsx")
+
+
+# Label Encoding Categorical Data
 encoded_data <- transform(data,
                      Canton_num=as.numeric(
                        factor(Canton,
