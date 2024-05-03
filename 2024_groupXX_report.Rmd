@@ -96,6 +96,10 @@ library(dplyr)
 library(readxl)
 library(openxlsx)
 library(lubridate)
+library(readxl)
+library(neuralnet)
+library(caret)
+library(e1071)
 ```
 
 </details> 
@@ -111,7 +115,7 @@ A critical observation from our initial analysis is the notable imbalance in the
 
 
 ```{r, echo=FALSE}
-df_total <- read_excel("C:/Users/Victor/Desktop/ML1/data/data_cleaned/data_total.xlsx")
+df_total <- read_excel("data/data_cleaned/data_total.xlsx")
 colnames(df_total)
 ```
 
