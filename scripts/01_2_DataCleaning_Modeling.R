@@ -76,10 +76,9 @@ oh_encoded_order <- c("Canton", "Days_Difference",
                    "Package_Product", "GDP_2020_21", "GDP_per", "Population",
                    "Area_km2", "Density", "Size_m2",
                    "Price_Gross")
-data_ohe$Canton <- as.factor(data_ohe$Canton)
+str(data_ohe)$Canton <- as.factor(data_ohe$Canton)
 data_ohe$Customer_Segment <- as.factor(data_ohe$Customer_Segment)
 data_ohe$Category <- as.factor(data_ohe$Category)
-data_ohe$Nr_rooms <- as.factor(data_ohe$Nr_rooms)
 data_ohe$Package_Product <- as.factor(data_ohe$Package_Product)
 data_ohe <- data_ohe %>% select(oh_encoded_order)
 str(data_ohe) # So far so good
@@ -129,7 +128,6 @@ final_data <- encoded_data %>%
 final_data$Canton_num <- factor(final_data$Canton_num)
 final_data$Customer_Segment_num <- factor(final_data$Customer_Segment_num)
 final_data$Category_num <- factor(final_data$Category_num)
-final_data$Nr_rooms <- factor(final_data$Nr_rooms)
 final_data$Package_Product_num <- factor(final_data$Package_Product_num)
 str(final_data)
 

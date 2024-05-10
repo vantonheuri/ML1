@@ -2,6 +2,9 @@
 # Target Variable: Price_Gross
 # SVMs are good for high-dimensional data, so we can one-hot encode data
 # SVM performance vs NeuralNet for High Ticket classification
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PENDING
+# Nr_rooms must not be categorical, but continuous
 #-------------------------------------------------------------------------------
 # Required Packages
 library(readxl)

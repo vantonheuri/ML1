@@ -171,7 +171,9 @@ Real Estate Pricing</p></h1>
 <li><a href="#exploratory-graphical-analysis" id="toc-exploratory-graphical-analysis"><span class="toc-section-number">3</span> Exploratory Graphical
 Analysis</a></li>
 <li><a href="#linear-model" id="toc-linear-model"><span class="toc-section-number">4</span> Linear Model</a></li>
-<li><a href="#references" id="toc-references"><span class="toc-section-number">5</span> References</a></li>
+<li><a href="#neural-network" id="toc-neural-network"><span class="toc-section-number">5</span> Neural Network</a></li>
+<li><a href="#support-vector-machine" id="toc-support-vector-machine"><span class="toc-section-number">6</span> Support Vector Machine</a></li>
+<li><a href="#references" id="toc-references"><span class="toc-section-number">7</span> References</a></li>
 </ul>
 </div>
 
@@ -368,54 +370,135 @@ scrambled it to make a type specimen book.</p>
 </div>
 <div id="linear-model" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Linear Model</h1>
-<p>Our initial strategy to predict attrition involved utilizing a linear
-model. However, since attrition is inherently binary, employing a linear
-model for prediction is not optimal. Recognizing the close relationship
-between attrition and retention, we turn our attention to the latter.
-While attrition analysis the reasons behind employees’ departures,
-exploring retention allows us to comprehend the reasons they stay and
-the elements that ensure their sustained allegiance. By redirecting our
-focus to retention, we seek to acquire a more rounded perspective of our
-workforce.</p>
-<div id="linear-regression-analysis-for-years-at-company" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Linear Regression
-Analysis for “Years at Company”</h2>
-<p>We have chosen “Years at Company” as our response variable to predict
-the tenure of employees within the company. This will provide us with
-valuable insights into retention factors and help us better understand
-the elements that influence an employee’s longevity with the
-company.</p>
-<div id="practical-implications" class="section level3" number="4.1.1">
-<h3><span class="header-section-number">4.1.1</span> Practical
-Implications</h3>
-<p>Based on the comparison of predictors for employee attrition and
-retention, here are some practical implications (as first ideas) that
-can be drawn to enhance employee engagement, reduce turnover, and
-improve retention:</p>
-<ul>
-<li>Enhancing Job Satisfaction and Involvement: Regular feedback and
-personalized development opportunities can increase job satisfaction,
-directly impacting retention. Addressing factors that affect job
-involvement, such as role clarity and recognition, is crucial.</li>
-<li>Work-Life Balance: Managing overtime and offering flexible work
-arrangements can significantly reduce burnout and attrition,
-particularly for those with longer commutes. Tailoring benefits to
-diverse life situations, like family needs or social engagement for
-single employees, acknowledges the varied personal lives of the
-workforce.</li>
-<li>Training and Career Development: Focusing on continuous learning and
-clear career paths can engage employees, reducing the likelihood of
-job-hopping and increasing tenure.</li>
-</ul>
+<div id="purpose-and-target" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Purpose and
+target</h2>
+<p>We decided to employ a linear regression model in order to predict
+prices for different rental properties, specifically apartments. We
+created three different models, each taking into account different
+features to help us gain better insight.</p>
+<div id="linear-model-1" class="section level3" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Linear Model 1</h3>
+<p>The first model ( <em>all_lm_model</em> )takes all available property
+features into account to train and make predictions. From this we were
+able to see that some of those we included were not relevant to the
+target variable, as seen below:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">summary</span>(all_lm_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Price_Gross ~ ., data = train_set)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2176.5  -520.6  -127.7   291.5  8029.0 
+## 
+## Coefficients: (6 not defined because of singularities)
+##                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)           -330.2945   150.2993  -2.198  0.02830 *  
+## Canton_num2            254.4067   148.3181   1.715  0.08673 .  
+## Canton_num3            483.3631    99.2194   4.872 1.36e-06 ***
+## Days_Difference          4.8306     1.1046   4.373 1.41e-05 ***
+## Customer_Segment_num2  372.1311   113.1334   3.289  0.00105 ** 
+## Category_num2         1313.0156   209.7461   6.260 6.62e-10 ***
+## Nr_rooms               392.9436    37.3741  10.514  &lt; 2e-16 ***
+## Package_Product_num2    74.9385   146.7752   0.511  0.60981    
+## Package_Product_num3   -42.5430   149.3823  -0.285  0.77589    
+## Package_Product_num4         NA         NA      NA       NA    
+## GDP_2020_21                  NA         NA      NA       NA    
+## GDP_per                      NA         NA      NA       NA    
+## Population                   NA         NA      NA       NA    
+## Area_km2                     NA         NA      NA       NA    
+## Density                      NA         NA      NA       NA    
+## Size_m2                  1.2904     0.5644   2.286  0.02253 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 924 on 719 degrees of freedom
+## Multiple R-squared:  0.3748, Adjusted R-squared:  0.367 
+## F-statistic: 47.89 on 9 and 719 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p><em>As we can see in the model summary, some variables are converted
+into factors and interpreted separately, we can also see Nr_rooms is
+relevant in general, but Package_Product and Category, for example, are
+not.</em></p>
+<p>With this information we were able to refine our selection of
+variables for training the following models, one with only a few
+variables, and one with only one.</p>
+</div>
+<div id="linear-model-2" class="section level3" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Linear Model 2</h3>
+<p>The next model ( <em>few_lm_model</em> ) we trained with fewer
+dependent variables, only those of high importance. For this one, we
+took into account only the ones that were calculated to be significant
+to the model’s performance.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">summary</span>(few_lm_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Price_Gross ~ ., data = rel_train_set)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2229.4  -514.6  -141.5   293.3  8029.5 
+## 
+## Coefficients:
+##                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)           -331.4296   150.1187  -2.208   0.0276 *  
+## Canton_num2            252.9396   148.1582   1.707   0.0882 .  
+## Canton_num3            484.3610    99.1035   4.887 1.26e-06 ***
+## Days_Difference          4.8187     1.1027   4.370 1.43e-05 ***
+## Customer_Segment_num2  384.0690    77.0910   4.982 7.88e-07 ***
+## Category_num2         1310.3480   209.3197   6.260 6.61e-10 ***
+## Nr_rooms               393.1761    37.3357  10.531  &lt; 2e-16 ***
+## Size_m2                  1.2903     0.5639   2.288   0.0224 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 923.1 on 721 degrees of freedom
+## Multiple R-squared:  0.3742, Adjusted R-squared:  0.3682 
+## F-statistic:  61.6 on 7 and 721 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p><em>Here we can see that the variables taken into account were
+Canton, Days_Difference, Category, Customer_Segment, Nr_rooms and
+Size_m2.</em></p>
+</div>
+<div id="linear-model-3" class="section level3" number="4.1.3">
+<h3><span class="header-section-number">4.1.3</span> Linear Model 3</h3>
+<p>The last model generated took into account only <em>two</em> variable
+as a predictor: <em>Nr_rooms</em> and <em>Category_num2</em>. The number
+of rooms seems to have one of, if not the biggest effect on rental price
+of a property, which is why we went with this variable for analysis. The
+second customer category also has a significant effect, so it was
+included.</p>
+<pre><code>##                Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)    276.3230   121.5397  2.273521 2.328600e-02
+## Nr_rooms       422.9314    34.9998 12.083822 9.238078e-31
+## Category_num2 1474.6644   217.7799  6.771352 2.634720e-11</code></pre>
 </div>
 </div>
-<div id="outlook" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Outlook</h2>
+<div id="interpretation-and-conclusion" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Interpretation and
+Conclusion</h2>
+<p>All three models offer us some insight into the behavior of rental
+prices for different properties. Interestingly, our research thus far
+shows that the Canton of said property is not that influential in its
+rental price, except for Canton 3.</p>
+<p><em>(Canton 1: Argau, Canton 2: Luzern, Canton 3: Zuerich)</em></p>
+<p>Linear model (NOT GLS)</p>
+</div>
+</div>
+<div id="neural-network" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Neural Network</h1>
+<p>NN</p>
+</div>
+<div id="support-vector-machine" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Support Vector
+Machine</h1>
+<p>SVM</p>
+<div id="outlook" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Outlook</h2>
 <p>We would like to highlight our top four recommendations for
 improvements in future endeavors related to this project and more
 broadly in the field of employee attrition.</p>
-<div id="data-quality-and-amount" class="section level3" number="4.2.1">
-<h3><span class="header-section-number">4.2.1</span> Data Quality and
+<div id="data-quality-and-amount" class="section level3" number="6.1.1">
+<h3><span class="header-section-number">6.1.1</span> Data Quality and
 Amount</h3>
 <p>Future studies could benefit from investigating ensemble methods,
 which merge the advantages of various models to boost overall efficacy.
@@ -432,8 +515,8 @@ rather than solely classifying outcomes. This approach would enable us
 to personalize interventions more effectively, tailoring strategies to
 the specific likelihood of an employee’s departure.</p>
 </div>
-<div id="enhanced-validation-of-models" class="section level3" number="4.2.2">
-<h3><span class="header-section-number">4.2.2</span> Enhanced Validation
+<div id="enhanced-validation-of-models" class="section level3" number="6.1.2">
+<h3><span class="header-section-number">6.1.2</span> Enhanced Validation
 of Models</h3>
 <p>Due to the time constraints and scope of this project, we couldn’t
 conduct extensive validation and testing for all models. Implementing
@@ -442,8 +525,8 @@ training phase would be necessary to enhance the overall quality and
 performance of the developed models. Moreover, testing interactions was
 at short-cut in this project. In</p>
 </div>
-<div id="model-complexity-vs.-performance" class="section level3" number="4.2.3">
-<h3><span class="header-section-number">4.2.3</span> Model Complexity
+<div id="model-complexity-vs.-performance" class="section level3" number="6.1.3">
+<h3><span class="header-section-number">6.1.3</span> Model Complexity
 vs. Performance</h3>
 <p>The study underscored the delicate balance between model complexity
 and performance. Although more sophisticated models, as seen in the GAM
@@ -453,8 +536,8 @@ particularly regarding specificity. When developing a model for a
 company, it’s essential to clearly articulate the model’s intended
 purpose and application to determine the most appropriate solution.</p>
 </div>
-<div id="data-privacy-and-ethics" class="section level3" number="4.2.4">
-<h3><span class="header-section-number">4.2.4</span> Data Privacy and
+<div id="data-privacy-and-ethics" class="section level3" number="6.1.4">
+<h3><span class="header-section-number">6.1.4</span> Data Privacy and
 Ethics</h3>
 <p>While we have pointed out that various stakeholders can gain from
 these models, it’s crucial to note that the personal data used here,
@@ -465,8 +548,8 @@ introduce significant bias, particularly against underrepresented groups
 within the organization.</p>
 </div>
 </div>
-<div id="personal-learnings" class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Personal
+<div id="personal-learnings" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Personal
 Learnings</h2>
 <p>This project was a great opportunity for us to learn about machine
 learning and develop our skills. We really enjoyed experimenting with
@@ -497,8 +580,8 @@ mere replication of the solutions provided.</p>
 happier with how much we learned along the way.</p>
 </div>
 </div>
-<div id="references" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> References</h1>
+<div id="references" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> References</h1>
 </div>
 </div><!-- /.entry-content -->
 </article>

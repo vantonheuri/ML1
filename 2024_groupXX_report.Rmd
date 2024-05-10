@@ -40,24 +40,19 @@ opts_chunk$set(
 
 # Introduction
 
-Zug Estates focuses on developing, managing, and marketing properties in the Zug region, Switzerland. They prioritize centrally located sites for sustainable, multi-use development. Their portfolio is concentrated in Zug and Risch Rotkreuz, featuring a mix of residential, office, retail, hotel, and service spaces. The company aims for long-term property retention and development, driving value creation through sustainable designs and active management 
+Zug Estates focuses on developing, managing, and marketing properties in the Zug region, Switzerland. They prioritize centrally located sites for sustainable, multi-use development. Their portfolio is concentrated in Zug and Risch Rotkreuz, featuring a mix of residential, office, retail, hotel, and service spaces. The company aims for long-term property retention and development, driving value creation through sustainable designs and active management
 
-Zug Estates, a major real estate player in Zug, Switzerland, might be looking to invest in other parts of the country for several reasons. Here's a comprehensive breakdown: 
+Zug Estates, a major real estate player in Zug, Switzerland, might be looking to invest in other parts of the country for several reasons. Here's a comprehensive breakdown:
 
-* __Risk Reduction:__ 
-The real estate market can be volatile. By spreading their investments across different cantons (Swiss states), Zug Estates reduces the risk associated with a downturn in Zug's market. They might target areas with strong growth potential or a different property mix to complement their Zug portfolio. This diversification provides a buffer and ensures a more stable income stream. 
+-   **Risk Reduction:** The real estate market can be volatile. By spreading their investments across different cantons (Swiss states), Zug Estates reduces the risk associated with a downturn in Zug's market. They might target areas with strong growth potential or a different property mix to complement their Zug portfolio. This diversification provides a buffer and ensures a more stable income stream.
 
-* __Saturated Market:__ 
-Perhaps the Zug market is saturated, meaning there are limited opportunities for profitable investments. Expanding to other areas allows Zug Estates to tap into new markets with higher potential returns. They might find regions with a greater need for the kind of development they specialize in, offering exciting growth possibilities. 
+-   **Saturated Market:** Perhaps the Zug market is saturated, meaning there are limited opportunities for profitable investments. Expanding to other areas allows Zug Estates to tap into new markets with higher potential returns. They might find regions with a greater need for the kind of development they specialize in, offering exciting growth possibilities.
 
-* __Connecting the Landscape:__ 
-Zug Estates' investments might have a strategic element beyond just individual properties. They could be acquiring properties near transportation hubs or in developing commercial centers. This could be a way to connect different areas of Switzerland through their investments, potentially influencing the overall development landscape. 
+-   **Connecting the Landscape:** Zug Estates' investments might have a strategic element beyond just individual properties. They could be acquiring properties near transportation hubs or in developing commercial centers. This could be a way to connect different areas of Switzerland through their investments, potentially influencing the overall development landscape.
 
-* __Reputation and Knowledge:__ 
-Over time, Zug Estates has likely built a strong reputation for high-quality development and property management within Zug. Expanding to other cantons allows them to leverage this reputation. They can attract partnerships with local developers or win contracts for projects in new areas based on their proven track record. Essentially, they bring their successful model to other parts of Switzerland. 
+-   **Reputation and Knowledge:** Over time, Zug Estates has likely built a strong reputation for high-quality development and property management within Zug. Expanding to other cantons allows them to leverage this reputation. They can attract partnerships with local developers or win contracts for projects in new areas based on their proven track record. Essentially, they bring their successful model to other parts of Switzerland.
 
-* __Capitalizing on Demand:__ 
-Zug Estates might be strategically responding to broader market trends across Switzerland. Perhaps there's a growing demand for specific property types, like student housing or retirement communities, in certain regions. By investing in these areas, they can capitalize on these trends and meet those demands, ensuring their portfolio remains relevant and profitable. .
+-   **Capitalizing on Demand:** Zug Estates might be strategically responding to broader market trends across Switzerland. Perhaps there's a growing demand for specific property types, like student housing or retirement communities, in certain regions. By investing in these areas, they can capitalize on these trends and meet those demands, ensuring their portfolio remains relevant and profitable. .
 
 ## Dataset "Homegate..."
 
@@ -102,17 +97,15 @@ library(caret)
 library(e1071)
 ```
 
-</details> 
+</details>
 
 <br>
-
 
 # Exploratory Graphical Analysis
 
 This chapter delves into an in-depth exploration of the dataset to gain a comprehensive understanding of the underlying data, with a particular focus on the key variable of interest: attrition. As highlighted in the introduction, our primary objective in this section is to examine attrition closely and to analyze its relationships with other variables in the dataset.
 
 A critical observation from our initial analysis is the notable imbalance in the response variable. The data reveals that a significant majority of the workforce, amounting to over 80%, have not experienced attrition. Specifically, out of the total number of employees in the dataset, 1233 remain employed, while 237 have left the company (marked as 'attrition = yes'). This disproportionate representation poses a potential challenge in the context of predictive modeling. Models developed under these conditions may inherently exhibit a bias towards the majority class, in this case, the employees who have stayed.
-
 
 ```{r, echo=FALSE}
 df_total <- read_excel("data/data_cleaned/data_total.xlsx")
@@ -254,7 +247,7 @@ ggplot(df_total, aes(x = Nr_rooms)) +
   theme_minimal()
 ```
 
-_Interpreta el grafico_
+*Interpreta el grafico*
 
 ### Effect of Number of Rooms on Rental Price
 
@@ -276,22 +269,148 @@ ggplot(df_filtered, aes(x = Nr_rooms, y = Price_Gross)) +
   scale_y_log10() # Apply logarithmic scale to y-axis
 ```
 
-
 # Linear Model
 
-Our initial strategy to predict attrition involved utilizing a linear model. However, since attrition is inherently binary, employing a linear model for prediction is not optimal. Recognizing the close relationship between attrition and retention, we turn our attention to the latter. While attrition analysis the reasons behind employees' departures, exploring retention allows us to comprehend the reasons they stay and the elements that ensure their sustained allegiance. By redirecting our focus to retention, we seek to acquire a more rounded perspective of our workforce. 
+```{r Linear Model, echo=FALSE, warning=FALSE}
+# Linear Model
+# Target Variable: Price_Gross
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PENDING
+# Nr_rooms must not be categorical, but continuous
+#-------------------------------------------------------------------------------
+# Required Packages
+library(readxl)
+library(ggplot2)
+#-------------------------------------------------------------------------------
+set.seed(71)
+# Reading in data
+enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
 
-## Linear Regression Analysis for "Years at Company"
+#Splitting the data into training and testing
+split_ratio <- 0.8
+training_indices <- sample(1:nrow(enc_data), 
+                           size=nrow(enc_data) * split_ratio,
+                           replace=FALSE)
 
-We have chosen "Years at Company" as our response variable to predict the tenure of employees within the company. This will provide us with valuable insights into retention factors and help us better understand the elements that influence an employee's longevity with the company.
+train_set <- enc_data[training_indices,]
+test_set <- enc_data[-training_indices,]
 
-### Practical Implications
+#Fit the model    data[, !(names(data) %in% column_to_exclude)]
+all_lm_model <- lm(Price_Gross ~ ., data=train_set)
 
-Based on the comparison of predictors for employee attrition and retention, here are some practical implications (as first ideas) that can be drawn to enhance employee engagement, reduce turnover, and improve retention:
+# Retraining with only relevant variables
+rel_data <- enc_data[, !(names(enc_data) %in% 
+                           c("Package_Product_num",
+                             "Type_num",
+                             "GDP_2020_21","GDP_per",
+                             "Population",
+                              "Area_km2", "Density")), drop = TRUE]
 
-- Enhancing Job Satisfaction and Involvement: Regular feedback and personalized development opportunities can increase job satisfaction, directly impacting retention. Addressing factors that affect job involvement, such as role clarity and recognition, is crucial.
-- Work-Life Balance: Managing overtime and offering flexible work arrangements can significantly reduce burnout and attrition, particularly for those with longer commutes. Tailoring benefits to diverse life situations, like family needs or social engagement for single employees, acknowledges the varied personal lives of the workforce.
-- Training and Career Development: Focusing on continuous learning and clear career paths can engage employees, reducing the likelihood of job-hopping and increasing tenure.
+rel_train_set <- rel_data[training_indices,]
+rel_test_set <- rel_data[-training_indices,]
+
+# Fit the model
+few_lm_model <- lm(Price_Gross ~ ., data=rel_train_set)
+
+# Retraining with fewer variables
+simp_data <- enc_data[, c("Nr_rooms", "Category_num", "Price_Gross")]
+
+simp_train_set <- simp_data[training_indices,]
+simp_test_set <- simp_data[-training_indices,]
+
+# Fit the model
+simple_lm_model <- lm(Price_Gross ~ ., data=simp_train_set)
+
+#Model Predictions
+all_lm_predictions <- predict(all_lm_model, newdata=test_set)
+few_lm_predictions <- predict(few_lm_model, 
+                              newdata=rel_test_set)
+simple_lm_predictions <- predict(simple_lm_model, 
+                                 newdata=simp_test_set)
+
+#Model Evaluation
+
+rmse <- sqrt(mean((all_lm_predictions - test_set$Price_Gross)^2))
+mae <- mean(abs(all_lm_predictions - test_set$Price_Gross))
+
+new_rmse <- sqrt(mean((few_lm_predictions - rel_test_set$Price_Gross)^2))
+new_mae <- mean(abs(few_lm_predictions - rel_test_set$Price_Gross))
+
+simp_rmse <- sqrt(mean((simple_lm_predictions - simp_test_set$Price_Gross)^2))
+simp_mae <- mean(abs(simple_lm_predictions - simp_test_set$Price_Gross))
+
+```
+
+## Purpose and target
+
+We decided to employ a linear regression model in order to predict prices for different rental properties, specifically apartments. We created three different models, each taking into account different features to help us gain better insight.
+
+### Linear Model 1
+
+The first model (*all_lm_model*)takes all available property features into account to train and make predictions. From this we were able to see that some of those we included were not relevant to the target variable, as seen below:
+
+```{r First Linear model, echo=False}
+summary(all_lm_model)
+```
+
+*As we can see in the model summary, some variables are converted into factors and interpreted separately, we can also see 'Nr_rooms' is relevant in general, but Package_Product and Category, for example, are not.*
+
+With this information we were able to refine our selection of variables for training the following models, one with only a few variables, and one with only one.
+
+### Linear Model 2
+
+The next model ( *few_lm_model* ) we trained with fewer dependent variables, only those of high importance. For this one, we took into account only the ones that were calculated to be significant to the model's performance.
+
+```{r Few Model Summary, echo=FALSE}
+summary(few_lm_model)
+```
+
+*Here we can see that the variables taken into account were Canton, Days_Difference, Category, Customer_Segment, Nr_rooms and Size_m2.*
+
+### Linear Model 3
+
+The last model generated took into account only *two* variable as a predictor: *Nr_rooms* and *Category_num2*. The number of rooms seems to have one of, if not the biggest effect on rental price of a property, which is why we went with this variable for analysis. The second customer category also has a significant effect, so it was included.
+
+```{r Simple Model Summary echo=FALSE}
+summary(simple_lm_model)$coef
+```
+
+## Interpretation
+
+All three models offer us some insight into the behavior of rental prices for different properties. Interestingly, our research thus far shows that the Canton of said property is not that influential in its rental price, except for Canton 3.
+
+*(Canton 1: Argau, Canton 2: Luzern, Canton 3: Zürich)*
+
+For desired results, we will focus on the second model, which includes all the variables considered significant for the best results.
+
+```{r Model 2 - Few LM - Category plot, echo=FALSE}
+lm_plot1 <- data.frame(rel_data$Nr_rooms, rel_data$Price_Gross)
+lm_plot2 <- data.frame(rel_data$Category_num, rel_data$Price_Gross)
+plot(rel_data$Category_num, rel_data$Price_Gross, xlab="Category", ylab="Price_Gross", main="Price of a Rental Property as a Result of the Customer Category")
+
+```
+
+In this diagram we can observe that, though there are fewer instances of Category 2 (House) compared to Category 1 (Apartment), Category 2 properties tend to have higher rental prices. This does not, however, indicate that they may be the more lucrative option, as houses tend to incur other costs that are either not present, or the cost is split in the community, in the case of apartments.
+
+```{r Model 2 - Few LM - Rooms Plot, echo=FALSE}
+
+plot(lm_plot1, xlab="Nr_Rooms", ylab="Price_Gross", main="Price of a Rental Property as a result of the Number of Rooms")
+
+```
+
+In the illustration above, we depict the relationship between the number of rooms in a property and the gross price of the same. We can observe an upward curve, which leads to believe that a higher number of rooms leads to a higher price, which would make sense. This information must also be taken into consideration together with other variables, like the property's area in meters squared, average size of rooms, location, etc.
+
+## Conclusion
+
+Our linear models suggest that properties, specifically houses, with more rooms go for a higher price. This doesn't necessarily indicate that they may be the best choice for renting out to customers, but it does suggest that they are the properties which generate the highest gross payment on a regular basis.
+
+# Neural Network
+
+NN
+
+# Support Vector Machine
+
+SVM
 
 ## Outlook
 
@@ -299,13 +418,13 @@ We would like to highlight our top four recommendations for improvements in futu
 
 ### Data Quality and Amount
 
-Future studies could benefit from investigating ensemble methods, which merge the advantages of various models to boost overall efficacy. We suggest that a larger dataset might enhance the performance of specific models like neural networks. Furthermore, gathering additional predictive variables could facilitate the training of more sophisticated models. 
+Future studies could benefit from investigating ensemble methods, which merge the advantages of various models to boost overall efficacy. We suggest that a larger dataset might enhance the performance of specific models like neural networks. Furthermore, gathering additional predictive variables could facilitate the training of more sophisticated models.
 
-The primary focus of our project was centered on identifying general predictors of attrition. This objective shaped our analytical approach and the methodologies we employed, and provided a foundation for understanding the key predictors. An extension of our analysis would be to change the focus and predict the probabilities of employee attrition, rather than solely classifying outcomes. This approach would enable us to personalize interventions more effectively, tailoring strategies to the specific likelihood of an employee's departure. 
+The primary focus of our project was centered on identifying general predictors of attrition. This objective shaped our analytical approach and the methodologies we employed, and provided a foundation for understanding the key predictors. An extension of our analysis would be to change the focus and predict the probabilities of employee attrition, rather than solely classifying outcomes. This approach would enable us to personalize interventions more effectively, tailoring strategies to the specific likelihood of an employee's departure.
 
 ### Enhanced Validation of Models
 
-Due to the time constraints and scope of this project, we couldn't conduct extensive validation and testing for all models. Implementing more techniques such as cross-validation and regularization in the training phase would be necessary to enhance the overall quality and performance of the developed models. Moreover, testing interactions was at short-cut in this project. In 
+Due to the time constraints and scope of this project, we couldn't conduct extensive validation and testing for all models. Implementing more techniques such as cross-validation and regularization in the training phase would be necessary to enhance the overall quality and performance of the developed models. Moreover, testing interactions was at short-cut in this project. In
 
 ### Model Complexity vs. Performance
 
@@ -321,20 +440,10 @@ This project was a great opportunity for us to learn about machine learning and 
 
 Our models are of solid quality, but we didn't get to explore every detail or use all the methods perfectly. For example, our early graphical analysis could be improved by using methods better suited to different types of data than just correlation coefficients, or validation of different models is not fully implemented (CSV). The neural network component, in particular, posed significant challenges. Our results here were not as robust as we had hoped, possibly due to limitations in the amount of data available. This experience highlighted the importance of having a substantial dataset for neural network models to truly excel.
 
-An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing metrics.  In our case, relying solely on accuracy as a metric wasn't appropriate due to the unbalanced nature of the dataset. 
+An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing metrics. In our case, relying solely on accuracy as a metric wasn't appropriate due to the unbalanced nature of the dataset.
 
 It's important to note that ChatGPT was a valuable resource when we were faced with difficult debugging problems. However, we made a point of understanding, modifying and correcting the suggested code independently to ensure that our final work was truly our own and not a mere replication of the solutions provided.
 
 In the end, we're happy with the end result of our report, and even happier with how much we learned along the way.
 
 # References
-
-[^ref1]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>
-
-[^ref2]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>
-
-[^ref3]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>
-
-[^ref4]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>
-
-[^ref5]: Homepage - ZugEstates. (s. f.). Zugestates. <https://zugestates.ch/>

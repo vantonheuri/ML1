@@ -1,6 +1,9 @@
 # NN
 # Classification Variable: High_Ticket
 # - highest quartile of (Price_Gross / Size_m2) threshold ><
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PENDING
+# Nr_rooms must not be categorical, but continuous
 #-------------------------------------------------------------------------------
 # Required Packages
 library(readxl)
