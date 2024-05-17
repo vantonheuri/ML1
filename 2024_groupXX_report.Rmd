@@ -70,7 +70,7 @@ Zug Estates, a major real estate player in Zug, Switzerland, might be looking to
 
 This report is based on R code that was used to explore, train, and test various models on the data. To maintain a clean and accessible format, much of this code is hidden within the document. However, upon request, the code can be made visible for thorough review. This feature not only helps ensure the reproducibility of our analysis but also facilitates ease of reading.
 
-# Data Preperation
+# Data Preparation
 
 Before proceeding to the exploratory graphical analysis, this chapter provides a brief overview of how the dataset was loaded and prepared.
 
@@ -489,7 +489,7 @@ ggplot(data, aes(x = predictions, fill = predictions)) +
   scale_x_discrete(name = "Predicted Class") +
   ylab("Frequency") +
   ggtitle("Rounded Predictions") +
-  scale_fill_manual(values = c("Non-High Ticket" = "red4", "High-Ticket" = "green4"))
+  scale_fill_manual(values = c("Non-High Ticket" = "skyblue", "High-Ticket" = "#b4f8c8"))
 
 ```
 
