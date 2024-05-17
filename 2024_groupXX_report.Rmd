@@ -404,20 +404,15 @@ Our linear models suggest that properties, specifically houses, with more rooms 
 # Neural Network
 
 ```{r NeuralNet - Base, echo=FALSE}
-# NN
-# Classification Variable: High_Ticket
-# - highest quartile of (Price_Gross / Size_m2) threshold ><
-#---------------------------------------------------------------------------
 # Required Packages
 library(readxl)
 library(neuralnet)
-#---------------------------------------------------------------------------
 
 # Reading in data
 enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
 enc_data <- enc_data[, !(names(enc_data) %in% "X"), drop = TRUE]
 
-#Feature Engineering
+# Feature Engineering
 enc_data$Price_per_m2 <- enc_data$Price_Gross / enc_data$Size_m2
 q3 <- median(enc_data$Price_per_m2) + IQR(enc_data$Price_per_m2) / 2
 enc_data$High_Ticket <- enc_data$Price_per_m2 > q3
@@ -427,33 +422,35 @@ enc_data$High_Ticket <- ifelse(enc_data$High_Ticket, 1, 0)
 enc_data$Canton_num <- as.numeric(as.factor(enc_data$Canton_num))
 enc_data$Customer_Segment_num <- as.numeric(as.factor(enc_data$Customer_Segment_num))
 enc_data$Category_num <- as.numeric(as.factor(enc_data$Category_num))
-enc_data$Nr_rooms <- as.numeric(as.factor(enc_data$Nr_rooms))
+enc_data$Nr_rooms <- as.numeric(enc_data$Nr_rooms) # Treating Nr_rooms as continuous
 enc_data$Package_Product_num <- as.numeric(as.factor(enc_data$Package_Product_num))
 
 # Normalizing the data
-#minmax
-High_Ticket <- enc_data$High_Ticket
-features <- subset(enc_data, select = -High_Ticket)
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
 }
+
+features <- subset(enc_data, select = -High_Ticket)
 maxmindf_features <- as.data.frame(lapply(features, normalize))
 
+High_Ticket <- enc_data$High_Ticket
 maxmindf <- cbind(High_Ticket, maxmindf_features)
 
 # Split into train and test sets
 set.seed(36)
-smpl <- sample.int(n=nrow(maxmindf), size = floor(0.8*nrow(maxmindf)),
-                   replace = FALSE)
-train_maxmin <- maxmindf[smpl,]
-test_maxmin <- maxmindf[-smpl,]
+smpl <- sample.int(n = nrow(maxmindf), size = floor(0.8 * nrow(maxmindf)), replace = FALSE)
+train_maxmin <- maxmindf[smpl, ]
+test_maxmin <- maxmindf[-smpl, ]
 
 # Modeling
-model_maxmin <- neuralnet(High_Ticket ~ ., train_maxmin, hidden = c(3, 8, 5), linear.output = FALSE)
-#plot(model_maxmin)
+model_maxmin <- neuralnet(High_Ticket ~ ., data = train_maxmin, hidden = c(3, 8, 5), linear.output = FALSE)
 
 # Predicting
 pred_maxmin <- predict(model_maxmin, test_maxmin)
+
+# Testing the Accuracy of the models
+maxmin_results <- data.frame(actual = test_maxmin$High_Ticket, prediction = pred_maxmin)
+
 ```
 
 ## Purpose and Target
@@ -467,16 +464,13 @@ With this transformation, we had created a binary classification problem: is thi
 After classifying the properties into either category, we were able to analyze the model's performance on the dataset. If successful, this Neural Network will be a great tool in the future to predict a possible acquisition's performance over time. Properties may be acquired at lower prices, and may not be very attractive at the time of purchase, but with some remodeling and updating the living space, its perceived value may be brought to a new high. This is what we try to predict with this model: the potential of a specific property and to discern if it could be a lucrative investment for Zug Estates.
 
 ```{r NN Findings, echo=FALSE}
-temp_test_maxmin <- subset(test_maxmin, select = -High_Ticket)
-maxmin_model.results <- compute(model_maxmin, temp_test_maxmin)
-maxmin_results <- data.frame(actual = test_maxmin$High_Ticket, prediction = maxmin_model.results$net.result)
-
 # Confusion matrix
-roundedresults<-sapply(maxmin_results,round,digits=0)
-roundedresultsdf=data.frame(roundedresults)
-attach(roundedresultsdf)
-table(test_maxmin$High_Ticket,prediction)
-
+roundedresults <- sapply(maxmin_results, round, digits = 0)
+roundedresultsdf <- data.frame(roundedresults)
+nn_conf <- confusionMatrix(as.factor(roundedresultsdf$prediction),
+                           as.factor(roundedresultsdf$actual),
+                           dnn=c("Prediction", "Reference"))
+nn_conf$table
 ```
 
 *Confusion Matrix of the Neural Network's performance.*
@@ -505,7 +499,84 @@ As we can see, not many values actually fall into the category of High-Ticket pr
 
 # Support Vector Machine
 
-SVMs are cool
+Though the Neural Network presented great results, we wanted to make sure to validate that it was the optimal choice for classification in our problem. Support Vector Machines (SVMs henceforth) also excel at binary classification problems, so we wanted to create one and train it on the same data in order to visualize and compare performance, to ensure we use the better performing model for recommending properties to acquire.
+
+```{r SVM Intro, echo=FALSE, results='hide'}
+
+# Reading in data
+ohe_data <- read_excel("data/data_cleaned/data_total_model_one_hot_encoded.xlsx")
+
+#Feature Engineering
+ohe_data$Price_per_m2 <- ohe_data$Price_Gross / ohe_data$Size_m2
+q3 <- median(ohe_data$Price_per_m2) + IQR(ohe_data$Price_per_m2) / 2
+ohe_data$High_Ticket <- ohe_data$Price_per_m2 > q3
+ohe_data$High_Ticket <- ifelse(ohe_data$High_Ticket, 1, 0)
+
+# Price_per_m2 causes collinearity issues
+# Nr_rooms.8 has only one positive value, so we remove the row
+# Nr_rooms.10 is constant, so we remove it as well
+ohe_data <- ohe_data[, !names(ohe_data) %in% c("Price_per_m2","Nr_rooms.8",
+                                               "Nr_rooms.10")]
+
+# Convert target to factor since this is a classification problem (binary)
+ohe_data$High_Ticket <- as.factor(ohe_data$High_Ticket)
+
+# Random seed for reproducibility
+set.seed(123) # same seed as NN for reproduction/comparison
+
+# Split the data into training and test sets
+train_index <- sample(seq_len(nrow(ohe_data)), size = floor(0.8 * nrow(ohe_data)))
+train_data <- ohe_data[train_index, ]
+test_data <- ohe_data[-train_index, ]
+
+# Set up train control for cross-validation
+train_control <- trainControl(
+  method = "cv",         # Cross-validation
+  number = 10,           # Number of folds
+  savePredictions = "final",
+  classProbs = TRUE,     # If you want class probabilities
+  summaryFunction = twoClassSummary
+)
+
+
+# Train the SVM model
+svm_model <- svm(High_Ticket ~ ., data = train_data,trControl=train_contor,
+                 kernel = "radial",
+                 cost = 10, scale = TRUE)
+
+# Exclude the target variable from the test set
+test_data_without_target <- test_data[, !names(test_data) %in% 'High_Ticket']
+
+
+# Make predictions
+svm_predictions <- predict(svm_model, newdata = test_data_without_target)
+
+```
+
+```{r Re-NN Performance, echo=FALSE}
+nn_conf$table
+```
+
+*Neural Network Performance*
+
+```{r SVM Confusion Matrix, echo=FALSE}
+
+# Calculate confusion matrix
+svm_confusion <- confusionMatrix(as.factor(svm_predictions), as.factor(test_data$High_Ticket))
+
+svm_confusion$table
+
+```
+
+*SVM Performance*
+
+As we can see, comparing the two confusion matrices, the Neural Network has better accuracy than the SVM. Though at first glance it may seem like the better option, there are several advantages and disadvantages between the two models.
+
+An SVM is particularly effective when working with higher-dimensional data, and has better memory efficiency. It is also more robust to overfitting, but are less efficient with larger datasets because of the training complexity.
+
+Neural networks on the other hand, are more flexible and powerful when it comes to approximating trends. They can also learn and extract features that are not present in the data, finding new relationships that may not be obvious, but can be very computationally intensive.
+
+In summary, both are good options for our purpose. In the future, if considering to use either one, the size, shape and complexity of the available dataset will play a pivotal role in the selection of the best model to use for finding possible "golden goose" properties.
 
 ## Outlook
 

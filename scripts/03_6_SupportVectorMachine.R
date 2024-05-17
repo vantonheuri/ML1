@@ -57,11 +57,11 @@ svm_model <- svm(High_Ticket ~ ., data = train_data,trControl=train_contor,
 test_data_without_target <- test_data[, !names(test_data) %in% 'High_Ticket']
 
 # Make predictions
-predictions <- predict(svm_model, newdata = test_data_without_target)
+svm_predictions <- predict(svm_model, newdata = test_data_without_target)
 
 # Evaluate the model (assuming classification, adjust if it's regression)
-confusionMatrix(predictions, test_data$High_Ticket)
+confusionMatrix(svm_predictions, test_data$High_Ticket)
 
 # Calculate confusion matrix
-confusion <- confusionMatrix(as.factor(predictions), as.factor(test_data$High_Ticket))
+confusion <- confusionMatrix(as.factor(svm_predictions), as.factor(test_data$High_Ticket))
 
