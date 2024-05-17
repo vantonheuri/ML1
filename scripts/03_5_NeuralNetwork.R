@@ -46,7 +46,7 @@ train_maxmin <- maxmindf[smpl,]
 test_maxmin <- maxmindf[-smpl,]
 
 # Modeling
-model_maxmin <- neuralnet(High_Ticket ~ ., train_maxmin, hidden = c(10, 10, 10), 
+model_maxmin <- neuralnet(High_Ticket ~ ., train_maxmin, hidden = c(3, 8, 5), 
                    linear.output = FALSE)
 #plot(model_maxmin)
 
@@ -65,3 +65,5 @@ roundedresults<-sapply(maxmin_results,round,digits=0)
 roundedresultsdf=data.frame(roundedresults)
 attach(roundedresultsdf)
 table(actual,prediction)
+
+plot(model_maxmin)

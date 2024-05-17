@@ -274,14 +274,11 @@ ggplot(df_filtered, aes(x = Nr_rooms, y = Price_Gross)) +
 ```{r Linear Model, echo=FALSE, warning=FALSE}
 # Linear Model
 # Target Variable: Price_Gross
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# PENDING
-# Nr_rooms must not be categorical, but continuous
-#-------------------------------------------------------------------------------
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Required Packages
 library(readxl)
 library(ggplot2)
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------
 set.seed(71)
 # Reading in data
 enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
@@ -341,7 +338,7 @@ simp_mae <- mean(abs(simple_lm_predictions - simp_test_set$Price_Gross))
 
 ```
 
-## Purpose and target
+## Purpose and Target
 
 We decided to employ a linear regression model in order to predict prices for different rental properties, specifically apartments. We created three different models, each taking into account different features to help us gain better insight.
 
@@ -406,7 +403,70 @@ Our linear models suggest that properties, specifically houses, with more rooms 
 
 # Neural Network
 
-NN
+```{r NeuralNet - Base, echo=FALSE}
+# NN
+# Classification Variable: High_Ticket
+# - highest quartile of (Price_Gross / Size_m2) threshold ><
+#---------------------------------------------------------------------------
+# Required Packages
+library(readxl)
+library(neuralnet)
+#---------------------------------------------------------------------------
+
+# Reading in data
+enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
+enc_data <- enc_data[, !(names(enc_data) %in% "X"), drop = TRUE]
+
+#Feature Engineering
+enc_data$Price_per_m2 <- enc_data$Price_Gross / enc_data$Size_m2
+q3 <- median(enc_data$Price_per_m2) + IQR(enc_data$Price_per_m2) / 2
+enc_data$High_Ticket <- enc_data$Price_per_m2 > q3
+enc_data$High_Ticket <- ifelse(enc_data$High_Ticket, 1, 0)
+
+# Declaring Categorical Variables
+enc_data$Canton_num <- as.numeric(as.factor(enc_data$Canton_num))
+enc_data$Customer_Segment_num <- as.numeric(as.factor(enc_data$Customer_Segment_num))
+enc_data$Category_num <- as.numeric(as.factor(enc_data$Category_num))
+enc_data$Nr_rooms <- as.numeric(as.factor(enc_data$Nr_rooms))
+enc_data$Package_Product_num <- as.numeric(as.factor(enc_data$Package_Product_num))
+
+# Normalizing the data
+#minmax
+High_Ticket <- enc_data$High_Ticket
+features <- subset(enc_data, select = -High_Ticket)
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+maxmindf_features <- as.data.frame(lapply(features, normalize))
+
+maxmindf <- cbind(High_Ticket, maxmindf_features)
+
+# Split into train and test sets
+set.seed(36)
+smpl <- sample.int(n=nrow(maxmindf), size = floor(0.8*nrow(maxmindf)),
+                   replace = FALSE)
+train_maxmin <- maxmindf[smpl,]
+test_maxmin <- maxmindf[-smpl,]
+
+# Modeling
+model_maxmin <- neuralnet(High_Ticket ~ ., train_maxmin, hidden = c(3, 8, 5), linear.output = FALSE)
+#plot(model_maxmin)
+
+# Predicting
+pred_maxmin <- predict(model_maxmin, test_maxmin)
+```
+
+## Purpose and Target
+
+When considering using a Neural Network to identify potential high value properties within the dataset, we decided to do exactly that. To do this, we engineered a new, binary column, identifying whether a property was considered "High-Ticket" or not. In order to categorize properties this way, we calculated the price per meter squared of each property, and those in the top quartile had their High_Ticket column value set to 1, others to 0.
+
+With this transformation, we had created a binary classification problem: is this property a high-ticket property? Answering this question will allow us to filter out most properties which may not be as lucrative for Zug Estates, and offer only the cream of the crop as possible targets for acquisition.
+
+## Findings
+
+```{r}
+
+```
 
 # Support Vector Machine
 
@@ -442,7 +502,7 @@ Our models are of solid quality, but we didn't get to explore every detail or us
 
 An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing metrics. In our case, relying solely on accuracy as a metric wasn't appropriate due to the unbalanced nature of the dataset.
 
-It's important to note that ChatGPT was a valuable resource when we were faced with difficult debugging problems. However, we made a point of understanding, modifying and correcting the suggested code independently to ensure that our final work was truly our own and not a mere replication of the solutions provided.
+It's important to note that OpenAI's Chat-GPT and Google's Gemini LLMs were valuable resources when we were faced with difficult debugging problems. However, we made a point of understanding, modifying and correcting the suggested code independently to ensure that our final work was truly our own and not a mere replication of the solutions provided.
 
 In the end, we're happy with the end result of our report, and even happier with how much we learned along the way.
 
