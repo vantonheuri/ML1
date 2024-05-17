@@ -346,7 +346,7 @@ We decided to employ a linear regression model in order to predict prices for di
 
 The first model (*all_lm_model*)takes all available property features into account to train and make predictions. From this we were able to see that some of those we included were not relevant to the target variable, as seen below:
 
-```{r First Linear model, echo=False}
+```{r First Linear model, echo=FALSE}
 summary(all_lm_model)
 ```
 
@@ -368,7 +368,7 @@ summary(few_lm_model)
 
 The last model generated took into account only *two* variable as a predictor: *Nr_rooms* and *Category_num2*. The number of rooms seems to have one of, if not the biggest effect on rental price of a property, which is why we went with this variable for analysis. The second customer category also has a significant effect, so it was included.
 
-```{r Simple Model Summary echo=FALSE}
+```{r Simple Model Summary, echo=FALSE}
 summary(simple_lm_model)$coef
 ```
 
@@ -380,7 +380,7 @@ All three models offer us some insight into the behavior of rental prices for di
 
 For desired results, we will focus on the second model, which includes all the variables considered significant for the best results.
 
-```{r Model 2 - Few LM - Category plot, echo=FALSE}
+```{r Few Model Plot, echo=FALSE}
 lm_plot1 <- data.frame(rel_data$Nr_rooms, rel_data$Price_Gross)
 lm_plot2 <- data.frame(rel_data$Category_num, rel_data$Price_Gross)
 plot(rel_data$Category_num, rel_data$Price_Gross, xlab="Category", ylab="Price_Gross", main="Price of a Rental Property as a Result of the Customer Category")
@@ -389,7 +389,7 @@ plot(rel_data$Category_num, rel_data$Price_Gross, xlab="Category", ylab="Price_G
 
 In this diagram we can observe that, though there are fewer instances of Category 2 (House) compared to Category 1 (Apartment), Category 2 properties tend to have higher rental prices. This does not, however, indicate that they may be the more lucrative option, as houses tend to incur other costs that are either not present, or the cost is split in the community, in the case of apartments.
 
-```{r Model 2 - Few LM - Rooms Plot, echo=FALSE}
+```{r First Model Plot, echo=FALSE}
 
 plot(lm_plot1, xlab="Nr_Rooms", ylab="Price_Gross", main="Price of a Rental Property as a result of the Number of Rooms")
 
@@ -458,19 +458,54 @@ pred_maxmin <- predict(model_maxmin, test_maxmin)
 
 ## Purpose and Target
 
-When considering using a Neural Network to identify potential high value properties within the dataset, we decided to do exactly that. To do this, we engineered a new, binary column, identifying whether a property was considered "High-Ticket" or not. In order to categorize properties this way, we calculated the price per meter squared of each property, and those in the top quartile had their High_Ticket column value set to 1, others to 0.
+When considering using a Neural Network, we decided to identify potential high value properties within the dataset. To do this, we engineered a new, binary column, identifying whether a property was considered "High-Ticket" or not. In order to categorize properties this way, we calculated the price per meter squared of each property, and those in the top quartile had their High_Ticket column value set to 1, others to 0.
 
 With this transformation, we had created a binary classification problem: is this property a high-ticket property? Answering this question will allow us to filter out most properties which may not be as lucrative for Zug Estates, and offer only the cream of the crop as possible targets for acquisition.
 
 ## Findings
 
-```{r}
+After classifying the properties into either category, we were able to analyze the model's performance on the dataset. If successful, this Neural Network will be a great tool in the future to predict a possible acquisition's performance over time. Properties may be acquired at lower prices, and may not be very attractive at the time of purchase, but with some remodeling and updating the living space, its perceived value may be brought to a new high. This is what we try to predict with this model: the potential of a specific property and to discern if it could be a lucrative investment for Zug Estates.
+
+```{r NN Findings, echo=FALSE}
+temp_test_maxmin <- subset(test_maxmin, select = -High_Ticket)
+maxmin_model.results <- compute(model_maxmin, temp_test_maxmin)
+maxmin_results <- data.frame(actual = test_maxmin$High_Ticket, prediction = maxmin_model.results$net.result)
+
+# Confusion matrix
+roundedresults<-sapply(maxmin_results,round,digits=0)
+roundedresultsdf=data.frame(roundedresults)
+attach(roundedresultsdf)
+table(test_maxmin$High_Ticket,prediction)
 
 ```
 
+*Confusion Matrix of the Neural Network's performance.*
+
+As seen in the previous matrix, the model's performance on categorizing properties into possible high-ticket or not is quite good. This tool will help in the future, when looking at new properties, to have an idea of more or less how beneficial a specific property could be to Zug Estates' portfolio.
+
+```{r Predictions Chart, echo=FALSE}
+# Convert to a data frame for ggplot2
+rounded_predictions <- round(pred_maxmin)
+data <- data.frame(predictions = factor(rounded_predictions, levels = c(0, 1), labels = c("Non-High Ticket", "High-Ticket")))
+
+
+# Create the histogram
+ggplot(data, aes(x = predictions, fill = predictions)) +
+  geom_bar(color = "black", width = 0.5) +
+  scale_x_discrete(name = "Predicted Class") +
+  ylab("Frequency") +
+  ggtitle("Rounded Predictions") +
+  scale_fill_manual(values = c("Non-High Ticket" = "red4", "High-Ticket" = "green4"))
+
+```
+
+*Predictions have been rounded because some values fell into decimal places, due to the nature of the Neural Networks' activation function (sigmoid curve)*
+
+As we can see, not many values actually fall into the category of High-Ticket properties, so having a tool like this network will be beneficial in catching such opportunities early on and maximizing added value and profits for the real estate company.
+
 # Support Vector Machine
 
-SVM
+SVMs are cool
 
 ## Outlook
 
