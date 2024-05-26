@@ -1,0 +1,955 @@
+---
+title: |
+  ![](LogoZugEstates.png){width=4in}   
+  Real Estate Pricing
+author: "Victor Anton, Rodrigo Gonzalez & Carlos Leon"
+date: "Machine Learning 1 - 05 June 2024"
+output: 
+  prettydoc::html_pretty:
+    theme: hpstr
+    highlight: github
+    #highlight: tango
+    toc: yes
+    toc_depth: 1
+    # toc_float: yes
+    number_sections: yes
+    #code_folding: hide
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+  # html_document:
+  #   toc: yes
+  #   toc_depth: 2
+  #   toc_float: true
+  #   number_sections: yes
+  #   code_folding: hide
+  #   theme: cerulean
+  #   highlight: tango
+knit:
+  citations: yes
+---
+
+```{r setup, include = FALSE, warning = FALSE}
+library(knitr)
+opts_chunk$set(
+  echo = TRUE,
+  eval = TRUE,
+  warning = FALSE,
+  message = FALSE)
+```
+
+# Introduction
+
+Zug Estates focuses on developing, managing, and marketing properties in the Zug region, Switzerland. They prioritize centrally located sites for sustainable, multi-use development. Their portfolio is concentrated in Zug and Risch Rotkreuz, featuring a mix of residential, office, retail, hotel, and service spaces. The company aims for long-term property retention and development, driving value creation through sustainable designs and active management
+
+Zug Estates, a major real estate player in Zug, Switzerland, might be looking to invest in other parts of the country for several reasons. Here's a comprehensive breakdown:
+
+-   **Risk Reduction:** The real estate market can be volatile. By spreading their investments across different cantons (Swiss states), Zug Estates reduces the risk associated with a downturn in Zug's market. They might target areas with strong growth potential or a different property mix to complement their Zug portfolio. This diversification provides a buffer and ensures a more stable income stream.
+
+-   **Saturated Market:** Perhaps the Zug market is saturated, meaning there are limited opportunities for profitable investments. Expanding to other areas allows Zug Estates to tap into new markets with higher potential returns. They might find regions with a greater need for the kind of development they specialize in, offering exciting growth possibilities.
+
+-   **Connecting the Landscape:** Zug Estates' investments might have a strategic element beyond just individual properties. They could be acquiring properties near transportation hubs or in developing commercial centers. This could be a way to connect different areas of Switzerland through their investments, potentially influencing the overall development landscape.
+
+-   **Reputation and Knowledge:** Over time, Zug Estates has likely built a strong reputation for high-quality development and property management within Zug. Expanding to other cantons allows them to leverage this reputation. They can attract partnerships with local developers or win contracts for projects in new areas based on their proven track record. Essentially, they bring their successful model to other parts of Switzerland.
+
+-   **Capitalizing on Demand:** Zug Estates might be strategically responding to broader market trends across Switzerland. Perhaps there's a growing demand for specific property types, like student housing or retirement communities, in certain regions. By investing in these areas, they can capitalize on these trends and meet those demands, ensuring their portfolio remains relevant and profitable. .
+
+## Dataset "Homegate..."
+
+... Rodrigo ...
+
+## Motivation and Goal
+
+... Rodrigo ...
+
+## Project Structure
+
+... Rodrigo ...
+
+## Navigating the Report: Understanding the Hidden R Code
+
+This report is based on R code that was used to explore, train, and test various models on the data. To maintain a clean and accessible format, much of this code is hidden within the document.
+
+However, upon request, the code can be made visible for thorough review. This feature not only helps ensure the reproducibility of our analysis but also facilitates ease of reading.
+
+# Data Preparation
+
+Before proceeding to the exploratory graphical analysis, this chapter provides a brief overview of how the dataset was loaded and prepared.
+
+## Libraries
+
+In this report the following libraries are used.
+
+<details>
+
+<summary>*Click to see all libraries*</summary>
+
+```{r libraries, class.source = "fold-show"}
+# used libraries
+library(readr)
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(readxl)
+library(openxlsx)
+library(lubridate)
+library(readxl)
+library(neuralnet)
+library(caret)
+library(e1071)
+library(gridExtra)
+library(mgcv)
+```
+
+</details>
+
+<br>
+
+# Exploratory Data Analysis
+
+
+This chapter thoroughly explores the dataset, with a specific focus on the main variable of interest: __rental prices__. Our primary goal is to develop predictive models for rental prices of both apartments and houses.
+
+<br>
+
+## Data Preparation and Preliminary Analysis
+
+Before embarking on our data analysis journey, it was essential to prepare our data, here the step by step:
+
+- **Data Import and Merging:** The first step was to import our two datasets, named __"df_kanton"__ (information on the Swiss cantons) and __"df_homegate"__ (property characteristics including prices, size, number of rooms, etc). In order to work with one dataset, we merged the two datasets based on the __"Canton"__ column into a new data frame.
+
+- **Data Filtering:** Some data points were not suitable for our intended use case because our focus is on houses and apartments. Other irrelevant property types were filtered out. Furthermore, we determined that analyzing the entire Swiss market was irrelevant for our purposes. Therefore, we limited our analysis to __Central Switzerland (Aargau (AG), Luzern (LU), Zurich (ZH)__ and __Zug (ZG))__ to maintain relevance and homogeneity.
+
+- **Preliminary Data Cleaning:** Before of cleaning the whole dataset we performed visualizations to identify and focus on interesting features. 
+
+- **Data cleaning and preparation:**
+  
+  - **Missing value handling:** Removed rows with missing values in key columns.
+      
+  - **Feature engineering:** Created a new column __"Days_Difference"__ to capture the time difference between two date columns.
+      
+  - **One-Hot Encoding:** Applied to categorical variables for better compatibility with machine learning models.
+      
+  - **Label encoding:** Converted categorical variables to numerical representations.
+
+In summary, these steps prepared the data for further analysis and modelling by cleaning it, handling missing values, and encoding categorical variables, which are essential steps in data pre-processing for machine learning tasks.
+
+The dataset for our Exploratory Data Analysis includes the following columns.
+
+<details>
+
+<summary>*Click to see all column names*</summary>
+
+```{r EDA dataset column names, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+df_total <- read_excel("data/data_cleaned/data_total.xlsx")
+colnames(df_total)
+```
+</details>
+
+Finally, the dataset for our Modeling includes the following columns.
+
+<details>
+
+<summary>*Click to see all column names*</summary>
+
+```{r Modeling dataset column names, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
+colnames(enc_data)
+```
+</details>
+
+<br>
+
+## Data Visualization
+
+### Properties per Canton
+
+This bar chart shows the distribution of properties across different cantons in Switzerland. Zurich (ZH) has the highest number of properties listed, followed by Vaud (VD) and Aargau (AG), highlighting regional differences in property availability.
+
+```{r Properties per Canton, echo=FALSE, warning = FALSE}
+# Counting properties per Canton and arranging them from highest to lowest
+properties_per_canton <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Count = n()) %>%
+  arrange(desc(Count)) # Arrange in descending order of count
+
+# Define colors for specific cantons
+highlight_cantons <- c("ZG", "ZH", "AG", "LU")
+properties_per_canton$color <- ifelse(properties_per_canton$Canton %in% highlight_cantons, "#9C8AE6", "skyblue")
+
+# Creating the vertical bar chart with colored bars for specific cantons
+ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count, fill = color)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_text(aes(label = Count), vjust = -0.5, color = "black", size = 2.2) + # Data labels above bars
+  scale_fill_identity() + # Use the colors defined in the data frame
+  labs(title = "Properties per Canton", x = "Canton", y = "Count of Properties") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), # Rotate x-axis labels for better readability
+        plot.title = element_text(hjust = 0.5))
+```
+
+### Average Rental Price per Canton
+
+The visualizations compare average rental prices across Swiss cantons, with the first chart showing the top ten cantons and highlighting the exceptionally high average rental price in Ticino compared to others.
+
+The second chart focuses on our study cantons of Zurich, Lucerne, Aargau and Zug, illustrating more typical, affordable rental prices below CHF 2,000. 
+
+These charts highlight the significant regional differences in rental costs within Switzerland, which is useful for market analysis, investment decisions and policy formulation.
+```{r, echo=FALSE, warning=FALSE}
+# Function to format numbers as thousands (K)
+format_k <- function(x) {
+  paste0(round(x / 1000, 1), "K")
+}
+
+# Order of top 10 cantons based on average rental price
+top_cantons <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(desc(Average_Price_Gross)) %>%
+  slice(1:10) %>%
+  .$Canton
+
+df_total_top_10 <- df_total %>%
+  filter(Canton %in% top_cantons) %>%
+  mutate(Canton = factor(Canton, levels = top_cantons))
+
+# Plot top 10 cantons
+plot_top_10 <- ggplot(df_total_top_10, aes(x = Canton, y = Price_Gross)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black", width = 0.8) +
+  geom_text(stat = "summary", fun = mean, aes(label = format_k(..y..)), vjust = -0.3, size = 2.5) +
+  labs(title = "Average Rental Price | Top 10", x = "", y = "Average Price (CHF)") +
+  scale_y_continuous(labels = format_k) + 
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+        axis.title.y = element_text(size = 9),
+        plot.title = element_text(size = 11))
+
+highlight_cantons <- c("ZG", "ZH", "AG", "LU")
+
+# Filter data for highlighted cantons 
+highlighted_data <- df_total %>%
+  filter(Canton %in% highlight_cantons) %>%
+  group_by(Canton) %>%
+  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(desc(Average_Price_Gross)) 
+
+highlighted_data$Canton <- factor(highlighted_data$Canton, levels = highlighted_data$Canton)
+
+# Plot use case cantons
+plot_highlighted <- ggplot(highlighted_data, aes(x = Canton, y = Average_Price_Gross)) +
+  geom_bar(stat = "identity", fill = "#9C8AE6", color = "black", width = 0.8) +
+  geom_text(aes(label = format_k(Average_Price_Gross)), vjust = -0.3, size = 2.5) +
+  labs(title = "Average Rental Price | Use Case", x = "", y = "Average Price (CHF)") +
+  scale_y_continuous(labels = format_k) + 
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+        axis.title.y = element_text(size = 9),
+        plot.title = element_text(size = 11))
+
+# Arrange both plots side by side with specific widths
+grid.arrange(plot_top_10, plot_highlighted, ncol = 2, widths = c(3, 2))
+```
+
+### Differences in rental prices between different customer segment
+
+The box plot compare the gross rental prices between private and professional customer segments. Prices for private customers are generally lower and less varied than those for professionals, indicating a potential market segmentation by rental price.
+
+```{r Differences in rental prices between different customer segment, echo=FALSE, warning=FALSE}
+ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
+  geom_boxplot(outlier.size = 1.5, alpha = 0.7) + 
+  scale_fill_manual(values = c("Private" = "skyblue", "Professional" = "#9C8AE6")) + 
+  ylim(750, 4500) +
+  #coord_cartesian(ylim = c(0, quantile(df_total$Price_Gross, 0.95, na.rm = TRUE))) + 
+  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  theme(legend.position = "none", 
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size =8))
+```
+
+
+### Influence of Property Size on Rental Price
+
+
+- **Correlation Between Property Size and Rental Price**
+
+The scatter plot illustrates the correlation between property size and rental price across Swiss cantons. The linear trend line shows a positive correlation, indicating that as property size increases, the gross rental price also tends to increase. 
+
+This trend is consistent across both the highlighted and other cantons, suggesting that property size is a significant factor in determining rental prices across the regions analyzed. The distinction between the canton groups helps to visually assess whether there are any noticeable differences in price trends based on location, which appear to be relatively uniform across the board.
+
+- **Distribution of Property Size**
+
+This histogram highlights that the majority of properties fall within smaller size brackets, with a steep drop-off as property size increases. This distribution suggests that smaller properties are more common in the market.
+
+```{r Property Size and Rental Price, echo=FALSE, warning = FALSE}
+# Define a new factor variable for canton groups
+df_filtered <- df_total %>%
+  mutate(canton_group = ifelse(Canton %in% c("ZH", "AG", "LU", "ZG"), 
+                               "ZH, AG, LU & ZG", 
+                               "Rest of Cantons"))
+
+# Scatter Plot
+plot_scatter_size <- ggplot(df_filtered, aes(x = Size_m2, y = Price_Gross, color = canton_group)) +
+  geom_point(size = 1, alpha = 0.8) +
+  scale_color_manual(values = c("ZH, AG, LU & ZG" = "#9C8AE6", 
+                                "Rest of Cantons" = "grey")) +
+  geom_smooth(method = "lm", aes(group = 1), color = "black", size = 0.5, se = FALSE) +
+  labs(title = "Correlation Between Property Size and Rental Price",
+       x = "Size (m²)", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 250), ylim = c(0, 8000)) + 
+  theme(legend.position = c(0.8, 0.9), 
+        legend.background = element_rect(fill = "white", colour = "black", size = 0.2), 
+        legend.title = element_blank(),
+        legend.margin = margin(t = 5, r = 20, b = 5, l = 10),
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size =8))
+
+# Histogram for Size_m2 with matched theme and limits
+plot_histogram_size <- ggplot(df_total, aes(x = Size_m2)) +
+  geom_histogram(bins = 30, fill = "#9C8AE6", color = "black") +
+  labs(title = "Distribution of Property Size", x = "Size (m²)", y = "Frequency") +
+  coord_cartesian(xlim = c(0, 350)) +  
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8))
+
+# Arrange both plots side by side with specific widths and padding
+grid.arrange(plot_scatter_size, plot_histogram_size, ncol = 2, widths = c(3, 2), padding = unit(1, "lines"))
+```
+
+### Influence of Number of Rooms on Rental Price
+
+- **Effect of Number of Rooms on Rental Price**
+
+This scatter plot explores how the number of rooms affects the gross rental price. While there is a general trend of increasing rental prices with more rooms, the variability in price also increases, as indicated by the spread of data points.
+
+- **Distribution of Number of Rooms**
+
+The bar chart illustrates the frequency of properties based on the number of rooms. Properties with 3 to 4 rooms are the most common, which aligns with the predominance of smaller property sizes seen in the previous chart.
+
+```{r Number of Rooms, echo=FALSE, warning = FALSE}
+# Define filtering and factor setting for number of rooms related to rental price
+library(dplyr)
+df_filtered_rooms <- df_total %>%
+  filter(Price_Gross <= 400000) %>%
+  mutate(Nr_rooms = as.factor(Nr_rooms)) 
+
+# Scatter Plot: Effect of Number of Rooms on Rental Price
+plot_effect_rooms <- ggplot(df_filtered_rooms, aes(x = Nr_rooms, y = Price_Gross)) +
+  geom_point(alpha = 0.6, size = 1, color = "#9C8AE6") +
+  labs(title = "Effect of Number of Rooms on Rental Price", x = "Number of Rooms", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  scale_y_log10() + # Apply logarithmic scale to y-axis for better visualization of data spread
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8))
+
+# Histogram: Distribution of Number of Rooms
+plot_distribution_rooms <- ggplot(df_total, aes(x = Nr_rooms)) +
+  geom_histogram(bins = 30, fill = "#9C8AE6", color = "black") +
+  labs(title = "Distribution of Number of Rooms", x = "Number of Rooms", y = "Frequency") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8))
+
+# Arrange plots side by side
+grid.arrange(plot_effect_rooms, plot_distribution_rooms, ncol = 2, widths = c(3, 2), padding = unit(2, "lines"))
+
+```
+
+# Data Modeling
+
+**falta explicacion**
+
+# Linear Model
+
+```{r Linear Model, echo=FALSE, warning=FALSE}
+# Linear Model
+# Target Variable: Price_Gross
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Required Packages
+library(readxl)
+library(ggplot2)
+#---------------------------------------------------------------------------
+set.seed(71)
+
+#Splitting the data into training and testing
+split_ratio <- 0.8
+training_indices <- sample(1:nrow(enc_data), 
+                           size=nrow(enc_data) * split_ratio,
+                           replace=FALSE)
+
+train_set <- enc_data[training_indices,]
+test_set <- enc_data[-training_indices,]
+
+#Fit the model    data[, !(names(data) %in% column_to_exclude)]
+all_lm_model <- lm(Price_Gross ~ ., data=train_set)
+
+# Retraining with only relevant variables
+rel_data <- enc_data[, !(names(enc_data) %in% 
+                           c("Package_Product_num",
+                             "Type_num",
+                             "GDP_2020_21","GDP_per",
+                             "Population",
+                              "Area_km2", "Density")), drop = TRUE]
+
+rel_train_set <- rel_data[training_indices,]
+rel_test_set <- rel_data[-training_indices,]
+
+# Fit the model
+few_lm_model <- lm(Price_Gross ~ ., data=rel_train_set)
+
+# Retraining with fewer variables
+simp_data <- enc_data[, c("Nr_rooms", "Category_num", "Price_Gross")]
+
+simp_train_set <- simp_data[training_indices,]
+simp_test_set <- simp_data[-training_indices,]
+
+# Fit the model
+simple_lm_model <- lm(Price_Gross ~ ., data=simp_train_set)
+
+#Model Predictions
+all_lm_predictions <- predict(all_lm_model, newdata=test_set)
+few_lm_predictions <- predict(few_lm_model, 
+                              newdata=rel_test_set)
+simple_lm_predictions <- predict(simple_lm_model, 
+                                 newdata=simp_test_set)
+
+#Model Evaluation
+
+rmse <- sqrt(mean((all_lm_predictions - test_set$Price_Gross)^2))
+mae <- mean(abs(all_lm_predictions - test_set$Price_Gross))
+
+new_rmse <- sqrt(mean((few_lm_predictions - rel_test_set$Price_Gross)^2))
+new_mae <- mean(abs(few_lm_predictions - rel_test_set$Price_Gross))
+
+simp_rmse <- sqrt(mean((simple_lm_predictions - simp_test_set$Price_Gross)^2))
+simp_mae <- mean(abs(simple_lm_predictions - simp_test_set$Price_Gross))
+
+```
+
+## Purpose and Target
+
+We decided to employ a linear regression model in order to predict prices for different rental properties, specifically apartments. We created three different models, each taking into account different features to help us gain better insight.
+
+### Linear Model 1
+
+The first model (*all_lm_model*) takes all available property features into account to train and make predictions. From this we were able to see that some of those we included were not relevant to the target variable, as seen below:
+
+<details>
+
+<summary>*Click to see the summary of the first linear model*</summary>
+
+```{r First Linear model, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+summary(all_lm_model)
+```
+
+</details>
+
+*As we can see in the model summary, some variables are converted into factors and interpreted separately, we can also see 'Nr_rooms' is relevant in general, but Package_Product and Category, for example, are not.*
+
+With this information we were able to refine our selection of variables for training the following models, one with only a few variables, and one with only one.
+
+### Linear Model 2
+
+The next model ( *few_lm_model* ) we trained with fewer dependent variables, only those of high importance. For this one, we took into account only the ones that were calculated to be significant to the model's performance.
+
+<details>
+
+<summary>*Click to see the summary of the second linear model*</summary>
+
+```{r Few Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+summary(few_lm_model)
+```
+
+</details>
+
+*Here we can see that the variables taken into account were Canton, Days_Difference, Category, Customer_Segment, Nr_rooms and Size_m2.*
+
+### Linear Model 3
+
+The last model generated took into account only *two* variable as a predictor: *Nr_rooms* and *Category_num2*. The number of rooms seems to have one of, if not the biggest effect on rental price of a property, which is why we went with this variable for analysis. The second customer category also has a significant effect, so it was included.
+
+<details>
+
+<summary>*Click to see the summary of the third linear model*</summary>
+
+```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+summary(simple_lm_model)$coef
+```
+
+</details>
+
+## Interpretation
+
+All three models offer us some insight into the behavior of rental prices for different properties. Interestingly, our research thus far shows that the Canton of said property is not that influential in its rental price, except for Canton 3.
+
+*(Canton 1: Argau, Canton 2: Luzern, Canton 3: Zürich, Canton 4: Zug)*
+
+For desired results, we will focus on the second model, which includes all the variables considered significant for the best results.
+
+```{r Few Model Plot, echo=FALSE}
+lm_plot1 <- data.frame(rel_data$Nr_rooms, rel_data$Price_Gross)
+lm_plot2 <- data.frame(rel_data$Category_num, rel_data$Price_Gross)
+plot(rel_data$Category_num, rel_data$Price_Gross, xlab="Category", ylab="Price_Gross", main="Price of a Rental Property as a Result of the Customer Category")
+
+```
+
+In this diagram we can observe that, though there are fewer instances of Category 2 (House) compared to Category 1 (Apartment), Category 2 properties tend to have higher rental prices. This does not, however, indicate that they may be the more lucrative option, as houses tend to incur other costs that are either not present, or the cost is split in the community, in the case of apartments.
+
+```{r First Model Plot, echo=FALSE}
+
+plot(lm_plot1, xlab="Nr_Rooms", ylab="Price_Gross", main="Price of a Rental Property as a result of the Number of Rooms")
+
+```
+
+In the illustration above, we depict the relationship between the number of rooms in a property and the gross price of the same. We can observe an upward trend, which leads to believe that a higher number of rooms leads to a higher price, which would make sense. This information must also be taken into consideration together with other variables, like the property's area in meters squared, average size of rooms, location, etc.
+
+## Conclusion
+
+Our linear models suggest that properties, specifically houses, with more rooms go for a higher price. This doesn't necessarily indicate that they may be the best choice for renting out to customers, but it does suggest that they are the properties which generate the highest gross payment on a regular basis.
+
+<br>
+
+# GLM - Generalised Linear - Poisson
+
+```{r GLM - Generalised Linear - Binomial, echo=FALSE, warning=FALSE}
+
+
+```
+
+## Purpose and Target
+
+
+
+## Interpretation
+
+
+
+## Conclusion
+
+
+
+<br>
+
+#  GLM - Generalised Linear - Binomial
+
+```{r Generalised Linear Model with family set to Binomial, echo=FALSE, warning=FALSE}
+
+
+```
+
+## Purpose and Target
+
+
+
+## Interpretation
+
+
+
+## Conclusion
+
+
+
+<br>
+
+# GAM - Generalised Additive Model
+
+```{r GAM code 0, echo=FALSE, warning=FALSE}
+d.properties <- read_excel("data/data_cleaned/data_total_model.xlsx")
+
+```
+
+## Purpose and Target
+
+### Purpose
+
+The purpose is to analyze and model the relationship between property size (in square meters) and price using various statistical techniques. The goal is to determine the best-fitting model that accurately predicts property prices based on the available data. By fitting and comparing different models Generalized Additive Models (GAMs), we aim to identify the most reliable and insightful model. Additionally, the report provides recommendations for further improving the model and making more accurate predictions.
+
+- **Data Analysis:** Understand the dataset and the key variables involved.
+
+- **Model Fitting:** Apply different statistical models to the data.
+
+- **Model Comparison:** Evaluate and compare the performance of the models.
+
+- **Recommendations:** Provide suggestions for future improvements and next steps.
+
+## Interpretation
+
+### Quadratic Model Plot
+
+The graph shows the relationship between Size_m2 and Price_Gross using a quadratic model. The black line represents the fitted values from the quadratic model, and the shaded area represents the confidence interval around the fitted values.
+
+**Key Observations**
+
+- **Non-linear Relationship** between Size_m2 and Price_Gross. Initially, Price_Gross increases with Size_m2 up to about 300-400 m², after which it starts to decrease.
+
+- **The Confidence Intervals** widen significantly beyond 300 m², indicating increased uncertainty in the predictions for larger properties. This suggests that the model is less reliable for larger properties due to fewer data points in this range.
+
+- **Data Distribution.** Most of the data points are clustered below 300 m², with few data points for larger properties. The fit of the model is more certain where there are more data points, and less certain where data points are sparse.
+
+```{r GAM code 1 , echo=FALSE, warning=FALSE}
+gg.density.site <- ggplot(data = d.properties, mapping = aes(y = Price_Gross, x = Size_m2)) + 
+  geom_point(alpha = 0.6, size = 0.8, color = "#9C8AE6") +
+  labs(title = "Effect of Size on Gross Price", x = "Size (m²)", y = "Gross Price (CHF)") +  
+  theme_minimal() +  
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8)) +
+  geom_smooth(color = "black")  
+
+print(gg.density.site)
+
+```
+
+**Next Steps for the GAM**
+
+Given the observations from the quadratic model, we can take the following steps to improve our model using GAM:
+    
+- **Filter the data.** Consider filtering the data to include only properties with Size_m2 less than 300 m². This can help improve the reliability of the model in the range where we have more data.
+
+- **Transform variables.** Transform Size_m2 to log(Size_m2) if a log transformation better captures the relationship and stabilises the variance.
+
+- **Include interactions** with other significant variables such as Nr_rooms to capture more complex relationships.
+
+- **Use smoothing splines in GAM**, which can capture non-linear relationships more flexibly than a quadratic model.
+
+Once these parameters are clear, we will implement them in our GAM models and see which ones perform best.
+
+###  Basic GAM
+Starting with fitting a basic GAM to capture more complex non-linear relationships:
+
+<details>
+
+<summary>Click to see the summary</summary>
+
+```{r GAM code 4, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+gam.properties <- gam(Price_Gross ~ s(Size_m2), data = d.properties)
+summary(gam.properties)
+```
+</details>
+
+R-squared (adj.): 0.389, indicating that 38.9% of the variability is explained.
+Deviance explained: 39.5%.
+
+###  GAM with Multiple Predictors
+To account for additional factors, a GAM including multiple predictors was fitted:
+
+<details>
+
+<summary>Click to see the summary</summary>
+
+```{r GAM code 5, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+gam.properties.full <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density, data = d.properties)
+summary(gam.properties.full)
+```
+
+</details>
+
+Adjusted R-squared: 0.413, indicating 41.3% of variability is explained.
+Significant predictors: Days_Difference, Nr_rooms, GDP_per, Population.
+
+###  Filtered GAM
+To focus on properties with Size_m2 less than 300, a filtered GAM was fitted:
+
+<details>
+
+<summary>Click to see the summary</summary>
+
+```{r GAM code 6, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+d.properties.filtered <- d.properties %>% filter(Size_m2 < 300)
+gam.properties.filtered <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density, data = d.properties.filtered)
+summary(gam.properties.filtered)
+```
+
+</details>
+
+Adjusted R-squared: 0.431, explaining 43.1% of variability.
+
+###  Log-Transformed GAM
+
+A log transformation of Size_m2 was applied to improve model fit:
+
+<details>
+
+<summary>Click to see the summary</summary>
+
+```{r GAM code 7, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+d.properties <- d.properties %>% mutate(log_Size_m2 = log(Size_m2))
+gam.properties.log <- gam(Price_Gross ~ s(log_Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density, data = d.properties)
+summary(gam.properties.log)
+```
+
+</details>
+
+Adjusted R-squared: 0.388, explaining 38.8% of variability.
+
+### GAM with Interactions
+To explore interactions, a GAM including interaction terms was fitted:
+
+<details>
+
+<summary>Click to see the summary</summary>
+
+```{r GAM code 8, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+gam.properties.interaction <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by=Nr_rooms), data = d.properties)
+summary(gam.properties.interaction)
+```
+
+</details>
+
+Adjusted R-squared: 0.449, explaining 44.9% of variability.
+Significant interaction: s(Size_m2):Nr_rooms.
+
+
+## Conclusion
+
+Based on the adjusted R-squared and deviance explained, the best-fitting model is the GAM with interaction terms. This model explains 44.9% of the variability in Price_Gross and includes significant interactions between **Size_m2** and **Nr_rooms**.
+
+### Next Steps
+
+**1. Higher-Order Polynomial Terms:** Explore cubic or higher-order terms.
+
+**2. Advanced GAMs:** Consider fitting more complex GAMs with different smoothing parameters.
+
+**3. Additional Predictors:** Include more relevant predictors to improve model accuracy.
+
+**4. Cross-Validation:** Perform cross-validation to validate model robustness.
+
+These steps will help in further refining the model and ensuring more accurate predictions for property prices.
+
+
+<br>
+
+
+# Neural Network
+
+```{r NeuralNet - Base, echo=FALSE}
+# Required Packages
+library(readxl)
+library(neuralnet)
+
+# Reading in data
+enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
+enc_data <- enc_data[, !(names(enc_data) %in% "X"), drop = TRUE]
+
+# Feature Engineering
+enc_data$Price_per_m2 <- enc_data$Price_Gross / enc_data$Size_m2
+q3 <- median(enc_data$Price_per_m2) + IQR(enc_data$Price_per_m2) / 2
+enc_data$High_Ticket <- enc_data$Price_per_m2 > q3
+enc_data$High_Ticket <- ifelse(enc_data$High_Ticket, 1, 0)
+
+# Declaring Categorical Variables
+enc_data$Canton_num <- as.numeric(as.factor(enc_data$Canton_num))
+enc_data$Customer_Segment_num <- as.numeric(as.factor(enc_data$Customer_Segment_num))
+enc_data$Category_num <- as.numeric(as.factor(enc_data$Category_num))
+enc_data$Nr_rooms <- as.numeric(enc_data$Nr_rooms) # Treating Nr_rooms as continuous
+enc_data$Package_Product_num <- as.numeric(as.factor(enc_data$Package_Product_num))
+
+# Normalizing the data
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+features <- subset(enc_data, select = -High_Ticket)
+maxmindf_features <- as.data.frame(lapply(features, normalize))
+
+High_Ticket <- enc_data$High_Ticket
+maxmindf <- cbind(High_Ticket, maxmindf_features)
+
+# Split into train and test sets
+set.seed(36)
+smpl <- sample.int(n = nrow(maxmindf), size = floor(0.8 * nrow(maxmindf)), replace = FALSE)
+train_maxmin <- maxmindf[smpl, ]
+test_maxmin <- maxmindf[-smpl, ]
+
+# Modeling
+model_maxmin <- neuralnet(High_Ticket ~ ., data = train_maxmin, hidden = c(3, 8, 5), linear.output = FALSE)
+
+# Predicting
+pred_maxmin <- predict(model_maxmin, test_maxmin)
+
+# Testing the Accuracy of the models
+maxmin_results <- data.frame(actual = test_maxmin$High_Ticket, prediction = pred_maxmin)
+
+```
+
+## Purpose and Target
+
+When considering using a Neural Network, we decided to identify potential high value properties within the dataset. To do this, we engineered a new, binary column, identifying whether a property was considered "High-Ticket" or not. In order to categorize properties this way, we calculated the price per meter squared of each property, and those in the top quartile had their High_Ticket column value set to 1, others to 0.
+
+With this transformation, we had created a binary classification problem: is this property a high-ticket property? Answering this question will allow us to filter out most properties which may not be as lucrative for Zug Estates, and offer only the cream of the crop as possible targets for acquisition.
+
+## Findings
+
+After classifying the properties into either category, we were able to analyze the model's performance on the dataset. If successful, this Neural Network will be a great tool in the future to predict a possible acquisition's performance over time. Properties may be acquired at lower prices, and may not be very attractive at the time of purchase, but with some remodeling and updating the living space, its perceived value may be brought to a new high. This is what we try to predict with this model: the potential of a specific property and to discern if it could be a lucrative investment for Zug Estates.
+
+```{r NN Findings, echo=FALSE}
+# Confusion matrix
+roundedresults <- sapply(maxmin_results, round, digits = 0)
+roundedresultsdf <- data.frame(roundedresults)
+nn_conf <- confusionMatrix(as.factor(roundedresultsdf$prediction),
+                           as.factor(roundedresultsdf$actual),
+                           dnn=c("Prediction", "Reference"))
+nn_conf$table
+```
+
+*Confusion Matrix of the Neural Network's performance.*
+
+As seen in the previous matrix, the model's performance on categorizing properties into possible high-ticket or not is quite good. This tool will help in the future, when looking at new properties, to have an idea of more or less how beneficial a specific property could be to Zug Estates' portfolio.
+
+```{r Predictions Chart, echo=FALSE}
+# Convert to a data frame for ggplot2
+rounded_predictions <- round(pred_maxmin)
+data <- data.frame(predictions = factor(rounded_predictions, levels = c(0, 1), labels = c("Non-High Ticket", "High-Ticket")))
+
+
+# Create the histogram
+ggplot(data, aes(x = predictions, fill = predictions)) +
+  geom_bar(color = "black", width = 0.5) +
+  scale_x_discrete(name = "Predicted Class") +
+  ylab("Frequency") +
+  ggtitle("Rounded Predictions") +
+  scale_fill_manual(values = c("Non-High Ticket" = "skyblue", "High-Ticket" = "#b4f8c8"))
+
+```
+
+*Predictions have been rounded because some values fell into decimal places, due to the nature of the Neural Networks' activation function (sigmoid curve)*
+
+As we can see, not many values actually fall into the category of High-Ticket properties, so having a tool like this network will be beneficial in catching such opportunities early on and maximizing added value and profits for the real estate company.
+
+<br>
+
+# Support Vector Machine
+
+Though the Neural Network presented great results, we wanted to make sure to validate that it was the optimal choice for classification in our problem. Support Vector Machines (SVMs henceforth) also excel at binary classification problems, so we wanted to create one and train it on the same data in order to visualize and compare performance, to ensure we use the better performing model for recommending properties to acquire.
+
+```{r SVM Intro, echo=FALSE, results='hide'}
+
+# Reading in data
+ohe_data <- read_excel("data/data_cleaned/data_total_model_one_hot_encoded.xlsx")
+
+#Feature Engineering
+ohe_data$Price_per_m2 <- ohe_data$Price_Gross / ohe_data$Size_m2
+q3 <- median(ohe_data$Price_per_m2) + IQR(ohe_data$Price_per_m2) / 2
+ohe_data$High_Ticket <- ohe_data$Price_per_m2 > q3
+ohe_data$High_Ticket <- ifelse(ohe_data$High_Ticket, 1, 0)
+
+# Price_per_m2 causes collinearity issues
+# Nr_rooms.8 has only one positive value, so we remove the row
+# Nr_rooms.10 is constant, so we remove it as well
+ohe_data <- ohe_data[, !names(ohe_data) %in% c("Price_per_m2","Nr_rooms.8",
+                                               "Nr_rooms.10")]
+
+# Convert target to factor since this is a classification problem (binary)
+ohe_data$High_Ticket <- as.factor(ohe_data$High_Ticket)
+
+# Random seed for reproducibility
+set.seed(123) # same seed as NN for reproduction/comparison
+
+# Split the data into training and test sets
+train_index <- sample(seq_len(nrow(ohe_data)), size = floor(0.8 * nrow(ohe_data)))
+train_data <- ohe_data[train_index, ]
+test_data <- ohe_data[-train_index, ]
+
+# Set up train control for cross-validation
+train_control <- trainControl(
+  method = "cv",         # Cross-validation
+  number = 10,           # Number of folds
+  savePredictions = "final",
+  classProbs = TRUE,     # If you want class probabilities
+  summaryFunction = twoClassSummary
+)
+
+
+# Train the SVM model
+svm_model <- svm(High_Ticket ~ ., data = train_data,trControl=train_contor,
+                 kernel = "radial",
+                 cost = 10, scale = TRUE)
+
+# Exclude the target variable from the test set
+test_data_without_target <- test_data[, !names(test_data) %in% 'High_Ticket']
+
+
+# Make predictions
+svm_predictions <- predict(svm_model, newdata = test_data_without_target)
+
+```
+
+```{r Re-NN Performance, echo=FALSE}
+nn_conf$table
+```
+
+*Neural Network Performance*
+
+```{r SVM Confusion Matrix, echo=FALSE}
+
+# Calculate confusion matrix
+svm_confusion <- confusionMatrix(as.factor(svm_predictions), as.factor(test_data$High_Ticket))
+
+svm_confusion$table
+
+```
+
+*SVM Performance*
+
+As we can see, comparing the two confusion matrices, the Neural Network has slightly better accuracy than the SVM. Though at first glance it may seem like the better option, there are several advantages and disadvantages between the two models.
+
+An SVM is particularly effective when working with higher-dimensional data, and has better memory efficiency. It is also more robust to over-fitting, but are less efficient with larger datasets because of the training complexity.
+
+Neural networks on the other hand, are more flexible and powerful when it comes to approximating trends. They can also learn and extract features that are not present in the data, finding new relationships that may not be obvious, but can be very computationally intensive.
+
+In summary, both are good options for our purpose. In the future, if considering to use either one, the size, shape and complexity of the available dataset will play a pivotal role in the selection of the best model to use for finding possible "golden goose" properties.
+
+# Outlook for Rental Price Prediction
+We present our top recommendations for future enhancements in both this project and the broader domain of predicting rental prices in the real estate market.
+
+## Data Quality and Quantity
+Future endeavors could benefit from exploring ensemble methods, which amalgamate the strengths of various models to improve overall efficacy in predicting rental prices. Augmenting the dataset may enhance the performance of specific models, particularly neural networks tailored for rental price prediction. Moreover, incorporating additional predictive variables related to rental properties could facilitate the training of more sophisticated models.
+
+## Validation of Models
+Due to time constraints and project scope, extensive validation and testing for all models were not possible. Employing techniques such as cross-validation and regularization during the training phase would be imperative to elevate the overall quality and performance of developed models. Furthermore, exploring interactions between variables specific to rental prices can provide deeper insights into model performance.
+
+## Balancing Model Complexity and Performance
+This project underscores the delicate balance between model complexity and performance in predicting rental prices. While sophisticated models, such as Generalized Additive Models (GAM) and Support Vector Machines (SVM), excel at identifying complex patterns, they may not always yield the most accurate predictions, especially concerning specificity in rental price prediction. Hence, it's crucial to align model complexity with the intended application to achieve optimal results in rental price prediction.
+
+## Data Privacy and Ethics
+Considering the sensitive nature of personal data related to rental properties, it's paramount for companies to exercise caution and ethical consideration when utilizing property-related data for rental price prediction. Thoughtful selection of predictors can mitigate bias and ensure fair treatment of all properties, particularly those from underrepresented regions.
+
+# Personal Reflections
+This project has provided invaluable learning experiences, allowing us to delve into the realm of predicting rental prices in the real estate market and hone our skills. While challenges were encountered, particularly with complex models like neural networks for rental price prediction, we appreciate the opportunity to experiment and grow. Moving forward, we recognize the importance of establishing common measures for model comparison and the ethical implications of data usage in rental price prediction. Ultimately, we're proud of our report and grateful for the knowledge gained throughout this journey.
+
+# Implementation of Generative AI
+
+The implementation of generative AI, particularly through platforms like OpenAI's GPT-3, has significantly enhanced our project by providing invaluable assistance across various facets. Its advanced natural language processing capabilities have proven invaluable in a wide range of tasks, from data exploration to model development and report writing.
+
+Generative AI has assisted us in navigating complex technical challenges and refining our methodologies more efficiently by offering insights, suggestions, and alternative approaches. Furthermore, it has contributed to enhancing our creativity and generating innovative ideas, thereby enriching our analysis and enabling us to uncover hidden insights within our data.
+
+In summary, Generative AI has served as an invaluable assistant, prompting new insights, facilitating problem-solving, and ultimately contributing to the success and advancement of our project.
+
+# References
