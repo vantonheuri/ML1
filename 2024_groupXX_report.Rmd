@@ -527,6 +527,237 @@ Our linear models suggest that properties, specifically houses, with more rooms 
 
 <br>
 
+# Generalised Linear Model with family set to Poisson
+
+```{r Generalised Linear Model with family set to Poisson, echo=FALSE, warning=FALSE}
+
+
+```
+
+## Purpose and Target
+
+
+
+## Interpretation
+
+
+
+## Conclusion
+
+
+
+<br>
+
+#  Generalised Linear Model with family set to Binomial
+
+```{r Generalised Linear Model with family set to Binomial, echo=FALSE, warning=FALSE}
+
+
+```
+
+## Purpose and Target
+
+
+
+## Interpretation
+
+
+
+## Conclusion
+
+
+
+<br>
+
+# Generalised Additive Model
+
+```{r Generalised Additive Model, echo=FALSE, warning=FALSE}
+
+
+```
+
+## Purpose and Target
+
+```{r 1, echo=FALSE, warning=FALSE}
+# Linear Model
+# Install libraries
+
+library(readr)
+library(readxl)
+library(ggplot2)
+library(mgcv)
+library(dplyr)
+library(caret)
+
+--------------------------------------------------------------------------------
+
+# Load necessary libraries
+
+# Reading in data
+d.properties <- read_excel("data/data_cleaned/data_total_model.xlsx")
+str(d.properties)
+head(d.properties)
+
+--------------------------------------------------------------------------------
+# Plotting data
+gg.density.site <- ggplot(data = d.properties, mapping = aes(y = Price_Gross, x = Size_m2)) + 
+  geom_point()
+
+gg.density.site + geom_smooth()
+
+```
+
+## Interpretation
+
+**Linear Model**
+A basic linear model was fitted with Size_m2 as the predictor for Price_Gross:
+
+<details>
+
+<summary>Click to see the summary of the third linear model</summary>
+
+```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+lm.properties.1 <- lm(Price_Gross ~ Size_m2, data = d.properties)
+summary(lm.properties.1)
+```
+</details>
+
+p-value: < 2e-16, indicating high significance.
+Multiple R-squared: 0.08348, suggesting that only 8.35% of the variability in Price_Gross can be explained by Size_m2.
+
+**Quadratic Model**
+
+To capture potential non-linear relationships, a quadratic model was fitted:
+
+<details>
+
+<summary>Click to see the summary of the third linear model</summary>
+
+```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+lm.properties.2 <- lm(Price_Gross ~ poly(Size_m2, 2), data = d.properties)
+summary(lm.properties.2)
+anova(lm.properties.1, lm.properties.2)
+```
+</details>
+
+p-value: < 2.2e-16, indicating high significance.
+Multiple R-squared: 0.1973, showing an improvement over the linear model.
+ANOVA: Significant reduction in RSS by 134,208,867, confirming the quadratic model provides a better fit.
+
+**Generalized Additive Models (GAM)**
+
+- **Basic GAM**
+A basic GAM was fitted to capture more complex non-linear relationships:
+
+<details>
+
+<summary>Click to see the summary of the third linear model</summary>
+
+```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+gam.properties <- gam(Price_Gross ~ s(Size_m2), data = d.properties)
+summary(gam.properties)
+```
+</details>
+
+R-squared (adj.): 0.389, indicating that 38.9% of the variability is explained.
+Deviance explained: 39.5%.
+
+- **GAM with Multiple Predictors**
+To account for additional factors, a GAM including multiple predictors was fitted:
+
+<details>
+
+<summary>Click to see the summary of the third linear model</summary>
+
+```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+gam.properties.full <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density, data = d.properties)
+summary(gam.properties.full)
+```
+
+</details>
+
+Adjusted R-squared: 0.413, indicating 41.3% of variability is explained.
+Significant predictors: Days_Difference, Nr_rooms, GDP_per, Population.
+
+- **Filtered GAM**
+To focus on properties with Size_m2 less than 300, a filtered GAM was fitted:
+
+<details>
+
+<summary>Click to see the summary of the third linear model</summary>
+
+```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+d.properties.filtered <- d.properties %>% filter(Size_m2 < 300)
+gam.properties.filtered <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density, data = d.properties.filtered)
+summary(gam.properties.filtered)
+```
+
+</details>
+
+Adjusted R-squared: 0.431, explaining 43.1% of variability.
+
+- **Log-Transformed GAM**
+
+A log transformation of Size_m2 was applied to improve model fit:
+
+<details>
+
+<summary>Click to see the summary of the third linear model</summary>
+
+```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+d.properties <- d.properties %>% mutate(log_Size_m2 = log(Size_m2))
+gam.properties.log <- gam(Price_Gross ~ s(log_Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density, data = d.properties)
+summary(gam.properties.log)
+```
+
+</details>
+
+Adjusted R-squared: 0.388, explaining 38.8% of variability.
+
+- **GAM with Interactions**
+To explore interactions, a GAM including interaction terms was fitted:
+
+<details>
+
+<summary>Click to see the summary of the third linear model</summary>
+
+```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+
+gam.properties.interaction <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by=Nr_rooms), data = d.properties)
+summary(gam.properties.interaction)
+```
+
+</details>
+
+Adjusted R-squared: 0.449, explaining 44.9% of variability.
+Significant interaction: s(Size_m2):Nr_rooms.
+
+## Conclusion
+
+Based on the adjusted R-squared and deviance explained, the best-fitting model is the GAM with interaction terms. This model explains 44.9% of the variability in Price_Gross and includes significant interactions between **Size_m2** and **Nr_rooms**.
+
+- **Next Steps**
+
+**1. Higher-Order Polynomial Terms:** Explore cubic or higher-order terms.
+
+**2. Advanced GAMs:** Consider fitting more complex GAMs with different smoothing parameters.
+
+**3. Additional Predictors:** Include more relevant predictors to improve model accuracy.
+
+**4. Cross-Validation:** Perform cross-validation to validate model robustness.
+
+These steps will help in further refining the model and ensuring more accurate predictions for property prices.
+
+
+<br>
+
+
 # Neural Network
 
 ```{r NeuralNet - Base, echo=FALSE}
