@@ -98,6 +98,9 @@ library(neuralnet)
 library(caret)
 library(e1071)
 library(gridExtra)
+library(pROC)
+library(reshape2)
+library(tidyr)
 ```
 
 </details>
@@ -558,19 +561,13 @@ It is also made clear in our findings, that although the number of rooms is a go
 
 ## Purpose and Target
 
-
-
 ## Interpretation
-
-
 
 ## Conclusion
 
-
-
 <br>
 
-#  Generalised Linear Model with family set to Binomial
+# Generalised Linear Model with family set to Binomial
 
 ```{r Generalised Linear Model with family set to Binomial, echo=FALSE, warning=FALSE}
 
@@ -579,15 +576,9 @@ It is also made clear in our findings, that although the number of rooms is a go
 
 ## Purpose and Target
 
-
-
 ## Interpretation
 
-
-
 ## Conclusion
-
-
 
 <br>
 
@@ -631,8 +622,7 @@ gg.density.site + geom_smooth()
 
 ## Interpretation
 
-**Linear Model**
-A basic linear model was fitted with Size_m2 as the predictor for Price_Gross:
+**Linear Model** A basic linear model was fitted with Size_m2 as the predictor for Price_Gross:
 
 <details>
 
@@ -643,10 +633,10 @@ A basic linear model was fitted with Size_m2 as the predictor for Price_Gross:
 lm.properties.1 <- lm(Price_Gross ~ Size_m2, data = d.properties)
 summary(lm.properties.1)
 ```
+
 </details>
 
-p-value: < 2e-16, indicating high significance.
-Multiple R-squared: 0.08348, suggesting that only 8.35% of the variability in Price_Gross can be explained by Size_m2.
+p-value: \< 2e-16, indicating high significance. Multiple R-squared: 0.08348, suggesting that only 8.35% of the variability in Price_Gross can be explained by Size_m2.
 
 **Quadratic Model**
 
@@ -662,16 +652,14 @@ lm.properties.2 <- lm(Price_Gross ~ poly(Size_m2, 2), data = d.properties)
 summary(lm.properties.2)
 anova(lm.properties.1, lm.properties.2)
 ```
+
 </details>
 
-p-value: < 2.2e-16, indicating high significance.
-Multiple R-squared: 0.1973, showing an improvement over the linear model.
-ANOVA: Significant reduction in RSS by 134,208,867, confirming the quadratic model provides a better fit.
+p-value: \< 2.2e-16, indicating high significance. Multiple R-squared: 0.1973, showing an improvement over the linear model. ANOVA: Significant reduction in RSS by 134,208,867, confirming the quadratic model provides a better fit.
 
 **Generalized Additive Models (GAM)**
 
-- **Basic GAM**
-A basic GAM was fitted to capture more complex non-linear relationships:
+-   **Basic GAM** A basic GAM was fitted to capture more complex non-linear relationships:
 
 <details>
 
@@ -682,13 +670,12 @@ A basic GAM was fitted to capture more complex non-linear relationships:
 gam.properties <- gam(Price_Gross ~ s(Size_m2), data = d.properties)
 summary(gam.properties)
 ```
+
 </details>
 
-R-squared (adj.): 0.389, indicating that 38.9% of the variability is explained.
-Deviance explained: 39.5%.
+R-squared (adj.): 0.389, indicating that 38.9% of the variability is explained. Deviance explained: 39.5%.
 
-- **GAM with Multiple Predictors**
-To account for additional factors, a GAM including multiple predictors was fitted:
+-   **GAM with Multiple Predictors** To account for additional factors, a GAM including multiple predictors was fitted:
 
 <details>
 
@@ -702,11 +689,9 @@ summary(gam.properties.full)
 
 </details>
 
-Adjusted R-squared: 0.413, indicating 41.3% of variability is explained.
-Significant predictors: Days_Difference, Nr_rooms, GDP_per, Population.
+Adjusted R-squared: 0.413, indicating 41.3% of variability is explained. Significant predictors: Days_Difference, Nr_rooms, GDP_per, Population.
 
-- **Filtered GAM**
-To focus on properties with Size_m2 less than 300, a filtered GAM was fitted:
+-   **Filtered GAM** To focus on properties with Size_m2 less than 300, a filtered GAM was fitted:
 
 <details>
 
@@ -723,7 +708,7 @@ summary(gam.properties.filtered)
 
 Adjusted R-squared: 0.431, explaining 43.1% of variability.
 
-- **Log-Transformed GAM**
+-   **Log-Transformed GAM**
 
 A log transformation of Size_m2 was applied to improve model fit:
 
@@ -742,8 +727,7 @@ summary(gam.properties.log)
 
 Adjusted R-squared: 0.388, explaining 38.8% of variability.
 
-- **GAM with Interactions**
-To explore interactions, a GAM including interaction terms was fitted:
+-   **GAM with Interactions** To explore interactions, a GAM including interaction terms was fitted:
 
 <details>
 
@@ -757,14 +741,13 @@ summary(gam.properties.interaction)
 
 </details>
 
-Adjusted R-squared: 0.449, explaining 44.9% of variability.
-Significant interaction: s(Size_m2):Nr_rooms.
+Adjusted R-squared: 0.449, explaining 44.9% of variability. Significant interaction: s(Size_m2):Nr_rooms.
 
 ## Conclusion
 
 Based on the adjusted R-squared and deviance explained, the best-fitting model is the GAM with interaction terms. This model explains 44.9% of the variability in Price_Gross and includes significant interactions between **Size_m2** and **Nr_rooms**.
 
-- **Next Steps**
+-   **Next Steps**
 
 **1. Higher-Order Polynomial Terms:** Explore cubic or higher-order terms.
 
@@ -776,9 +759,7 @@ Based on the adjusted R-squared and deviance explained, the best-fitting model i
 
 These steps will help in further refining the model and ensuring more accurate predictions for property prices.
 
-
 <br>
-
 
 # Neural Network
 
@@ -944,7 +925,8 @@ train_control <- trainControl(
 # Train the SVM model
 svm_model <- svm(High_Ticket ~ ., data = train_data,trControl=train_contor,
                  kernel = "radial",
-                 cost = 10, scale = TRUE)
+                 cost = 10, scale = TRUE,
+                 probability=TRUE)
 
 # Exclude the target variable from the test set
 test_data_without_target <- test_data[, !names(test_data) %in% 'High_Ticket']
@@ -952,6 +934,7 @@ test_data_without_target <- test_data[, !names(test_data) %in% 'High_Ticket']
 
 # Make predictions
 svm_predictions <- predict(svm_model, newdata = test_data_without_target)
+
 
 ```
 
@@ -975,6 +958,15 @@ svm_confusion$table
 *SVM Performance*
 
 As we can see, comparing the two confusion matrices, the Neural Network has slightly better accuracy than the SVM. Though at first glance it may seem like the better option, there are several advantages and disadvantages between the two models.
+
+```{r SVM ROC Curve, echo=FALSE}
+svm_probabilities <- attr(predict(svm_model, newdata = test_data_without_target, probability = TRUE), "probabilities")[,2]
+
+roc_curve <- roc(test_data$High_Ticket, svm_probabilities)
+
+plot(roc_curve, col="#9C8AE6", main="ROC Curve for SVM Model")
+abline(a=0, b=1, lty=2, col="skyblue")
+```
 
 An SVM is particularly effective when working with higher-dimensional data, and has better memory efficiency. It is also more robust to over-fitting, but are less efficient with larger datasets because of the training complexity.
 
