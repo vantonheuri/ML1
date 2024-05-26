@@ -171,14 +171,19 @@ Real Estate Pricing</p></h1>
 <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis"><span class="toc-section-number">3</span> Exploratory Data Analysis</a></li>
 <li><a href="#data-modeling" id="toc-data-modeling"><span class="toc-section-number">4</span> Data Modeling</a></li>
 <li><a href="#linear-model" id="toc-linear-model"><span class="toc-section-number">5</span> Linear Model</a></li>
-<li><a href="#neural-network" id="toc-neural-network"><span class="toc-section-number">6</span> Neural Network</a></li>
-<li><a href="#support-vector-machine" id="toc-support-vector-machine"><span class="toc-section-number">7</span> Support Vector Machine</a></li>
-<li><a href="#outlook-for-rental-price-prediction" id="toc-outlook-for-rental-price-prediction"><span class="toc-section-number">8</span> Outlook for Rental Price
+<li><a href="#generalised-linear-model-with-family-set-to-poisson" id="toc-generalised-linear-model-with-family-set-to-poisson"><span class="toc-section-number">6</span> Generalised Linear Model with family
+set to Poisson</a></li>
+<li><a href="#generalised-linear-model-with-family-set-to-binomial" id="toc-generalised-linear-model-with-family-set-to-binomial"><span class="toc-section-number">7</span> Generalised Linear Model with family
+set to Binomial</a></li>
+<li><a href="#generalised-additive-model" id="toc-generalised-additive-model"><span class="toc-section-number">8</span> Generalised Additive Model</a></li>
+<li><a href="#neural-network" id="toc-neural-network"><span class="toc-section-number">9</span> Neural Network</a></li>
+<li><a href="#support-vector-machine" id="toc-support-vector-machine"><span class="toc-section-number">10</span> Support Vector Machine</a></li>
+<li><a href="#outlook-for-rental-price-prediction" id="toc-outlook-for-rental-price-prediction"><span class="toc-section-number">11</span> Outlook for Rental Price
 Prediction</a></li>
-<li><a href="#personal-reflections" id="toc-personal-reflections"><span class="toc-section-number">9</span> Personal Reflections</a></li>
-<li><a href="#personal-reflections-1" id="toc-personal-reflections-1"><span class="toc-section-number">10</span> Personal Reflections</a></li>
-<li><a href="#help-of-gen-ai" id="toc-help-of-gen-ai"><span class="toc-section-number">11</span> Help of Gen AI</a></li>
-<li><a href="#references" id="toc-references"><span class="toc-section-number">12</span> References</a></li>
+<li><a href="#personal-reflections" id="toc-personal-reflections"><span class="toc-section-number">12</span> Personal Reflections</a></li>
+<li><a href="#implementation-of-generative-ai" id="toc-implementation-of-generative-ai"><span class="toc-section-number">13</span> Implementation of Generative
+AI</a></li>
+<li><a href="#references" id="toc-references"><span class="toc-section-number">14</span> References</a></li>
 </ul>
 </div>
 
@@ -279,7 +284,8 @@ prepared.</p>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">library</span>(neuralnet)</span>
 <span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
 <span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span></code></pre></div>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span></code></pre></div>
 </details>
 <p><br></p>
 </div>
@@ -605,10 +611,335 @@ payment on a regular basis.</p>
 <p><br></p>
 </div>
 </div>
-<div id="neural-network" class="section level1" number="6">
-<h1><span class="header-section-number">6</span> Neural Network</h1>
+<div id="generalised-linear-model-with-family-set-to-poisson" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Generalised Linear
+Model with family set to Poisson</h1>
 <div id="purpose-and-target-1" class="section level2" number="6.1">
 <h2><span class="header-section-number">6.1</span> Purpose and
+Target</h2>
+</div>
+<div id="interpretation-1" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Interpretation</h2>
+</div>
+<div id="conclusion-1" class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> Conclusion</h2>
+<p><br></p>
+</div>
+</div>
+<div id="generalised-linear-model-with-family-set-to-binomial" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Generalised Linear
+Model with family set to Binomial</h1>
+<div id="purpose-and-target-2" class="section level2" number="7.1">
+<h2><span class="header-section-number">7.1</span> Purpose and
+Target</h2>
+</div>
+<div id="interpretation-2" class="section level2" number="7.2">
+<h2><span class="header-section-number">7.2</span> Interpretation</h2>
+</div>
+<div id="conclusion-2" class="section level2" number="7.3">
+<h2><span class="header-section-number">7.3</span> Conclusion</h2>
+<p><br></p>
+</div>
+</div>
+<div id="generalised-additive-model" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Generalised Additive
+Model</h1>
+<div id="purpose-and-target-3" class="section level2" number="8.1">
+<h2><span class="header-section-number">8.1</span> Purpose and
+Target</h2>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="interpretation-3" class="section level2" number="8.2">
+<h2><span class="header-section-number">8.2</span> Interpretation</h2>
+<p><strong>Linear Model</strong> A basic linear model was fitted with
+Size_m2 as the predictor for Price_Gross:</p>
+<details>
+<summary>
+Click to see the summary
+</summary>
+<pre><code>## 
+## Call:
+## lm(formula = Price_Gross ~ Size_m2, data = d.properties)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5797.4  -774.6  -122.0   373.5 11087.3 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 1243.4868    59.5487  20.882   &lt;2e-16 ***
+## Size_m2        5.0490     0.5391   9.365   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1059 on 963 degrees of freedom
+## Multiple R-squared:  0.08348,    Adjusted R-squared:  0.08253 
+## F-statistic: 87.71 on 1 and 963 DF,  p-value: &lt; 2.2e-16</code></pre>
+</details>
+<p>p-value: &lt; 2e-16, indicating high significance. Multiple
+R-squared: 0.08348, suggesting that only 8.35% of the variability in
+Price_Gross can be explained by Size_m2.</p>
+<p><strong>Quadratic Model</strong></p>
+<p>To capture potential non-linear relationships, a quadratic model was
+fitted:</p>
+<details>
+<summary>
+Click to see the summary
+</summary>
+<pre><code>## 
+## Call:
+## lm(formula = Price_Gross ~ poly(Size_m2, 2), data = d.properties)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1922.7  -671.8   -26.4   394.9  9532.7 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)         1700.68      31.93   53.26   &lt;2e-16 ***
+## poly(Size_m2, 2)1   9921.31     991.91   10.00   &lt;2e-16 ***
+## poly(Size_m2, 2)2 -11584.86     991.91  -11.68   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 991.9 on 962 degrees of freedom
+## Multiple R-squared:  0.1973, Adjusted R-squared:  0.1956 
+## F-statistic: 118.2 on 2 and 962 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: Price_Gross ~ Size_m2
+## Model 2: Price_Gross ~ poly(Size_m2, 2)
+##   Res.Df        RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1    963 1080715226                                  
+## 2    962  946506359  1 134208867 136.41 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</details>
+<p>p-value: &lt; 2.2e-16, indicating high significance. Multiple
+R-squared: 0.1973, showing an improvement over the linear model. ANOVA:
+Significant reduction in RSS by 134,208,867, confirming the quadratic
+model provides a better fit.</p>
+<p><strong>Generalized Additive Models (GAM)</strong></p>
+<ul>
+<li><strong>Basic GAM</strong> A basic GAM was fitted to capture more
+complex non-linear relationships:</li>
+</ul>
+<details>
+<summary>
+Click to see the summary
+</summary>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(Size_m2)
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1700.68      27.82   61.13   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##              edf Ref.df     F p-value    
+## s(Size_m2) 8.907  8.997 68.76  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.389   Deviance explained = 39.5%
+## GCV = 7.5459e+05  Scale est. = 7.4684e+05  n = 965</code></pre>
+</details>
+<p>R-squared (adj.): 0.389, indicating that 38.9% of the variability is
+explained. Deviance explained: 39.5%.</p>
+<ul>
+<li><strong>GAM with Multiple Predictors</strong> To account for
+additional factors, a GAM including multiple predictors was fitted:</li>
+</ul>
+<details>
+<summary>
+Click to see the summary
+</summary>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + 
+##     Population + Area_km2 + Density
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     -2.429e-03  1.726e-03  -1.407   0.1597    
+## Days_Difference  6.473e+00  8.729e-01   7.415 2.68e-13 ***
+## Nr_rooms         2.704e+02  5.213e+01   5.188 2.60e-07 ***
+## GDP_per          5.979e-03  3.404e-03   1.757   0.0793 .  
+## Population       9.380e-04  4.846e-04   1.936   0.0532 .  
+## Area_km2         1.054e-01  1.457e-01   0.723   0.4698    
+## Density         -1.579e+00  1.068e+00  -1.479   0.1395    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##              edf Ref.df    F p-value    
+## s(Size_m2) 5.146  5.981 32.5  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Rank: 13/16
+## R-sq.(adj) =  0.413   Deviance explained = 41.9%
+## GCV = 7.2697e+05  Scale est. = 7.1857e+05  n = 965</code></pre>
+</details>
+<p>Adjusted R-squared: 0.413, indicating 41.3% of variability is
+explained. Significant predictors: Days_Difference, Nr_rooms, GDP_per,
+Population.</p>
+<ul>
+<li><strong>Filtered GAM</strong> To focus on properties with Size_m2
+less than 300, a filtered GAM was fitted:</li>
+</ul>
+<details>
+<summary>
+Click to see the summary
+</summary>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + 
+##     Population + Area_km2 + Density
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     -2.343e-03  1.684e-03  -1.392   0.1643    
+## Days_Difference  6.003e+00  8.577e-01   6.999 4.88e-12 ***
+## Nr_rooms         2.495e+02  5.169e+01   4.827 1.62e-06 ***
+## GDP_per          6.803e-03  3.316e-03   2.051   0.0405 *  
+## Population       8.362e-04  4.731e-04   1.767   0.0775 .  
+## Area_km2         1.708e-01  1.433e-01   1.192   0.2336    
+## Density         -1.550e+00  1.041e+00  -1.489   0.1367    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##              edf Ref.df    F p-value    
+## s(Size_m2) 7.514  7.916 35.2  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Rank: 14/16
+## R-sq.(adj) =  0.431   Deviance explained = 43.9%
+## GCV = 6.8502e+05  Scale est. = 6.754e+05  n = 962</code></pre>
+</details>
+<p>Adjusted R-squared: 0.431, explaining 43.1% of variability.</p>
+<ul>
+<li><strong>Log-Transformed GAM</strong></li>
+</ul>
+<p>A log transformation of Size_m2 was applied to improve model fit:</p>
+<details>
+<summary>
+Click to see the summary
+</summary>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(log_Size_m2) + Days_Difference + Nr_rooms + GDP_per + 
+##     Population + Area_km2 + Density
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     -3.466e-03  1.763e-03  -1.966   0.0496 *  
+## Days_Difference  5.769e+00  8.992e-01   6.415 2.22e-10 ***
+## Nr_rooms         3.492e+02  5.224e+01   6.684 3.96e-11 ***
+## GDP_per          6.650e-03  3.482e-03   1.910   0.0565 .  
+## Population       1.260e-03  4.943e-04   2.548   0.0110 *  
+## Area_km2        -6.384e-02  1.472e-01  -0.434   0.6646    
+## Density         -2.169e+00  1.091e+00  -1.988   0.0471 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##                  edf Ref.df     F p-value    
+## s(log_Size_m2) 7.438  7.877 23.15  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Rank: 14/16
+## R-sq.(adj) =  0.388   Deviance explained = 39.6%
+## GCV = 7.5932e+05  Scale est. = 7.4874e+05  n = 965</code></pre>
+</details>
+<p>Adjusted R-squared: 0.388, explaining 38.8% of variability.</p>
+<ul>
+<li><strong>GAM with Interactions</strong> To explore interactions, a
+GAM including interaction terms was fitted:</li>
+</ul>
+<details>
+<summary>
+Click to see the summary
+</summary>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + 
+##     Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms)
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     -1.592e-03  1.683e-03  -0.946   0.3445    
+## Days_Difference  6.204e+00  8.492e-01   7.305 5.87e-13 ***
+## Nr_rooms         2.072e+02  1.668e+02   1.242   0.2144    
+## GDP_per          5.362e-03  3.310e-03   1.620   0.1056    
+## Population       6.345e-04  4.724e-04   1.343   0.1795    
+## Area_km2         2.345e-01  1.419e-01   1.652   0.0989 .  
+## Density         -1.099e+00  1.041e+00  -1.056   0.2912    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##                       edf Ref.df     F  p-value    
+## s(Size_m2)          2.226  2.360 11.13 0.000302 ***
+## s(Size_m2):Nr_rooms 7.018  7.463 38.82  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Rank: 16/26
+## R-sq.(adj) =  0.449   Deviance explained = 45.7%
+## GCV = 6.8369e+05  Scale est. = 6.7338e+05  n = 965</code></pre>
+</details>
+<p>Adjusted R-squared: 0.449, explaining 44.9% of variability.
+Significant interaction: s(Size_m2):Nr_rooms.</p>
+</div>
+<div id="conclusion-3" class="section level2" number="8.3">
+<h2><span class="header-section-number">8.3</span> Conclusion</h2>
+<p>Based on the adjusted R-squared and deviance explained, the
+best-fitting model is the GAM with interaction terms. This model
+explains 44.9% of the variability in Price_Gross and includes
+significant interactions between <strong>Size_m2</strong> and
+<strong>Nr_rooms</strong>.</p>
+<ul>
+<li><strong>Next Steps</strong></li>
+</ul>
+<p><strong>1. Higher-Order Polynomial Terms:</strong> Explore cubic or
+higher-order terms.</p>
+<p><strong>2. Advanced GAMs:</strong> Consider fitting more complex GAMs
+with different smoothing parameters.</p>
+<p><strong>3. Additional Predictors:</strong> Include more relevant
+predictors to improve model accuracy.</p>
+<p><strong>4. Cross-Validation:</strong> Perform cross-validation to
+validate model robustness.</p>
+<p>These steps will help in further refining the model and ensuring more
+accurate predictions for property prices.</p>
+<p><br></p>
+</div>
+</div>
+<div id="neural-network" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Neural Network</h1>
+<div id="purpose-and-target-4" class="section level2" number="9.1">
+<h2><span class="header-section-number">9.1</span> Purpose and
 Target</h2>
 <p>When considering using a Neural Network, we decided to identify
 potential high value properties within the dataset. To do this, we
@@ -623,8 +954,8 @@ question will allow us to filter out most properties which may not be as
 lucrative for Zug Estates, and offer only the cream of the crop as
 possible targets for acquisition.</p>
 </div>
-<div id="findings" class="section level2" number="6.2">
-<h2><span class="header-section-number">6.2</span> Findings</h2>
+<div id="findings" class="section level2" number="9.2">
+<h2><span class="header-section-number">9.2</span> Findings</h2>
 <p>After classifying the properties into either category, we were able
 to analyze the model’s performance on the dataset. If successful, this
 Neural Network will be a great tool in the future to predict a possible
@@ -655,8 +986,8 @@ value and profits for the real estate company.</p>
 <p><br></p>
 </div>
 </div>
-<div id="support-vector-machine" class="section level1" number="7">
-<h1><span class="header-section-number">7</span> Support Vector
+<div id="support-vector-machine" class="section level1" number="10">
+<h1><span class="header-section-number">10</span> Support Vector
 Machine</h1>
 <p>Though the Neural Network presented great results, we wanted to make
 sure to validate that it was the optimal choice for classification in
@@ -692,14 +1023,14 @@ considering to use either one, the size, shape and complexity of the
 available dataset will play a pivotal role in the selection of the best
 model to use for finding possible “golden goose” properties.</p>
 </div>
-<div id="outlook-for-rental-price-prediction" class="section level1" number="8">
-<h1><span class="header-section-number">8</span> Outlook for Rental
+<div id="outlook-for-rental-price-prediction" class="section level1" number="11">
+<h1><span class="header-section-number">11</span> Outlook for Rental
 Price Prediction</h1>
 <p>We present our top recommendations for future enhancements in both
 this project and the broader domain of predicting rental prices in the
 real estate market.</p>
-<div id="data-quality-and-quantity" class="section level2" number="8.1">
-<h2><span class="header-section-number">8.1</span> Data Quality and
+<div id="data-quality-and-quantity" class="section level2" number="11.1">
+<h2><span class="header-section-number">11.1</span> Data Quality and
 Quantity</h2>
 <p>Future endeavors could benefit from exploring ensemble methods, which
 amalgamate the strengths of various models to improve overall efficacy
@@ -709,8 +1040,8 @@ for rental price prediction. Moreover, incorporating additional
 predictive variables related to rental properties could facilitate the
 training of more sophisticated models.</p>
 </div>
-<div id="validation-of-models" class="section level2" number="8.2">
-<h2><span class="header-section-number">8.2</span> Validation of
+<div id="validation-of-models" class="section level2" number="11.2">
+<h2><span class="header-section-number">11.2</span> Validation of
 Models</h2>
 <p>Due to time constraints and project scope, extensive validation and
 testing for all models were not possible. Employing techniques such as
@@ -719,8 +1050,8 @@ imperative to elevate the overall quality and performance of developed
 models. Furthermore, exploring interactions between variables specific
 to rental prices can provide deeper insights into model performance.</p>
 </div>
-<div id="balancing-model-complexity-and-performance" class="section level2" number="8.3">
-<h2><span class="header-section-number">8.3</span> Balancing Model
+<div id="balancing-model-complexity-and-performance" class="section level2" number="11.3">
+<h2><span class="header-section-number">11.3</span> Balancing Model
 Complexity and Performance</h2>
 <p>This project underscores the delicate balance between model
 complexity and performance in predicting rental prices. While
@@ -731,8 +1062,8 @@ concerning specificity in rental price prediction. Hence, it’s crucial
 to align model complexity with the intended application to achieve
 optimal results in rental price prediction.</p>
 </div>
-<div id="data-privacy-and-ethics" class="section level2" number="8.4">
-<h2><span class="header-section-number">8.4</span> Data Privacy and
+<div id="data-privacy-and-ethics" class="section level2" number="11.4">
+<h2><span class="header-section-number">11.4</span> Data Privacy and
 Ethics</h2>
 <p>Considering the sensitive nature of personal data related to rental
 properties, it’s paramount for companies to exercise caution and ethical
@@ -742,8 +1073,8 @@ ensure fair treatment of all properties, particularly those from
 underrepresented regions.</p>
 </div>
 </div>
-<div id="personal-reflections" class="section level1" number="9">
-<h1><span class="header-section-number">9</span> Personal
+<div id="personal-reflections" class="section level1" number="12">
+<h1><span class="header-section-number">12</span> Personal
 Reflections</h1>
 <p>This project has provided invaluable learning experiences, allowing
 us to delve into the realm of predicting rental prices in the real
@@ -755,21 +1086,9 @@ model comparison and the ethical implications of data usage in rental
 price prediction. Ultimately, we’re proud of our report and grateful for
 the knowledge gained throughout this journey.</p>
 </div>
-<div id="personal-reflections-1" class="section level1" number="10">
-<h1><span class="header-section-number">10</span> Personal
-Reflections</h1>
-<p>This project has provided invaluable learning experiences, allowing
-us to delve into the realm of predicting rental prices in the real
-estate market and hone our skills. While challenges were encountered,
-particularly with complex models like neural networks for rental price
-prediction, we appreciate the opportunity to experiment and grow. Moving
-forward, we recognize the importance of establishing common measures for
-model comparison and the ethical implications of data usage in rental
-price prediction. Ultimately, we’re proud of our report and grateful for
-the knowledge gained throughout this journey.</p>
-</div>
-<div id="help-of-gen-ai" class="section level1" number="11">
-<h1><span class="header-section-number">11</span> Help of Gen AI</h1>
+<div id="implementation-of-generative-ai" class="section level1" number="13">
+<h1><span class="header-section-number">13</span> Implementation of
+Generative AI</h1>
 <p>The implementation of generative AI, particularly through platforms
 like OpenAI’s GPT-3, has significantly enhanced our project by providing
 invaluable assistance across various facets. Its advanced natural
@@ -786,8 +1105,8 @@ insights within our data.</p>
 prompting new insights, facilitating problem-solving, and ultimately
 contributing to the success and advancement of our project.</p>
 </div>
-<div id="references" class="section level1" number="12">
-<h1><span class="header-section-number">12</span> References</h1>
+<div id="references" class="section level1" number="14">
+<h1><span class="header-section-number">14</span> References</h1>
 </div>
 </div><!-- /.entry-content -->
 </article>
