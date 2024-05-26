@@ -99,6 +99,9 @@ library(caret)
 library(e1071)
 library(gridExtra)
 library(mgcv)
+library(pROC)
+library(reshape2)
+library(tidyr)
 ```
 
 </details>
@@ -506,8 +509,8 @@ All three models offer us some insight into the behavior of rental prices for di
 For desired results, we will focus on the second model, which includes all the variables considered significant for the best results.
 
 ```{r LM Price Vs Category, echo=FALSE}
-#lm_plot1 <- data.frame(rel_data$Nr_rooms, rel_data$Price_Gross)
-#lm_plot2 <- data.frame(rel_data$Category_num, rel_data$Price_Gross)
+lm_plot1 <- data.frame(rel_data$Nr_rooms, rel_data$Price_Gross)
+lm_plot2 <- data.frame(rel_data$Category_num, rel_data$Price_Gross)
 
 colors <- ifelse(rel_data$Category_num<1.5, "#9C8AE6", "skyblue")
 
