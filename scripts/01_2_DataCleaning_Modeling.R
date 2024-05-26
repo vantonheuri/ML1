@@ -16,7 +16,7 @@ data_total <- read_excel("data/data_cleaned/data_total.xlsx")
 
 # As agreed upon for analysis:
 # Limited to these cantons
-cantons <- c("AG", "LU", "ZH", "ZU")
+cantons <- c("AG", "LU", "ZH", "ZG")
 # Limited to these property categories
 categories <- c("Appartment", "House")
 
@@ -76,7 +76,7 @@ oh_encoded_order <- c("Canton", "Days_Difference",
                    "Package_Product", "GDP_2020_21", "GDP_per", "Population",
                    "Area_km2", "Density", "Size_m2",
                    "Price_Gross")
-str(data_ohe)$Canton <- as.factor(data_ohe$Canton)
+data_ohe$Canton <- as.factor(data_ohe$Canton)
 data_ohe$Customer_Segment <- as.factor(data_ohe$Customer_Segment)
 data_ohe$Category <- as.factor(data_ohe$Category)
 data_ohe$Package_Product <- as.factor(data_ohe$Package_Product)
