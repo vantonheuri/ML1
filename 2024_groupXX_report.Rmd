@@ -97,6 +97,7 @@ library(readxl)
 library(neuralnet)
 library(caret)
 library(e1071)
+library(gridExtra)
 ```
 
 </details>
@@ -105,29 +106,28 @@ library(e1071)
 
 # Exploratory Graphical Analysis
 
-This chapter delves into an in-depth exploration of the dataset to gain a comprehensive understanding of the underlying data, with a particular focus on the key variable of interest: __prices__. As highlighted in the introduction, our primary objective in this section is to predict the rental prices of apartment and houses.
 
-Before embarking on our data analysis journey, it was essential to prepare our data for the task ahead.
+This chapter provides a comprehensive exploration of the dataset, focusing on the key variable of interest: rental prices. As said the primary objective is to predict rental prices for apartments and houses.
 
-The first step was to import our two datasets, named __"df_kanton"__ (containing information on the Swiss cantons) and __"df_homegate"__ (containing information on the features of properties, such as prices, size, number of rooms, etc). In order to work with one dataset, we merged the two datasets based on the __"Canton"__ column into a new data frame.
+Before embarking on our data analysis journey, it was essential to prepare our data, here the step by step:
 
-However, not all data points fit our intended use case. As mentioned in the introduction, our goal is to predict rental prices for houses and apartments. Therefore, we had to filter out other types of property that didn't fit this purpose.
+__1. Data Import and Merging__
+The first step was to import our two datasets, named __"df_kanton"__ (information on the Swiss cantons) and __"df_homegate"__ (property characteristics including prices, size, number of rooms, etc). 
+In order to work with one dataset, we merged the two datasets based on the __"Canton"__ column into a new data frame.
+__2. Data Filtering__
+Not all data points fit our intended use case, To focus on houses and apartments, other property types were filtered out.
+We then determined that analysing the entire Swiss market was irrelevant for our purposes, so we limited our analysis to __Central Switzerland__( __Aargau (AG)__, __Luzern (LU)__, __Zurich (ZH)__ and __Zug (ZG)__) to maintain relevance and homogeneity.
 
-We then determined that analysing the entire Swiss market was irrelevant for our purposes. We therefore narrowed our focus to Central Switzerland, where we have the greatest market relevance and the property types are more homogeneous. To this end, we applied filters to the data frame, including only records with specific cantonss __Aargau (AG)__, __Luzern (LU)__, __Zurich (ZH)__ and __Zug (ZG)__.
+__3. Preliminary data cleaning__
+Before of cleaning the whole dataset we performed visualizations to identify and focus on interesting features.
 
-Once the initial data had been collected, we conducted a preliminary cleaning process, which involved carrying out a few visualizations to identify any interesting features that might warrant further attention. This process enabled us to identify which cantons required our attention.
+__4. Detailed data cleaning and preparation__
+__+ Missing value handling:__ Removed rows with missing values in key columns ("Price_Gross" and "Size_m2").
+__+ Feature engineering:__ Created a new column "Days_Difference" to capture the time difference between two date columns.
+__+ One-Hot Encoding:__ Applied to categorical variables for better compatibility with machine learning models.
+__+ Label encoding:__ Converted categorical variables to numerical representations.
 
-In this second cleaning instance, we also needed to perform the following step:
-
-__1. Handle missing values.__ The process identifies missing values and removes rows with missing values in specific columns, namely "Price_Gross" and "Size_m2".
-
-__2. Feature Engineering.__ A new column, named "Days_Difference", is created and populated with the time difference between two date columns.
-
-__3. One-Hot Encoding.__ One-hot encoding is applied to categorical variables.
-
-__4. Label Encoding.__ This process involves the creation of numerical representations for categorical variables through the use of label encoding.
-
-In summary, these codes prepare the data for further analysis or modelling by cleaning it, handling missing values, and encoding categorical variables, which are common steps in data pre-processing for machine learning tasks.
+In summary, these steps prepared the data for further analysis and modeling by cleaning it, handling missing values, and encoding categorical variables, which are essential steps in data preprocessing for machine learning tasks.
 
 Here we can observe the different column names of our final dataset.
 
@@ -167,13 +167,18 @@ ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count, fill =
 
 ### Average Rental Price per Canton
 
-This visualization indicates significant variability in average rental prices across cantons. The highest average rental prices are observed in Ticino (TI), far exceeding other cantons like Zurich (ZH) and Vaud (VD). This may suggest a premium on rental prices in TI or a presence of high-end properties skewing the average.
-```{r, echo=FALSE, warning=FALSE}
-library(ggplot2)
-library(dplyr)
-library(gridExtra)
+The visualizations compare average rental prices across Swiss cantons, with the first chart showing the top ten cantons and highlighting the exceptionally high average rental price in Ticino compared to others.
 
-# Calculate the order of cantons based on average rental price and select top ten
+The second chart focuses on our study cantons of Zurich, Lucerne, Aargau and Zug, illustrating more typical, affordable rental prices below CHF 2,000. 
+
+These charts highlight the significant regional differences in rental costs within Switzerland, which is useful for market analysis, investment decisions and policy formulation.
+```{r, echo=FALSE, warning=FALSE}
+# Function to format numbers as thousands (K)
+format_k <- function(x) {
+  paste0(round(x / 1000, 1), "K")
+}
+
+# Order of top 10 cantons based on average rental price
 top_cantons <- df_total %>%
   group_by(Canton) %>%
   summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
@@ -181,153 +186,166 @@ top_cantons <- df_total %>%
   slice(1:10) %>%
   .$Canton
 
-# Adjust the factor levels of Canton for the top ten cantons
 df_total_top_10 <- df_total %>%
   filter(Canton %in% top_cantons) %>%
   mutate(Canton = factor(Canton, levels = top_cantons))
 
-# Plot
+# Plot top 10 cantons
 plot_top_10 <- ggplot(df_total_top_10, aes(x = Canton, y = Price_Gross)) +
-  stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black") +
-  labs(title = "Top 10 Cantons: Average Rental Price", x = "Canton", y = "Average Rental Price (CHF)") +
+  stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black", width = 0.8) +
+  geom_text(stat = "summary", fun = mean, aes(label = format_k(..y..)), vjust = -0.3, size = 2.5) +
+  labs(title = "Average Rental Price | Top 10", x = "", y = "Average Price (CHF)") +
+  scale_y_continuous(labels = format_k) + 
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+        axis.title.y = element_text(size = 9),
+        plot.title = element_text(size = 11))
 
-# Define highlighted cantons including Zurich (ZH)
-highlight_cantons <- c("ZG", "ZU", "AG", "LU", "ZH")
+highlight_cantons <- c("ZG", "ZH", "AG", "LU")
 
-# Filter data for highlighted cantons and recalculate averages
+# Filter data for highlighted cantons 
 highlighted_data <- df_total %>%
   filter(Canton %in% highlight_cantons) %>%
   group_by(Canton) %>%
   summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
   arrange(desc(Average_Price_Gross)) 
 
-# Adjust the factor levels based on the new order in the highlighted cantons
 highlighted_data$Canton <- factor(highlighted_data$Canton, levels = highlighted_data$Canton)
 
-# Plot 
+# Plot use case cantons
 plot_highlighted <- ggplot(highlighted_data, aes(x = Canton, y = Average_Price_Gross)) +
-  geom_bar(stat = "identity", fill = "#9C8AE6", color = "black") +
-  labs(title = "Average Rental Price", x = "Canton", y = "Average Rental Price (CHF)") +
+  geom_bar(stat = "identity", fill = "#9C8AE6", color = "black", width = 0.8) +
+  geom_text(aes(label = format_k(Average_Price_Gross)), vjust = -0.3, size = 2.5) +
+  labs(title = "Average Rental Price | Use Case", x = "", y = "Average Price (CHF)") +
+  scale_y_continuous(labels = format_k) + 
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+        axis.title.y = element_text(size = 9),
+        plot.title = element_text(size = 11))
 
-# Arrange both plots side by side
-grid.arrange(plot_top_10, plot_highlighted, ncol = 2)
+# Arrange both plots side by side with specific widths
+grid.arrange(plot_top_10, plot_highlighted, ncol = 2, widths = c(3, 2))
 ```
 
 ### Differences in rental prices between different customer segment
 
-The box plots compare the gross rental prices between private and professional customer segments. Prices for private customers are generally lower and less varied than those for professionals, indicating a potential market segmentation by rental price.
+The box plot compare the gross rental prices between private and professional customer segments. Prices for private customers are generally lower and less varied than those for professionals, indicating a potential market segmentation by rental price.
 
-```{r Differences in rental prices between different customer segment, echo=FALSE, warning = FALSE}
-  # - Are there differences in rental prices between different customer segments?
-  # Option 1
-  ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
+```{r Differences in rental prices between different customer segment, echo=FALSE, warning=FALSE}
+ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
   geom_boxplot(outlier.size = 1.5, alpha = 0.7) + 
-  scale_fill_brewer(palette = "Pastel1") + 
-  coord_cartesian(ylim = c(0, quantile(df_total$Price_Gross, 0.95, na.rm = TRUE))) + 
+  scale_fill_manual(values = c("Private" = "skyblue", "Professional" = "#9C8AE6")) + 
+  ylim(750, 4500) +
+  #coord_cartesian(ylim = c(0, quantile(df_total$Price_Gross, 0.95, na.rm = TRUE))) + 
   labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
   theme_minimal() +
-  theme(legend.position = "none") 
-
-# Option 2
-ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross)) +
-  geom_boxplot(outlier.size = 1, aes(fill = Customer_Segment)) + 
-  scale_y_log10(limits = c(100, NA)) + 
-  scale_fill_brewer(palette = "Pastel1", guide = FALSE) + 
-  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
-  theme_minimal() +
-  theme(legend.position = "none")
+  theme(legend.position = "none", 
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size =8))
 ```
+### Influence of Property Size on Rental Price
 
-### TITULO
+#### Correlation Between Property Size and Rental Price
 
-A scatter plot with a trend line demonstrates a positive correlation between property size and rental price, especially noticeable in the Zurich (ZH) canton. This correlation suggests that larger properties tend to command higher rents. We also clustered the points per Canton.
+The scatter plot illustrates the correlation between property size and rental price across Swiss cantons. The linear trend line shows a positive correlation, indicating that as property size increases, the gross rental price also tends to increase. 
 
-```{r Correlation Between Property Size and Rental Price, echo=FALSE, warning = FALSE}
-# - Is there a correlation between the size of the property (in m2) and the rental price?
-  
-# We sleect the Top Ten Cantons
-top_10_cantons <- c("ZH", "VD", "AG", "SG", "BE", "TI", "LU", "TG", "BS", "ZG")
-top_5_cantons <- c("ZH", "VD", "AG", "SG", "BE")
+This trend is consistent across both the highlighted and other cantons, suggesting that property size is a significant factor in determining rental prices across the regions analyzed. The distinction between the canton groups helps to visually assess whether there are any noticeable differences in price trends based on location, which appear to be relatively uniform across the board.
 
-# Filter the dataset to include only the top cantons
-df_top_10_cantons <- df_total %>%
-  filter(Canton %in% top_10_cantons) %>%
-  filter(Price_Gross <= 500000, Size_m2 <= 300) # Apply filters for Price_Gross and Size_m2
-
-# Filter the dataset to include only the top cantons
-df_top_5_cantons <- df_total %>%
-  filter(Canton %in% top_5_cantons) %>%
-  filter(Price_Gross <= 500000, Size_m2 <= 300) # Apply filters for Price_Gross and Size_m2
-
-# Create a manual pastel color palette
-pastel_colors <- c("ZH" = "#bdb2ff",  # Pastel blue
-                   "VD" = "#ffd6a5",  # Lighter pastel blue
-                   "AG" = "#b4f8c8",  # Pastel cyan
-                   "SG" = "#ade8f4",  # Lighter pastel cyan
-                   "BE" = "#ffafcc",  # Pastel red
-                   "TI" = "#bde0fe",  # Pastel orange
-                   "LU" = "#90e0ef",  # Pastel green
-                   "TG" = "#a0c4ff",  # Another shade of pastel blue
-                   "BS" = "#a1c9f4",  # Pastel purple
-                   "ZG" = "#ffc6ff") # Pastel pink
-
-# Scatter Plot TOP 5
-ggplot(df_top_5_cantons, aes(x = Size_m2, y = Price_Gross)) +
-  geom_point(aes(color = Canton), size = 0.8, alpha = 0.8) + # Smaller points with size 1
-  scale_color_manual(values = pastel_colors) +
-  geom_smooth(method = "lm", color = "darkblue", size = 0.5, se = FALSE) +
-  labs(title = "Correlation Between Property Size and Rental Price", x = "Size (m²)", y = "Gross Price (CHF)") +
-  theme_minimal() +
-  scale_y_log10(labels = scales::comma) # Apply logarithmic scale to y-axis
-```
-
-### Distribution of Property Size
+#### Distribution of Property Size
 
 This histogram highlights that the majority of properties fall within smaller size brackets, with a steep drop-off as property size increases. This distribution suggests that smaller properties are more common in the market.
 
-```{r Distribution of Property Size, echo=FALSE, warning = FALSE}
-# Histogram for Size_m2
-ggplot(df_total, aes(x = Size_m2)) +
-  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+```{r Property Size and Rental Price, echo=FALSE, warning = FALSE}
+# Define a new factor variable for canton groups
+df_filtered <- df_total %>%
+  mutate(canton_group = ifelse(Canton %in% c("ZH", "AG", "LU", "ZG"), 
+                               "ZH, AG, LU & ZG", 
+                               "Rest of Cantons"))
+
+# Scatter Plot
+plot_scatter_size <- ggplot(df_filtered, aes(x = Size_m2, y = Price_Gross, color = canton_group)) +
+  geom_point(size = 1, alpha = 0.8) +
+  scale_color_manual(values = c("ZH, AG, LU & ZG" = "#9C8AE6", 
+                                "Rest of Cantons" = "grey")) +
+  geom_smooth(method = "lm", aes(group = 1), color = "black", size = 0.5, se = FALSE) +
+  labs(title = "Correlation Between Property Size and Rental Price",
+       x = "Size (m²)", y = "Gross Price (CHF)") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 250), ylim = c(0, 8000)) + 
+  theme(legend.position = c(0.8, 0.9), 
+        legend.background = element_rect(fill = "white", colour = "black", size = 0.2), 
+        legend.title = element_blank(),
+        legend.margin = margin(t = 5, r = 20, b = 5, l = 10),
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size =8))
+
+# Histogram for Size_m2 with matched theme and limits
+plot_histogram_size <- ggplot(df_total, aes(x = Size_m2)) +
+  geom_histogram(bins = 30, fill = "#9C8AE6", color = "black") +
   labs(title = "Distribution of Property Size", x = "Size (m²)", y = "Frequency") +
-  theme_minimal()
+  coord_cartesian(xlim = c(0, 350)) +  
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8))
+
+# Arrange both plots side by side with specific widths and padding
+grid.arrange(plot_scatter_size, plot_histogram_size, ncol = 2, widths = c(3, 2), padding = unit(1, "lines"))
 ```
 
-### Distribution of Number of Rooms
+### Influence of Number of Rooms on Rental Price
 
-The bar chart illustrates the frequency of properties based on the number of rooms. Properties with 3 to 4 rooms are the most common, which aligns with the predominance of smaller property sizes seen in the previous chart.
-
-```{r Distribution of Number of Rooms, echo=FALSE, warning = FALSE}
-# Histogram for Nr_rooms
-ggplot(df_total, aes(x = Nr_rooms)) +
-  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
-  labs(title = "Distribution of Number of Rooms", x = "Number of Rooms", y = "Frequency") +
-  theme_minimal()
-```
-
-
-### Effect of Number of Rooms on Rental Price
+#### Effect of Number of Rooms on Rental Price
 
 This scatter plot explores how the number of rooms affects the gross rental price. While there is a general trend of increasing rental prices with more rooms, the variability in price also increases, as indicated by the spread of data points.
 
-```{r Effect of Number of Rooms on Rental Price, echo=FALSE, warning = FALSE}
-# - How does the number of rooms affect the rental price?
+#### Distribution of Number of Rooms
 
-# Apply filters to remove extreme prices for better visualization
-  df_filtered <- df_total %>%
-  filter(Price_Gross <= 500000) %>%
-  mutate(Nr_rooms = as.factor(Nr_rooms)) # Treat number of rooms as a factor
+The bar chart illustrates the frequency of properties based on the number of rooms. Properties with 3 to 4 rooms are the most common, which aligns with the predominance of smaller property sizes seen in the previous chart.
 
-# Create the scatter plot without differentiating by canton
-ggplot(df_filtered, aes(x = Nr_rooms, y = Price_Gross)) +
-  geom_point(alpha = 0.6, size = 1, color = "skyblue") +
+```{r Number of Rooms, echo=FALSE, warning = FALSE}
+# Define filtering and factor setting for number of rooms related to rental price
+library(dplyr)
+df_filtered_rooms <- df_total %>%
+  filter(Price_Gross <= 400000) %>%
+  mutate(Nr_rooms = as.factor(Nr_rooms)) 
+
+# Scatter Plot: Effect of Number of Rooms on Rental Price
+plot_effect_rooms <- ggplot(df_filtered_rooms, aes(x = Nr_rooms, y = Price_Gross)) +
+  geom_point(alpha = 0.6, size = 1, color = "#9C8AE6") +
   labs(title = "Effect of Number of Rooms on Rental Price", x = "Number of Rooms", y = "Gross Price (CHF)") +
   theme_minimal() +
-  scale_y_log10() # Apply logarithmic scale to y-axis
+  scale_y_log10() + # Apply logarithmic scale to y-axis for better visualization of data spread
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8))
+
+# Histogram: Distribution of Number of Rooms
+plot_distribution_rooms <- ggplot(df_total, aes(x = Nr_rooms)) +
+  geom_histogram(bins = 30, fill = "#9C8AE6", color = "black") +
+  labs(title = "Distribution of Number of Rooms", x = "Number of Rooms", y = "Frequency") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8))
+
+# Arrange plots side by side
+grid.arrange(plot_effect_rooms, plot_distribution_rooms, ncol = 2, widths = c(3, 2), padding = unit(2, "lines"))
+
 ```
 
 # Data Modeling
