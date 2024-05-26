@@ -507,7 +507,7 @@ All three models offer us some insight into the behavior of rental prices for di
 
 For desired results, we will focus on the second model, which includes all the variables considered significant for the best results.
 
-```{r Few Model Plot, echo=FALSE}
+```{r LM Price Vs Category, echo=FALSE}
 #lm_plot1 <- data.frame(rel_data$Nr_rooms, rel_data$Price_Gross)
 #lm_plot2 <- data.frame(rel_data$Category_num, rel_data$Price_Gross)
 
@@ -519,7 +519,7 @@ axis(1, at=c(1,2), labels = c("Category 1", "Category 2"))
 
 In this diagram we can observe that, though there are fewer instances of Category 2 (House) compared to Category 1 (Apartment), Category 2 properties tend to have higher rental prices. This does not, however, indicate that they may be the more lucrative option, as houses tend to incur other costs that are either not present, or the cost is split in the community, in the case of apartments.
 
-```{r First Model Plot, echo=FALSE}
+```{r LM First Model Plot, echo=FALSE}
 
 plot(lm_plot1, xlab="Nr_Rooms", ylab="Price_Gross", main="Price of a Rental Property as a result of the Number of Rooms", col="#9C8AE6")
 
@@ -838,7 +838,7 @@ nn_conf$table
 
 As seen in the previous matrix, the model's performance on categorizing properties into possible high-ticket or not is quite good. This tool will help in the future, when looking at new properties, to have an idea of more or less how beneficial a specific property could be to Zug Estates' portfolio.
 
-```{r Predictions Chart, echo=FALSE}
+```{r NN Predictions Chart, echo=FALSE}
 # Convert to a data frame for ggplot2
 rounded_predictions <- round(pred_maxmin)
 data <- data.frame(predictions = factor(rounded_predictions, levels = c(0, 1), labels = c("Non-High Ticket", "High-Ticket")))
@@ -959,7 +959,7 @@ svm_confusion$table
 
 As we can see, comparing the two confusion matrices, the Neural Network has slightly better accuracy than the SVM. Though at first glance it may seem like the better option, there are several advantages and disadvantages between the two models.
 
-```{r SVM ROC Curve, echo=FALSE}
+```{r SVM ROC Curve, echo=FALSE, warning=FALSE}
 svm_probabilities <- attr(predict(svm_model, newdata = test_data_without_target, probability = TRUE), "probabilities")[,2]
 
 roc_curve <- roc(test_data$High_Ticket, svm_probabilities)
