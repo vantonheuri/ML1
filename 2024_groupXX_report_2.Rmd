@@ -150,36 +150,18 @@ properties_per_canton <- df_total %>%
   summarise(Count = n()) %>%
   arrange(desc(Count)) # Arrange in descending order of count
 
-# Creating the vertical bar chart with smaller data labels
-ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
-  geom_text(aes(label = Count), vjust = -0.5, color = "black", size = 2.2) + # Data labels above bars
-  labs(title = "Properties per Canton", x = "Canton", y = "Count of Properties") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), # Rotate x-axis labels for better readability
-        plot.title = element_text(hjust = 0.5))
-```
-
-```{r Properties per Canton, echo=FALSE, warning = FALSE}
-# Counting properties per Canton and arranging them from highest to lowest
-properties_per_canton <- df_total %>%
-  group_by(Canton) %>%
-  summarise(Count = n()) %>%
-  arrange(desc(Count)) # Arrange in descending order of count
-
 # Define colors for specific cantons
 highlight_cantons <- c("ZG", "ZH", "AG", "LU")
-properties_per_canton$color <- ifelse(properties_per_canton$Canton %in% highlight_cantons, "#6a0dad", "#008080")
+properties_per_canton$color <- ifelse(properties_per_canton$Canton %in% highlight_cantons, "#9C8AE6", "skyblue")
 
 # Creating the vertical bar chart with colored bars for specific cantons
 ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count, fill = color)) +
   geom_bar(stat = "identity", color = "black") +
-  geom_text(aes(label = Count), vjust = -0.5, color = "black", size = 2.2) + # Data labels above bars
-  scale_fill_identity() + # Use the colors defined in the data frame
+  geom_text(aes(label = Count), vjust = -0.5, color = "black", size = 2.2) + 
+  scale_fill_identity() + 
   labs(title = "Properties per Canton", x = "Canton", y = "Count of Properties") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), # Rotate x-axis labels for better readability
-        plot.title = element_text(hjust = 0.5))
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
 
 ### Average Rental Price per Canton
@@ -203,6 +185,49 @@ ggplot(df_total, aes(x = Canton, y = Price_Gross)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
+```¡{r, echo=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+# Calculate the order of cantons based on average rental price
+canton_order <- df_total %>%
+  group_by(Canton) %>%
+  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(desc(Average_Price_Gross)) %>%
+  .$Canton
+
+# Adjust the factor levels of Canton based on the calculated order
+df_total$Canton <- factor(df_total$Canton, levels = canton_order)
+
+# Main plot with all cantons ordered by average rental price
+p1 <- ggplot(df_total, aes(x = Canton, y = Price_Gross)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black") +
+  labs(title = "Average Rental Price per Canton", x = "Canton", y = "Average Rental Price (CHF)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# Define highlighted cantons
+highlight_cantons <- c("ZG", "ZU", "AG", "LU")
+
+# Filter data for highlighted cantons and recalculate averages
+highlighted_data <- df_total %>%
+  filter(Canton %in% highlight_cantons) %>%
+  group_by(Canton) %>%
+  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(desc(Average_Price_Gross))
+
+# Adjust the factor levels based on the order in the highlighted cantons
+highlighted_data$Canton <- factor(highlighted_data$Canton, levels = highlight_cantons)
+
+# Plot for highlighted cantons
+p2 <- ggplot(highlighted_data, aes(x = Canton, y = Average_Price_Gross)) +
+  geom_bar(stat = "identity", fill = "coral", color = "black") +
+  labs(title = "Highlighted Cantons: Average Rental Price", x = "Canton", y = "Average Rental Price (CHF)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# Arrange both plots side by side
+grid.arrange(p1, p2, ncol = 2)```
 
 ### Differences in rental prices between different customer segment
 
