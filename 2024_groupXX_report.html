@@ -171,11 +171,12 @@ Real Estate Pricing</p></h1>
 <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis"><span class="toc-section-number">3</span> Exploratory Data Analysis</a></li>
 <li><a href="#data-modeling" id="toc-data-modeling"><span class="toc-section-number">4</span> Data Modeling</a></li>
 <li><a href="#linear-model" id="toc-linear-model"><span class="toc-section-number">5</span> Linear Model</a></li>
-<li><a href="#generalised-linear-model-with-family-set-to-poisson" id="toc-generalised-linear-model-with-family-set-to-poisson"><span class="toc-section-number">6</span> Generalised Linear Model with family
-set to Poisson</a></li>
-<li><a href="#generalised-linear-model-with-family-set-to-binomial" id="toc-generalised-linear-model-with-family-set-to-binomial"><span class="toc-section-number">7</span> Generalised Linear Model with family
-set to Binomial</a></li>
-<li><a href="#generalised-additive-model" id="toc-generalised-additive-model"><span class="toc-section-number">8</span> Generalised Additive Model</a></li>
+<li><a href="#glm---generalised-linear---poisson" id="toc-glm---generalised-linear---poisson"><span class="toc-section-number">6</span> GLM - Generalised Linear -
+Poisson</a></li>
+<li><a href="#glm---generalised-linear---binomial" id="toc-glm---generalised-linear---binomial"><span class="toc-section-number">7</span> GLM - Generalised Linear -
+Binomial</a></li>
+<li><a href="#gam---generalised-additive-model" id="toc-gam---generalised-additive-model"><span class="toc-section-number">8</span> GAM - Generalised Additive
+Model</a></li>
 <li><a href="#neural-network" id="toc-neural-network"><span class="toc-section-number">9</span> Neural Network</a></li>
 <li><a href="#support-vector-machine" id="toc-support-vector-machine"><span class="toc-section-number">10</span> Support Vector Machine</a></li>
 <li><a href="#outlook-for-rental-price-prediction" id="toc-outlook-for-rental-price-prediction"><span class="toc-section-number">11</span> Outlook for Rental Price
@@ -611,9 +612,9 @@ payment on a regular basis.</p>
 <p><br></p>
 </div>
 </div>
-<div id="generalised-linear-model-with-family-set-to-poisson" class="section level1" number="6">
-<h1><span class="header-section-number">6</span> Generalised Linear
-Model with family set to Poisson</h1>
+<div id="glm---generalised-linear---poisson" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> GLM - Generalised
+Linear - Poisson</h1>
 <div id="purpose-and-target-1" class="section level2" number="6.1">
 <h2><span class="header-section-number">6.1</span> Purpose and
 Target</h2>
@@ -626,9 +627,9 @@ Target</h2>
 <p><br></p>
 </div>
 </div>
-<div id="generalised-linear-model-with-family-set-to-binomial" class="section level1" number="7">
-<h1><span class="header-section-number">7</span> Generalised Linear
-Model with family set to Binomial</h1>
+<div id="glm---generalised-linear---binomial" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> GLM - Generalised
+Linear - Binomial</h1>
 <div id="purpose-and-target-2" class="section level2" number="7.1">
 <h2><span class="header-section-number">7.1</span> Purpose and
 Target</h2>
@@ -641,9 +642,9 @@ Target</h2>
 <p><br></p>
 </div>
 </div>
-<div id="generalised-additive-model" class="section level1" number="8">
-<h1><span class="header-section-number">8</span> Generalised Additive
-Model</h1>
+<div id="gam---generalised-additive-model" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> GAM - Generalised
+Additive Model</h1>
 <div id="purpose-and-target-3" class="section level2" number="8.1">
 <h2><span class="header-section-number">8.1</span> Purpose and
 Target</h2>
@@ -710,15 +711,11 @@ relationships.</p></li>
 <li><p><strong>Use smoothing splines in GAM</strong>, which can capture
 non-linear relationships more flexibly than a quadratic model.</p></li>
 </ul>
-<p><br></p>
-</div>
-<div id="generalized-additive-models-gam" class="section level3" number="8.2.2">
-<h3><span class="header-section-number">8.2.2</span> Generalized
-Additive Models (GAM)</h3>
 <p>Once these parameters are clear, we will implement them in our GAM
 models and see which ones perform best.</p>
-<div id="basic-gam" class="section level4" number="8.2.2.1">
-<h4><span class="header-section-number">8.2.2.1</span> Basic GAM</h4>
+</div>
+<div id="basic-gam" class="section level3" number="8.2.2">
+<h3><span class="header-section-number">8.2.2</span> Basic GAM</h3>
 <p>Starting with fitting a basic GAM to capture more complex non-linear
 relationships:</p>
 <details>
@@ -750,9 +747,9 @@ Click to see the summary
 <p>R-squared (adj.): 0.389, indicating that 38.9% of the variability is
 explained. Deviance explained: 39.5%.</p>
 </div>
-<div id="gam-with-multiple-predictors" class="section level4" number="8.2.2.2">
-<h4><span class="header-section-number">8.2.2.2</span> GAM with Multiple
-Predictors</h4>
+<div id="gam-with-multiple-predictors" class="section level3" number="8.2.3">
+<h3><span class="header-section-number">8.2.3</span> GAM with Multiple
+Predictors</h3>
 <p>To account for additional factors, a GAM including multiple
 predictors was fitted:</p>
 <details>
@@ -793,8 +790,8 @@ Click to see the summary
 explained. Significant predictors: Days_Difference, Nr_rooms, GDP_per,
 Population.</p>
 </div>
-<div id="filtered-gam" class="section level4" number="8.2.2.3">
-<h4><span class="header-section-number">8.2.2.3</span> Filtered GAM</h4>
+<div id="filtered-gam" class="section level3" number="8.2.4">
+<h3><span class="header-section-number">8.2.4</span> Filtered GAM</h3>
 <p>To focus on properties with Size_m2 less than 300, a filtered GAM was
 fitted:</p>
 <details>
@@ -833,9 +830,9 @@ Click to see the summary
 </details>
 <p>Adjusted R-squared: 0.431, explaining 43.1% of variability.</p>
 </div>
-<div id="log-transformed-gam" class="section level4" number="8.2.2.4">
-<h4><span class="header-section-number">8.2.2.4</span> Log-Transformed
-GAM</h4>
+<div id="log-transformed-gam" class="section level3" number="8.2.5">
+<h3><span class="header-section-number">8.2.5</span> Log-Transformed
+GAM</h3>
 <p>A log transformation of Size_m2 was applied to improve model fit:</p>
 <details>
 <summary>
@@ -873,9 +870,9 @@ Click to see the summary
 </details>
 <p>Adjusted R-squared: 0.388, explaining 38.8% of variability.</p>
 </div>
-<div id="gam-with-interactions" class="section level4" number="8.2.2.5">
-<h4><span class="header-section-number">8.2.2.5</span> GAM with
-Interactions</h4>
+<div id="gam-with-interactions" class="section level3" number="8.2.6">
+<h3><span class="header-section-number">8.2.6</span> GAM with
+Interactions</h3>
 <p>To explore interactions, a GAM including interaction terms was
 fitted:</p>
 <details>
@@ -915,7 +912,6 @@ Click to see the summary
 </details>
 <p>Adjusted R-squared: 0.449, explaining 44.9% of variability.
 Significant interaction: s(Size_m2):Nr_rooms.</p>
-</div>
 </div>
 </div>
 <div id="conclusion-3" class="section level2" number="8.3">
