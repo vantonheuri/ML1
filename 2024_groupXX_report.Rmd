@@ -104,38 +104,60 @@ library(gridExtra)
 
 <br>
 
-# Exploratory Graphical Analysis
+# Exploratory Data Analysis
 
 
-This chapter provides a comprehensive exploration of the dataset, focusing on the key variable of interest: rental prices. As said the primary objective is to predict rental prices for apartments and houses.
+This chapter thoroughly explores the dataset, with a specific focus on the main variable of interest: __rental prices__. Our primary goal is to develop predictive models for rental prices of both apartments and houses.
+
+<br>
+
+## Data Preparation and Preliminary Analysis
 
 Before embarking on our data analysis journey, it was essential to prepare our data, here the step by step:
 
-__1. Data Import and Merging__
-The first step was to import our two datasets, named __"df_kanton"__ (information on the Swiss cantons) and __"df_homegate"__ (property characteristics including prices, size, number of rooms, etc). 
-In order to work with one dataset, we merged the two datasets based on the __"Canton"__ column into a new data frame.
-__2. Data Filtering__
-Not all data points fit our intended use case, To focus on houses and apartments, other property types were filtered out.
-We then determined that analysing the entire Swiss market was irrelevant for our purposes, so we limited our analysis to __Central Switzerland__( __Aargau (AG)__, __Luzern (LU)__, __Zurich (ZH)__ and __Zug (ZG)__) to maintain relevance and homogeneity.
+- **Data Import and Merging:** The first step was to import our two datasets, named __"df_kanton"__ (information on the Swiss cantons) and __"df_homegate"__ (property characteristics including prices, size, number of rooms, etc). In order to work with one dataset, we merged the two datasets based on the __"Canton"__ column into a new data frame.
 
-__3. Preliminary data cleaning__
-Before of cleaning the whole dataset we performed visualizations to identify and focus on interesting features.
+- **Data Filtering:** Some data points were not suitable for our intended use case because our focus is on houses and apartments. Other irrelevant property types were filtered out. Furthermore, we determined that analyzing the entire Swiss market was irrelevant for our purposes. Therefore, we limited our analysis to __Central Switzerland (Aargau (AG), Luzern (LU), Zurich (ZH)__ and __Zug (ZG))__ to maintain relevance and homogeneity.
 
-__4. Detailed data cleaning and preparation__
-__+ Missing value handling:__ Removed rows with missing values in key columns ("Price_Gross" and "Size_m2").
-__+ Feature engineering:__ Created a new column "Days_Difference" to capture the time difference between two date columns.
-__+ One-Hot Encoding:__ Applied to categorical variables for better compatibility with machine learning models.
-__+ Label encoding:__ Converted categorical variables to numerical representations.
+- **Preliminary Data Cleaning:** Before of cleaning the whole dataset we performed visualizations to identify and focus on interesting features. 
 
-In summary, these steps prepared the data for further analysis and modeling by cleaning it, handling missing values, and encoding categorical variables, which are essential steps in data preprocessing for machine learning tasks.
+- **Data cleaning and preparation:**
+  
+  - **Missing value handling:** Removed rows with missing values in key columns.
+      
+  - **Feature engineering:** Created a new column __"Days_Difference"__ to capture the time difference between two date columns.
+      
+  - **One-Hot Encoding:** Applied to categorical variables for better compatibility with machine learning models.
+      
+  - **Label encoding:** Converted categorical variables to numerical representations.
 
-Here we can observe the different column names of our final dataset.
+In summary, these steps prepared the data for further analysis and modelling by cleaning it, handling missing values, and encoding categorical variables, which are essential steps in data pre-processing for machine learning tasks.
 
+The dataset for our Exploratory Data Analysis includes the following columns.
 
-```{r, echo=FALSE}
+<details>
+
+<summary>*Click to see all column names*</summary>
+
+```{r EDA dataset column names, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 df_total <- read_excel("data/data_cleaned/data_total.xlsx")
 colnames(df_total)
 ```
+</details>
+
+Finally, the dataset for our Modeling includes the following columns.
+
+<details>
+
+<summary>*Click to see all column names*</summary>
+
+```{r Modeling dataset column names, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
+colnames(enc_data)
+```
+</details>
+
+<br>
 
 ## Data Visualization
 
@@ -245,15 +267,18 @@ ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segm
         axis.text.x = element_text(size = 8),
         axis.text.y = element_text(size =8))
 ```
+
+
 ### Influence of Property Size on Rental Price
 
-#### Correlation Between Property Size and Rental Price
+
+- **Correlation Between Property Size and Rental Price**
 
 The scatter plot illustrates the correlation between property size and rental price across Swiss cantons. The linear trend line shows a positive correlation, indicating that as property size increases, the gross rental price also tends to increase. 
 
 This trend is consistent across both the highlighted and other cantons, suggesting that property size is a significant factor in determining rental prices across the regions analyzed. The distinction between the canton groups helps to visually assess whether there are any noticeable differences in price trends based on location, which appear to be relatively uniform across the board.
 
-#### Distribution of Property Size
+- **Distribution of Property Size**
 
 This histogram highlights that the majority of properties fall within smaller size brackets, with a steep drop-off as property size increases. This distribution suggests that smaller properties are more common in the market.
 
@@ -303,11 +328,11 @@ grid.arrange(plot_scatter_size, plot_histogram_size, ncol = 2, widths = c(3, 2),
 
 ### Influence of Number of Rooms on Rental Price
 
-#### Effect of Number of Rooms on Rental Price
+- **Effect of Number of Rooms on Rental Price**
 
 This scatter plot explores how the number of rooms affects the gross rental price. While there is a general trend of increasing rental prices with more rooms, the variability in price also increases, as indicated by the spread of data points.
 
-#### Distribution of Number of Rooms
+- **Distribution of Number of Rooms**
 
 The bar chart illustrates the frequency of properties based on the number of rooms. Properties with 3 to 4 rooms are the most common, which aligns with the predominance of smaller property sizes seen in the previous chart.
 
@@ -350,6 +375,8 @@ grid.arrange(plot_effect_rooms, plot_distribution_rooms, ncol = 2, widths = c(3,
 
 # Data Modeling
 
+**falta explicacion**
+
 # Linear Model
 
 ```{r Linear Model, echo=FALSE, warning=FALSE}
@@ -361,8 +388,6 @@ library(readxl)
 library(ggplot2)
 #---------------------------------------------------------------------------
 set.seed(71)
-# Reading in data
-enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
 
 #Splitting the data into training and testing
 split_ratio <- 0.8
@@ -427,9 +452,15 @@ We decided to employ a linear regression model in order to predict prices for di
 
 The first model (*all_lm_model*) takes all available property features into account to train and make predictions. From this we were able to see that some of those we included were not relevant to the target variable, as seen below:
 
-```{r First Linear model, echo=FALSE}
+<details>
+
+<summary>*Click to see the summary of the first linear model*</summary>
+
+```{r First Linear model, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 summary(all_lm_model)
 ```
+
+</details>
 
 *As we can see in the model summary, some variables are converted into factors and interpreted separately, we can also see 'Nr_rooms' is relevant in general, but Package_Product and Category, for example, are not.*
 
@@ -439,9 +470,15 @@ With this information we were able to refine our selection of variables for trai
 
 The next model ( *few_lm_model* ) we trained with fewer dependent variables, only those of high importance. For this one, we took into account only the ones that were calculated to be significant to the model's performance.
 
-```{r Few Model Summary, echo=FALSE}
+<details>
+
+<summary>*Click to see the summary of the second linear model*</summary>
+
+```{r Few Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 summary(few_lm_model)
 ```
+
+</details>
 
 *Here we can see that the variables taken into account were Canton, Days_Difference, Category, Customer_Segment, Nr_rooms and Size_m2.*
 
@@ -449,9 +486,17 @@ summary(few_lm_model)
 
 The last model generated took into account only *two* variable as a predictor: *Nr_rooms* and *Category_num2*. The number of rooms seems to have one of, if not the biggest effect on rental price of a property, which is why we went with this variable for analysis. The second customer category also has a significant effect, so it was included.
 
-```{r Simple Model Summary, echo=FALSE}
+<details>
+
+<summary>*Click to see the summary of the second linear model*</summary>
+
+```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 summary(simple_lm_model)$coef
 ```
+
+</details>
+
+<br>
 
 ## Interpretation
 
