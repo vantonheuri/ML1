@@ -724,10 +724,7 @@ Considering the sensitive nature of personal data related to rental properties, 
 # Personal Reflections
 This project has provided invaluable learning experiences, allowing us to delve into the realm of predicting rental prices in the real estate market and hone our skills. While challenges were encountered, particularly with complex models like neural networks for rental price prediction, we appreciate the opportunity to experiment and grow. Moving forward, we recognize the importance of establishing common measures for model comparison and the ethical implications of data usage in rental price prediction. Ultimately, we're proud of our report and grateful for the knowledge gained throughout this journey.
 
-# Personal Reflections
-This project has provided invaluable learning experiences, allowing us to delve into the realm of predicting rental prices in the real estate market and hone our skills. While challenges were encountered, particularly with complex models like neural networks for rental price prediction, we appreciate the opportunity to experiment and grow. Moving forward, we recognize the importance of establishing common measures for model comparison and the ethical implications of data usage in rental price prediction. Ultimately, we're proud of our report and grateful for the knowledge gained throughout this journey.
-
-# Help of Gen AI
+# Implementation of Generative AI
 
 The implementation of generative AI, particularly through platforms like OpenAI's GPT-3, has significantly enhanced our project by providing invaluable assistance across various facets. Its advanced natural language processing capabilities have proven invaluable in a wide range of tasks, from data exploration to model development and report writing.
 
