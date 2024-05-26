@@ -579,58 +579,66 @@ d.properties <- read_excel("data/data_cleaned/data_total_model.xlsx")
 
 ## Purpose and Target
 
-```{r GAM code 1 , echo=FALSE, warning=FALSE}
-# Plotting data
-gg.density.site <- ggplot(data = d.properties, mapping = aes(y = Price_Gross, x = Size_m2)) + 
-  geom_point()
+###Purpose
+The purpose is to analyze and model the relationship between property size (in square meters) and price using various statistical techniques. The goal is to determine the best-fitting model that accurately predicts property prices based on the available data. By fitting and comparing different models Generalized Additive Models (GAMs), we aim to identify the most reliable and insightful model. Additionally, the report provides recommendations for further improving the model and making more accurate predictions.
 
-gg.density.site + geom_smooth()
-
-```
+###Objectives
+- **Data Analysis:** Understand the dataset and the key variables involved.
+- **Model Fitting:** Apply different statistical models to the data.
+- **Model Comparison:** Evaluate and compare the performance of the models.
+- **Recommendations:** Provide suggestions for future improvements and next steps.
 
 ## Interpretation
 
-**Linear Model**
-A basic linear model was fitted with Size_m2 as the predictor for Price_Gross:
+### Quadratic Model Plot
 
-<details>
+The graph shows the relationship between Size_m2 and Price_Gross using a quadratic model. The black line represents the fitted values from the quadratic model, and the shaded area represents the confidence interval around the fitted values.
 
-<summary>Click to see the summary</summary>
+**Key Observations**
 
-```{r GAM code 2, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+- **Non-linear Relationship** between Size_m2 and Price_Gross. Initially, Price_Gross increases with Size_m2 up to about 300-400 m², after which it starts to decrease.
 
-lm.properties.1 <- lm(Price_Gross ~ Size_m2, data = d.properties)
-summary(lm.properties.1)
+- The **Confidence Intervals** widen significantly beyond 300 m², indicating increased uncertainty in the predictions for larger properties. This suggests that the model is less reliable for larger properties due to fewer data points in this range.
+
+- **Data Distribution.** Most of the data points are clustered below 300 m², with few data points for larger properties. The fit of the model is more certain where there are more data points, and less certain where data points are sparse.
+
+```{r GAM code 1 , echo=FALSE, warning=FALSE}
+gg.density.site <- ggplot(data = d.properties, mapping = aes(y = Price_Gross, x = Size_m2)) + 
+  geom_point(alpha = 0.6, size = 0.8, color = "#9C8AE6") +
+  labs(title = "Effect of Size on Gross Price", x = "Size (m²)", y = "Gross Price (CHF)") +  
+  theme_minimal() +  
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8)) +
+  geom_smooth(color = "black")  
+
+print(gg.density.site)
+
 ```
-</details>
 
-p-value: < 2e-16, indicating high significance.
-Multiple R-squared: 0.08348, suggesting that only 8.35% of the variability in Price_Gross can be explained by Size_m2.
+**Next Steps for the GAM**
 
-**Quadratic Model**
+Given the observations from the quadratic model, we can take the following steps to improve our model using GAM:
+    
+- **Filter the data.** Consider filtering the data to include only properties with Size_m2 less than 300 m². This can help improve the reliability of the model in the range where we have more data.
 
-To capture potential non-linear relationships, a quadratic model was fitted:
+- **Transform variables.** Transform Size_m2 to log(Size_m2) if a log transformation better captures the relationship and stabilises the variance.
 
-<details>
+- **Include interactions** with other significant variables such as Nr_rooms to capture more complex relationships.
 
-<summary>Click to see the summary</summary>
+- **Use smoothing splines in GAM**, which can capture non-linear relationships more flexibly than a quadratic model.
 
-```{r GAM code 3, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+<br>
 
-lm.properties.2 <- lm(Price_Gross ~ poly(Size_m2, 2), data = d.properties)
-summary(lm.properties.2)
-anova(lm.properties.1, lm.properties.2)
-```
-</details>
+### Generalized Additive Models (GAM)
 
-p-value: < 2.2e-16, indicating high significance.
-Multiple R-squared: 0.1973, showing an improvement over the linear model.
-ANOVA: Significant reduction in RSS by 134,208,867, confirming the quadratic model provides a better fit.
-
-**Generalized Additive Models (GAM)**
+Once these parameters are clear, we will implement them in our GAM models and see which ones perform best.
 
 - **Basic GAM**
-A basic GAM was fitted to capture more complex non-linear relationships:
+Starting with fitting a basic GAM to capture more complex non-linear relationships:
 
 <details>
 
