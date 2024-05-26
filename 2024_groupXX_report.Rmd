@@ -150,26 +150,9 @@ properties_per_canton <- df_total %>%
   summarise(Count = n()) %>%
   arrange(desc(Count)) # Arrange in descending order of count
 
-# Creating the vertical bar chart with smaller data labels
-ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
-  geom_text(aes(label = Count), vjust = -0.5, color = "black", size = 2.2) + # Data labels above bars
-  labs(title = "Properties per Canton", x = "Canton", y = "Count of Properties") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), # Rotate x-axis labels for better readability
-        plot.title = element_text(hjust = 0.5))
-```
-
-```{r Properties per Canton, echo=FALSE, warning = FALSE}
-# Counting properties per Canton and arranging them from highest to lowest
-properties_per_canton <- df_total %>%
-  group_by(Canton) %>%
-  summarise(Count = n()) %>%
-  arrange(desc(Count)) # Arrange in descending order of count
-
 # Define colors for specific cantons
 highlight_cantons <- c("ZG", "ZH", "AG", "LU")
-properties_per_canton$color <- ifelse(properties_per_canton$Canton %in% highlight_cantons, "#6a0dad", "#008080")
+properties_per_canton$color <- ifelse(properties_per_canton$Canton %in% highlight_cantons, "#9C8AE6", "skyblue")
 
 # Creating the vertical bar chart with colored bars for specific cantons
 ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count, fill = color)) +
@@ -185,23 +168,53 @@ ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count, fill =
 ### Average Rental Price per Canton
 
 This visualization indicates significant variability in average rental prices across cantons. The highest average rental prices are observed in Ticino (TI), far exceeding other cantons like Zurich (ZH) and Vaud (VD). This may suggest a premium on rental prices in TI or a presence of high-end properties skewing the average.
+```{r, echo=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
 
-```{r Average Rental Price per Canton, echo=FALSE, warning = FALSE}
-canton_order <- df_total %>%
+# Calculate the order of cantons based on average rental price and select top ten
+top_cantons <- df_total %>%
   group_by(Canton) %>%
   summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
   arrange(desc(Average_Price_Gross)) %>%
+  slice(1:10) %>%
   .$Canton
 
-# Adjust the factor levels of Canton based on the calculated order
-df_total$Canton <- factor(df_total$Canton, levels = canton_order)
+# Adjust the factor levels of Canton for the top ten cantons
+df_total_top_10 <- df_total %>%
+  filter(Canton %in% top_cantons) %>%
+  mutate(Canton = factor(Canton, levels = top_cantons))
 
-# Plot with cantons ordered by average rental price
-ggplot(df_total, aes(x = Canton, y = Price_Gross)) +
+# Plot
+plot_top_10 <- ggplot(df_total_top_10, aes(x = Canton, y = Price_Gross)) +
   stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black") +
-  labs(title = "Average Rental Price per Canton", x = "Canton", y = "Average Rental Price (CHF)") +
+  labs(title = "Top 10 Cantons: Average Rental Price", x = "Canton", y = "Average Rental Price (CHF)") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# Define highlighted cantons including Zurich (ZH)
+highlight_cantons <- c("ZG", "ZU", "AG", "LU", "ZH")
+
+# Filter data for highlighted cantons and recalculate averages
+highlighted_data <- df_total %>%
+  filter(Canton %in% highlight_cantons) %>%
+  group_by(Canton) %>%
+  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
+  arrange(desc(Average_Price_Gross)) 
+
+# Adjust the factor levels based on the new order in the highlighted cantons
+highlighted_data$Canton <- factor(highlighted_data$Canton, levels = highlighted_data$Canton)
+
+# Plot 
+plot_highlighted <- ggplot(highlighted_data, aes(x = Canton, y = Average_Price_Gross)) +
+  geom_bar(stat = "identity", fill = "#9C8AE6", color = "black") +
+  labs(title = "Average Rental Price", x = "Canton", y = "Average Rental Price (CHF)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# Arrange both plots side by side
+grid.arrange(plot_top_10, plot_highlighted, ncol = 2)
 ```
 
 ### Differences in rental prices between different customer segment
