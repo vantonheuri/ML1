@@ -344,7 +344,7 @@ We decided to employ a linear regression model in order to predict prices for di
 
 ### Linear Model 1
 
-The first model (*all_lm_model*)takes all available property features into account to train and make predictions. From this we were able to see that some of those we included were not relevant to the target variable, as seen below:
+The first model (*all_lm_model*) takes all available property features into account to train and make predictions. From this we were able to see that some of those we included were not relevant to the target variable, as seen below:
 
 ```{r First Linear model, echo=FALSE}
 summary(all_lm_model)
@@ -376,7 +376,7 @@ summary(simple_lm_model)$coef
 
 All three models offer us some insight into the behavior of rental prices for different properties. Interestingly, our research thus far shows that the Canton of said property is not that influential in its rental price, except for Canton 3.
 
-*(Canton 1: Argau, Canton 2: Luzern, Canton 3: Zürich)*
+*(Canton 1: Argau, Canton 2: Luzern, Canton 3: Zürich, Canton 4: Zug)*
 
 For desired results, we will focus on the second model, which includes all the variables considered significant for the best results.
 
@@ -395,7 +395,7 @@ plot(lm_plot1, xlab="Nr_Rooms", ylab="Price_Gross", main="Price of a Rental Prop
 
 ```
 
-In the illustration above, we depict the relationship between the number of rooms in a property and the gross price of the same. We can observe an upward curve, which leads to believe that a higher number of rooms leads to a higher price, which would make sense. This information must also be taken into consideration together with other variables, like the property's area in meters squared, average size of rooms, location, etc.
+In the illustration above, we depict the relationship between the number of rooms in a property and the gross price of the same. We can observe an upward trend, which leads to believe that a higher number of rooms leads to a higher price, which would make sense. This information must also be taken into consideration together with other variables, like the property's area in meters squared, average size of rooms, location, etc.
 
 ## Conclusion
 
@@ -570,9 +570,9 @@ svm_confusion$table
 
 *SVM Performance*
 
-As we can see, comparing the two confusion matrices, the Neural Network has better accuracy than the SVM. Though at first glance it may seem like the better option, there are several advantages and disadvantages between the two models.
+As we can see, comparing the two confusion matrices, the Neural Network has slightly better accuracy than the SVM. Though at first glance it may seem like the better option, there are several advantages and disadvantages between the two models.
 
-An SVM is particularly effective when working with higher-dimensional data, and has better memory efficiency. It is also more robust to overfitting, but are less efficient with larger datasets because of the training complexity.
+An SVM is particularly effective when working with higher-dimensional data, and has better memory efficiency. It is also more robust to over-fitting, but are less efficient with larger datasets because of the training complexity.
 
 Neural networks on the other hand, are more flexible and powerful when it comes to approximating trends. They can also learn and extract features that are not present in the data, finding new relationships that may not be obvious, but can be very computationally intensive.
 
