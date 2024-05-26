@@ -530,7 +530,7 @@ Our linear models suggest that properties, specifically houses, with more rooms 
 
 # GLM - Generalised Linear - Poisson
 
-```{r GLM - Generalised Linear - , echo=FALSE, warning=FALSE}
+```{r GLM - Generalised Linear - Binomial, echo=FALSE, warning=FALSE}
 
 
 ```
@@ -551,7 +551,7 @@ Our linear models suggest that properties, specifically houses, with more rooms 
 
 #  GLM - Generalised Linear - Binomial
 
-```{r GLM - Generalised Linear - Binomial, echo=FALSE, warning=FALSE}
+```{r Generalised Linear Model with family set to Binomial, echo=FALSE, warning=FALSE}
 
 
 ```
