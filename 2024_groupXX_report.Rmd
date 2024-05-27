@@ -933,7 +933,6 @@ test_data_without_target <- test_data[, !names(test_data) %in% 'High_Ticket']
 # Make predictions
 svm_predictions <- predict(svm_model, newdata = test_data_without_target)
 
-
 ```
 
 ## Interpretation
