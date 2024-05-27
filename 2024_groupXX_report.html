@@ -28,6 +28,230 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
+<script>$(document).ready(function(){
+    if (typeof $('[data-toggle="tooltip"]').tooltip === 'function') {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+    if ($('[data-toggle="popover"]').popover === 'function') {
+        $('[data-toggle="popover"]').popover();
+    }
+});
+</script>
+<style type="text/css">
+.lightable-minimal {
+border-collapse: separate;
+border-spacing: 16px 1px;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-minimal td {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal th {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal thead tr:last-child th {
+border-bottom: 2px solid #00000050;
+empty-cells: hide;
+}
+.lightable-minimal tbody tr:first-child td {
+padding-top: 0.5em;
+}
+.lightable-minimal.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-minimal.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic {
+border-top: 0.16em solid #111111;
+border-bottom: 0.16em solid #111111;
+width: 100%;
+margin-bottom: 10px;
+margin: 10px 5px;
+}
+.lightable-classic tfoot tr td {
+border: 0;
+}
+.lightable-classic tfoot tr:first-child td {
+border-top: 0.14em solid #111111;
+}
+.lightable-classic caption {
+color: #222222;
+}
+.lightable-classic td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic thead tr:last-child th {
+border-bottom: 0.10em solid #111111;
+}
+.lightable-classic.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic-2 {
+border-top: 3px double #111111;
+border-bottom: 3px double #111111;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-classic-2 tfoot tr td {
+border: 0;
+}
+.lightable-classic-2 tfoot tr:first-child td {
+border-top: 3px double #111111;
+}
+.lightable-classic-2 caption {
+color: #222222;
+}
+.lightable-classic-2 td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic-2 th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic-2 tbody tr:last-child td {
+border-bottom: 3px double #111111;
+}
+.lightable-classic-2 thead tr:last-child th {
+border-bottom: 1px solid #111111;
+}
+.lightable-classic-2.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic-2.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #EEE;
+border-collapse: collapse;
+margin-bottom: 10px;
+}
+.lightable-material tfoot tr td {
+border: 0;
+}
+.lightable-material tfoot tr:first-child td {
+border-top: 1px solid #EEE;
+}
+.lightable-material th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+}
+.lightable-material td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+border-top: 1px solid #eeeeee;
+}
+.lightable-material.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #ddd;
+}
+.lightable-material-dark {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #FFFFFF12;
+border-collapse: collapse;
+margin-bottom: 10px;
+background-color: #363640;
+}
+.lightable-material-dark tfoot tr td {
+border: 0;
+}
+.lightable-material-dark tfoot tr:first-child td {
+border-top: 1px solid #FFFFFF12;
+}
+.lightable-material-dark th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF60;
+}
+.lightable-material-dark td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF;
+border-top: 1px solid #FFFFFF12;
+}
+.lightable-material-dark.lightable-hover tbody tr:hover {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody tr:nth-child(even) {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material-dark.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #FFFFFF12;
+}
+.lightable-paper {
+width: 100%;
+margin-bottom: 10px;
+color: #444;
+}
+.lightable-paper tfoot tr td {
+border: 0;
+}
+.lightable-paper tfoot tr:first-child td {
+border-top: 1px solid #00000020;
+}
+.lightable-paper thead tr:last-child th {
+color: #666;
+vertical-align: bottom;
+border-bottom: 1px solid #00000020;
+line-height: 1.15em;
+padding: 10px 5px;
+}
+.lightable-paper td {
+vertical-align: middle;
+border-bottom: 1px solid #00000010;
+line-height: 1.15em;
+padding: 7px 5px;
+}
+.lightable-paper.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-paper.lightable-striped tbody tr:nth-child(even) {
+background-color: #00000008;
+}
+.lightable-paper.lightable-striped tbody td {
+border: 0;
+}
+</style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -134,7 +358,7 @@ code span.ch { color: #4070a0; }
 code span.st { color: #183691; } 
 code span.co { color: #969896; font-style: italic; } 
 code span.ot { color: #007020; } 
-body{font-family: 'Segoe UI', sans-serif;font-size: 10pt;}h1{font-size: 16pt;}h2{font-size: 14pt;}h3,h4,h5,h6{font-size: 12pt;}</style>
+</style>
 
 
 
@@ -188,6 +412,19 @@ AI</a></li>
 </ul>
 </div>
 
+<style>
+body {font-size: 15px;}
+p {font-size: 15px;}
+h1{font-size: 20pt;}
+h2{font-size: 17pt;}
+h3,h4,h5,h6{font-size: 15pt;}
+div.r-plot {height: 50%; width: 70%; margin: auto;}
+img {
+max-width: 70%; height: auto;
+display: block;
+margin: auto;
+}
+</style>
 <div id="introduction" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
 <p>Zug Estates focuses on developing, managing, and marketing properties
@@ -289,7 +526,8 @@ prepared.</p>
 <span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
 <span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
 <span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="fu">library</span>(reshape2)</span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span></code></pre></div>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code></pre></div>
 </details>
 <p><br></p>
 </div>
@@ -767,8 +1005,8 @@ Click to see the summary
 ## R-sq.(adj) =  0.389   Deviance explained = 39.5%
 ## GCV = 7.5459e+05  Scale est. = 7.4684e+05  n = 965</code></pre>
 </details>
-<p>R-squared (adj.): 0.389, indicating that 38.9% of the variability is
-explained. Deviance explained: 39.5%.</p>
+<p><em>R-squared (adj.): 0.389, indicating that 38.9% of the variability
+is explained. Deviance explained: 39.5%.</em></p>
 </div>
 <div id="gam-with-multiple-predictors" class="section level3" number="8.2.3">
 <h3><span class="header-section-number">8.2.3</span> GAM with Multiple
@@ -809,9 +1047,9 @@ Click to see the summary
 ## R-sq.(adj) =  0.413   Deviance explained = 41.9%
 ## GCV = 7.2697e+05  Scale est. = 7.1857e+05  n = 965</code></pre>
 </details>
-<p>Adjusted R-squared: 0.413, indicating 41.3% of variability is
+<p><em>Adjusted R-squared: 0.413, indicating 41.3% of variability is
 explained. Significant predictors: Days_Difference, Nr_rooms, GDP_per,
-Population.</p>
+Population.</em></p>
 </div>
 <div id="filtered-gam" class="section level3" number="8.2.4">
 <h3><span class="header-section-number">8.2.4</span> Filtered GAM</h3>
@@ -851,7 +1089,8 @@ Click to see the summary
 ## R-sq.(adj) =  0.431   Deviance explained = 43.9%
 ## GCV = 6.8502e+05  Scale est. = 6.754e+05  n = 962</code></pre>
 </details>
-<p>Adjusted R-squared: 0.431, explaining 43.1% of variability.</p>
+<p><em>Adjusted R-squared: 0.431, explaining 43.1% of
+variability.</em></p>
 </div>
 <div id="log-transformed-gam" class="section level3" number="8.2.5">
 <h3><span class="header-section-number">8.2.5</span> Log-Transformed
@@ -891,7 +1130,8 @@ Click to see the summary
 ## R-sq.(adj) =  0.388   Deviance explained = 39.6%
 ## GCV = 7.5932e+05  Scale est. = 7.4874e+05  n = 965</code></pre>
 </details>
-<p>Adjusted R-squared: 0.388, explaining 38.8% of variability.</p>
+<p><em>Adjusted R-squared: 0.388, explaining 38.8% of
+variability.</em></p>
 </div>
 <div id="gam-with-interactions" class="section level3" number="8.2.6">
 <h3><span class="header-section-number">8.2.6</span> GAM with
@@ -933,19 +1173,120 @@ Click to see the summary
 ## R-sq.(adj) =  0.449   Deviance explained = 45.7%
 ## GCV = 6.8369e+05  Scale est. = 6.7338e+05  n = 965</code></pre>
 </details>
-<p>Adjusted R-squared: 0.449, explaining 44.9% of variability.
-Significant interaction: s(Size_m2):Nr_rooms.</p>
+<p><em>Adjusted R-squared: 0.449, explaining 44.9% of variability.
+Significant interaction: s(Size_m2):Nr_rooms.</em></p>
 </div>
 </div>
 <div id="conclusion-3" class="section level2" number="8.3">
 <h2><span class="header-section-number">8.3</span> Conclusion</h2>
-<p>Based on the adjusted R-squared and deviance explained, the
-best-fitting model is the GAM with interaction terms. This model
-explains 44.9% of the variability in Price_Gross and includes
-significant interactions between <strong>Size_m2</strong> and
+</div>
+<div id="conclusion-4" class="section level2" number="8.4">
+<h2><span class="header-section-number">8.4</span> Conclusion</h2>
+<div id="model-comparison-table" class="section level3" number="8.4.1">
+<h3><span class="header-section-number">8.4.1</span> Model Comparison
+Table</h3>
+<p>As can be seen in the table and in the summaries of each model, based
+on the adjusted R-squared and the explained variance, the best fitting
+model is the GAM with interaction terms.</p>
+<p>This model explains 44.9% of the variability in Price_Gross and
+includes significant interactions between <strong>Size_m2</strong> and
 <strong>Nr_rooms</strong>.</p>
-<div id="next-steps" class="section level3" number="8.3.1">
-<h3><span class="header-section-number">8.3.1</span> Next Steps</h3>
+<table class=" lightable-classic table" style="font-family: Segoe UI; width: auto !important; margin-left: auto; margin-right: auto; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Model Comparison Summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: rgba(156, 138, 230, 255) !important;">
+Model
+</th>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: rgba(156, 138, 230, 255) !important;">
+R.squared..Adj.
+</th>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: rgba(156, 138, 230, 255) !important;">
+Deviance.Explained
+</th>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: rgba(156, 138, 230, 255) !important;">
+GCV.Score
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5cm; font-weight: bold;">
+GAM - Size_m2
+</td>
+<td style="text-align:left;width: 3cm; ">
+0.389
+</td>
+<td style="text-align:left;width: 3cm; ">
+39.5%
+</td>
+<td style="text-align:left;width: 3cm; ">
+754590
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5cm; font-weight: bold;">
+GAM - Full
+</td>
+<td style="text-align:left;width: 3cm; ">
+0.413
+</td>
+<td style="text-align:left;width: 3cm; ">
+41.9%
+</td>
+<td style="text-align:left;width: 3cm; ">
+726970
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5cm; font-weight: bold;">
+GAM - Filtered
+</td>
+<td style="text-align:left;width: 3cm; ">
+0.431
+</td>
+<td style="text-align:left;width: 3cm; ">
+43.9%
+</td>
+<td style="text-align:left;width: 3cm; ">
+685020
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5cm; font-weight: bold;">
+GAM - Log
+</td>
+<td style="text-align:left;width: 3cm; ">
+0.388
+</td>
+<td style="text-align:left;width: 3cm; ">
+39.6%
+</td>
+<td style="text-align:left;width: 3cm; ">
+759320
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5cm; font-weight: bold;">
+GAM - Interaction
+</td>
+<td style="text-align:left;width: 3cm; ">
+0.449
+</td>
+<td style="text-align:left;width: 3cm; ">
+45.7%
+</td>
+<td style="text-align:left;width: 3cm; ">
+683690
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="next-steps" class="section level3" number="8.4.2">
+<h3><span class="header-section-number">8.4.2</span> Next Steps</h3>
 <p><strong>1. Higher-Order Polynomial Terms:</strong> Explore cubic or
 higher-order terms.</p>
 <p><strong>2. Advanced GAMs:</strong> Consider fitting more complex GAMs
@@ -956,8 +1297,61 @@ predictors to improve model accuracy.</p>
 validate model robustness.</p>
 <p>These steps will help in further refining the model and ensuring more
 accurate predictions for property prices.</p>
-<p><br></p>
 </div>
+</div>
+<div id="model-predictions" class="section level2" number="8.5">
+<h2><span class="header-section-number">8.5</span> Model
+Predictions</h2>
+<p>The analysis aims to forecast rental prices for houses and
+apartments. Noticing that the highest volume of rental prices falls
+within the range of 50 to 150 square meters, we have decided to focus
+our prediction on rental prices within this segment. This size range can
+be understood as a key market segment for Zug Estates, given its
+commercial relevance.</p>
+<p><strong>Methodology used</strong></p>
+<ul>
+<li><p><strong>Cross-validation:</strong> A 10-fold cross-validation was
+used to increase the robustness of the model, involving repeated
+training and testing.</p></li>
+<li><p><strong>Model fitting:</strong> as we have seen in the Model
+Comparison Table, we choosed the GAM - Interaction Model which included
+between its predictors including property size, listing period, number
+of rooms, GDP per capita, population, area and population density, and
+an interaction between property size and number of rooms.</p></li>
+</ul>
+<p><strong>Performance metrics</strong></p>
+<ul>
+<li><strong>RMSE:</strong> The accuracy of the model in predicting
+rental prices was measured by the RMSE, which averaged CHF 1005.04
+across all replicates, indicating the model’s predictive ability.</li>
+</ul>
+<pre><code>## [1] 1005.038</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- -->
+<strong>Results</strong></p>
+<ul>
+<li><p><strong>Price comparison:</strong> Visual comparison showed the
+variability between predicted (purple) and actual (black) prices, with
+some variation across different property sizes.</p></li>
+<li><p><strong>Price distribution:</strong> Predicted prices showed a
+narrower interquartile range and fewer extremes compared to actual
+prices, suggesting under-prediction of outliers.</p></li>
+</ul>
+<p>To conclude we can say that The GAM model is reasonably effective at
+predicting rental prices for smaller properties, capturing general
+trends despite some variation.</p>
+<p><strong>Recommendations</strong></p>
+<ul>
+<li><p><strong>Refine the model:</strong> Consider additional predictors
+or interactions to improve accuracy.</p></li>
+<li><p><strong>Outlier analysis:</strong> Investigate causes of outliers
+to refine predictions.</p></li>
+<li><p><strong>Focus on target segment:</strong> Ensure data accuracy
+for properties under 150 square metres to align with market
+interest.</p></li>
+</ul>
+<p>This foundational analysis helps Zug Estates refine rental price
+predictions to maintain competitiveness and market insight.</p>
+<p><br></p>
 </div>
 </div>
 <div id="neural-network" class="section level1" number="9">
@@ -1018,7 +1412,7 @@ estimate to prediction errors. We can see from the clearly defined
 clusters that our model is very confident in its predictions, and not
 many incorrect predictions were made.</p>
 </div>
-<div id="conclusion-4" class="section level2" number="9.3">
+<div id="conclusion-5" class="section level2" number="9.3">
 <h2><span class="header-section-number">9.3</span> Conclusion</h2>
 <p>A Neural Network proves to be a very versatile tool when it comes to
 adapting to data. This may be beneficial in the future, if this tool is
@@ -1071,7 +1465,7 @@ when it comes to approximating trends. They can also learn and extract
 features that are not present in the data, finding new relationships
 that may not be obvious, but can be very computationally intensive.</p>
 </div>
-<div id="conclusion-5" class="section level2" number="10.3">
+<div id="conclusion-6" class="section level2" number="10.3">
 <h2><span class="header-section-number">10.3</span> Conclusion</h2>
 <p>In summary, both are good options for our purpose. In the future, if
 considering to use either one, the size, shape and complexity of the

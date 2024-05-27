@@ -8,7 +8,6 @@ output:
   prettydoc::html_pretty:
     theme: hpstr
     highlight: github
-    css: styles.css
     toc: yes
     toc_depth: 1
     # toc_float: yes
@@ -28,6 +27,30 @@ output:
 knit:
   citations: yes
 ---
+
+<style>
+
+body {font-size: 15px;}
+
+p {font-size: 15px;}
+
+h1{font-size: 20pt;}
+
+h2{font-size: 17pt;}
+
+h3,h4,h5,h6{font-size: 15pt;}
+
+div.r-plot {width: 70%; margin: auto;}
+
+img {
+  max-width: 70%; 
+  height: auto;
+  display: block;
+  margin: auto;
+}
+
+</style>
+
 
 ```{r setup, include = FALSE, warning = FALSE}
 library(knitr)
@@ -786,59 +809,160 @@ These steps will help in further refining the model and ensuring more accurate p
 
 ## Model Predictions
 
-In this analysis, we aimed to predict property prices using a Generalised Additive Model (GAM) based on several factors including property size (Size_m2), days difference (Days_Difference), number of rooms (Nr_rooms), GDP per capita (GDP_per), population, area (Area_km2) and density. We first performed a 10-fold cross-validation to assess the performance of the model and found the average RMSE to be an appropriate measure of model accuracy.
+The analysis aims to forecast rental prices for houses and apartments. Noticing that the highest volume of rental prices falls within the range of 50 to 150 square meters, we have decided to focus our prediction on rental prices within this segment. This size range can be understood as a key market segment for Zug Estates, given its commercial relevance.
 
-Following cross-validation, we fitted the GAM model to the full dataset to more accurately capture the underlying patterns. To understand the effect of property size on predicted prices, we generated a new dataset with Size_m2 values ranging from 50 to 500 m² and predicted prices using the fitted model. The other predictors were randomly sampled from the original dataset to maintain variability.
+**Methodology used**
 
-```{r NeuralNet - Base, echo=FALSE}
-# Required Packages
-library(readxl)
-library(neuralnet)
+- **Cross-validation:** A 10-fold cross-validation was used to increase the robustness of the model, involving repeated training and testing.
 
-# Reading in data
-enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
-enc_data <- enc_data[, !(names(enc_data) %in% "X"), drop = TRUE]
+- **Model fitting:** as we have seen in the Model Comparison Table, we choosed the GAM - Interaction Model which included between its predictors including property size, listing period, number of rooms, GDP per capita, population, area and population density, and an interaction between property size and number of rooms.
 
-# Feature Engineering
-enc_data$Price_per_m2 <- enc_data$Price_Gross / enc_data$Size_m2
-q3 <- median(enc_data$Price_per_m2) + IQR(enc_data$Price_per_m2) / 2
-enc_data$High_Ticket <- enc_data$Price_per_m2 > q3
-enc_data$High_Ticket <- ifelse(enc_data$High_Ticket, 1, 0)
+**Performance metrics**
 
-# Declaring Categorical Variables
-enc_data$Canton_num <- as.numeric(as.factor(enc_data$Canton_num))
-enc_data$Customer_Segment_num <- as.numeric(as.factor(enc_data$Customer_Segment_num))
-enc_data$Category_num <- as.numeric(as.factor(enc_data$Category_num))
-enc_data$Nr_rooms <- as.numeric(enc_data$Nr_rooms) # Treating Nr_rooms as continuous
-enc_data$Package_Product_num <- as.numeric(as.factor(enc_data$Package_Product_num))
+- **RMSE:** The accuracy of the model in predicting rental prices was measured by the RMSE, which averaged CHF 1005.04 across all replicates, indicating the model's predictive ability.
 
-# Normalizing the data
-normalize <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
+
+```{r GAM Plot, echo=FALSE, warning = FALSE}
+# Train Best model: GAM with interaction | Test Data with Cross Validation
+
+# Define the number of folds for cross-validation
+set.seed(123)
+folds <- createFolds(d.properties$Price_Gross, k = 10, list = TRUE)
+
+# Initialize vectors to store predictions and actual prices
+all_predictions <- c()
+all_actuals <- c()  
+rmse_values <- c()
+
+
+# Perform cross-validation
+for(i in 1:length(folds)) {
+  # Split the data into training and testing sets
+  test_indices <- folds[[i]]
+  train_data <- d.properties[-test_indices, ]
+  test_data <- d.properties[test_indices, ]
+  
+  # Fit the model on the training data
+  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
+  
+  # Predict on the test data
+  predictions <- predict(gam_model, newdata = test_data)
+  
+  # Store the predictions and actual values
+  all_predictions <- c(all_predictions, predictions)
+  all_actuals <- c(all_actuals, test_data$Price_Gross)
+  
+  # Calculate RMSE for the current fold
+  rmse <- sqrt(mean((predictions - test_data$Price_Gross)^2))
+  rmse_values <- c(rmse_values, rmse)
 }
 
-features <- subset(enc_data, select = -High_Ticket)
-maxmindf_features <- as.data.frame(lapply(features, normalize))
+# Calculate the average RMSE across all folds
+average_rmse <- mean(rmse_values)
 
-High_Ticket <- enc_data$High_Ticket
-maxmindf <- cbind(High_Ticket, maxmindf_features)
+# Print the average RMSE
+print(average_rmse)
 
-# Split into train and test sets
-set.seed(36)
-smpl <- sample.int(n = nrow(maxmindf), size = floor(0.8 * nrow(maxmindf)), replace = FALSE)
-train_maxmin <- maxmindf[smpl, ]
-test_maxmin <- maxmindf[-smpl, ]
+# Create a data frame with predictions and actual values
+results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals)
 
-# Modeling
-model_maxmin <- neuralnet(High_Ticket ~ ., data = train_maxmin, hidden = c(3, 8, 5), linear.output = FALSE)
+# Create an index for each test instance
+results_df <- results_df %>%
+  mutate(Index = 1:nrow(results_df))
 
+# Plot the predicted vs. actual prices as lines
+line_plot <- ggplot(results_df, aes(x = Index)) +
+  geom_line(aes(y = Actual, color = "Actual Price"), size = 0.5, alpha = 0.7) +
+  geom_line(aes(y = Predicted, color = "Predicted Price"), size = 0.75, alpha = 0.7) +
+  labs(title = "Comparison of Predicted and Actual Prices",
+       subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
+       x = "Size (m²)",
+       y = "Rental Price (CHF)",
+       color = "Legend") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 150), ylim = c(0, 8000)) +
+  scale_color_manual(values = c("Actual Price" = "black", "Predicted Price" = "#9C8AE6")) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 10),
+    axis.title = element_text(size = 10),
+    legend.text = element_text(size = 8),
+    legend.position = c(0.85, 0.9), 
+    legend.background = element_rect(fill = "white", colour = "black", size = 0.2), 
+    legend.title = element_blank(),
+    legend.margin = margin(t = 5, r = 20, b = 5, l = 10)
+  )
 
-# Predicting
-pred_maxmin <- predict(model_maxmin, test_maxmin)
+# Limit the data to properties with sizes up to 500 m²
+limited_data <- d.properties %>%
+  filter(Size_m2 <= 150)
 
-# Testing the Accuracy of the models
-maxmin_results <- data.frame(actual = test_maxmin$High_Ticket, prediction = pred_maxmin)
+# Initialize vectors to store predictions and actual prices for limited data
+limited_predictions <- c()
+limited_actuals <- c()
+
+# Perform cross-validation for limited data
+for(i in 1:length(folds)) {
+  # Split the data into training and testing sets
+  test_indices <- folds[[i]]
+  train_data <- limited_data[-test_indices, ]
+  test_data <- limited_data[test_indices, ]
+  
+  # Fit the model on the training data
+  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
+  
+  # Predict on the test data
+  predictions <- predict(gam_model, newdata = test_data)
+  
+  # Store the predictions and actual values
+  limited_predictions <- c(limited_predictions, predictions)
+  limited_actuals <- c(limited_actuals, test_data$Price_Gross)
+}
+
+# Create a data frame with predictions and actual values for limited data
+limited_results_df <- data.frame(Predicted = limited_predictions, Actual = limited_actuals)
+
+# Combine the predicted and actual prices into a single column for plotting
+long_results_df <- limited_results_df %>%
+  pivot_longer(cols = c("Predicted", "Actual"), names_to = "Type", values_to = "Price")
+
+# Plot box plots of the predicted and actual prices
+box_plot <- ggplot(long_results_df, aes(x = Type, y = Price, fill = Type)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Distribution Prices for Properties under 150m²",
+       x = "Type",
+       y = "Rental Price (CHF)") +
+  scale_fill_manual(values = c("Actual" = "grey", "Predicted" = "#9C8AE6")) +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0, 6000)) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 10),
+    axis.title = element_text(size = 10),
+    legend.position = "none"
+  )
+
+# Arrange both plots side by side with specific widths and padding
+grid.arrange(line_plot, box_plot, ncol = 2, widths = c(3, 2), padding = unit(1, "lines"))
 ```
+**Results**
+
+- **Price comparison:** Visual comparison showed the variability between predicted (purple) and actual (black) prices, with some variation across different property sizes.
+
+- **Price distribution:** Predicted prices showed a narrower interquartile range and fewer extremes compared to actual prices, suggesting under-prediction of outliers.
+
+
+To conclude we can say that The GAM model is reasonably effective at predicting rental prices for smaller properties, capturing general trends despite some variation.
+
+**Recommendations**
+
+- **Refine the model:** Consider additional predictors or interactions to improve accuracy.
+
+- **Outlier analysis:** Investigate causes of outliers to refine predictions.
+
+- **Focus on target segment:** Ensure data accuracy for properties under 150 square metres to align with market interest.
+
+This foundational analysis helps Zug Estates refine rental price predictions to maintain competitiveness and market insight.
 
 <br>
 
