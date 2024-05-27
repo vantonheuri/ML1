@@ -1,6 +1,6 @@
 ---
 title: |
-  ![](LogoZugEstates.png){width=4in}   
+  ![](images/LogoZugEstates.png){width=4in}   
   Real Estate Pricing
 author: "Victor Anton, Rodrigo Gonzalez & Carlos Leon"
 date: "Machine Learning 1 - 05 June 2024"
@@ -8,7 +8,7 @@ output:
   prettydoc::html_pretty:
     theme: hpstr
     highlight: github
-    #highlight: tango
+    css: styles.css
     toc: yes
     toc_depth: 1
     # toc_float: yes
