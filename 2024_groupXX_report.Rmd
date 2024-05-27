@@ -30,24 +30,31 @@ knit:
 
 <style>
 
-body {font-size: 15px;}
+body {font-size: 14px;}
 
-p {font-size: 15px;}
+p {font-size: 14px;}
 
-h1{font-size: 20pt;}
+h1{font-size: 17pt;}
 
-h2{font-size: 17pt;}
+h2{font-size: 15pt;}
 
-h3,h4,h5,h6{font-size: 15pt;}
+h3,h4,h5,h6{font-size: 14pt;}
 
-div.r-plot {width: 70%; margin: auto;}
+div.r-plot {width: 60%; margin: auto;}
 
 img {
-  max-width: 70%; 
+  max-width: 60%; 
   height: auto;
   display: block;
   margin: auto;
 }
+
+
+table {
+  font-size: 16px;
+  line-height: 0.8;
+}
+
 
 </style>
 
@@ -767,29 +774,32 @@ summary(gam.properties.interaction)
 
 ## Conclusion
 
-## Conclusion
-
 ### Model Comparison Table
+
 
 As can be seen in the table and in the summaries of each model, based on the adjusted R-squared and the explained variance, the best fitting model is the GAM with interaction terms. 
 
 This model explains 44.9% of the variability in Price_Gross and includes significant interactions between **Size_m2** and **Nr_rooms**.
 
+
 ```{r Table GAMs Comparison, echo=FALSE, warning = FALSE}
+# Load the kableExtra library
+library(kableExtra)
+
 # Create the data frame for model comparison
 model_comparison <- data.frame(
   Model = c("GAM - Size_m2", "GAM - Full", "GAM - Filtered", "GAM - Log", "GAM - Interaction"),
-  `R-squared (Adj)` = c(0.389, 0.413, 0.431, 0.388, 0.449),
-  `Deviance Explained` = c("39.5%", "41.9%", "43.9%", "39.6%", "45.7%"),
-  `GCV Score` = c(754590, 726970, 685020, 759320, 683690)
+  `R_squared_Adj` = c(0.389, 0.413, 0.431, 0.388, 0.449),
+  `Deviance_Explained` = c("39.5%", "41.9%", "43.9%", "39.6%", "45.7%"),
+  `GCV_Score` = c(754590, 726970, 685020, 759320, 683690)
 )
 
 # Create the table with styling
-kbl(model_comparison, caption = "Model Comparison Summary", align = "l") %>%
+kbl(model_comparison, align = "l") %>%
   kable_classic(full_width = F, html_font = "Segoe UI") %>%
-  kable_styling(latex_options = c("striped", "hold_position"), position = "center", full_width = FALSE) %>%
-  column_spec(1, bold = TRUE, width = "5cm") %>%
-  column_spec(2:4, width = "3cm") %>%
+  kable_styling(latex_options = c("striped", "hold_position"), position = "center", font_size = 10) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:4, width = "2cm") %>%
   row_spec(0, background = "#9C8AE6", color = "white", bold = TRUE)
 ```
 
@@ -817,19 +827,20 @@ The analysis aims to forecast rental prices for houses and apartments. Noticing 
 
 - **Model fitting:** as we have seen in the Model Comparison Table, we choosed the GAM - Interaction Model which included between its predictors including property size, listing period, number of rooms, GDP per capita, population, area and population density, and an interaction between property size and number of rooms.
 
-**Performance metrics**
+**Performance metrics** 
 
 - **RMSE:** The accuracy of the model in predicting rental prices was measured by the RMSE, which averaged CHF 1005.04 across all replicates, indicating the model's predictive ability.
+ 
 
+<br>
 
 ```{r GAM Plot, echo=FALSE, warning = FALSE}
 # Train Best model: GAM with interaction | Test Data with Cross Validation
-
 # Define the number of folds for cross-validation
 set.seed(123)
 folds <- createFolds(d.properties$Price_Gross, k = 10, list = TRUE)
 
-# Initialize vectors to store predictions and actual prices
+# Initialize vectors
 all_predictions <- c()
 all_actuals <- c()  
 rmse_values <- c()
@@ -861,7 +872,7 @@ for(i in 1:length(folds)) {
 average_rmse <- mean(rmse_values)
 
 # Print the average RMSE
-print(average_rmse)
+#print(average_rmse)
 
 # Create a data frame with predictions and actual values
 results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals)
@@ -874,7 +885,7 @@ results_df <- results_df %>%
 line_plot <- ggplot(results_df, aes(x = Index)) +
   geom_line(aes(y = Actual, color = "Actual Price"), size = 0.5, alpha = 0.7) +
   geom_line(aes(y = Predicted, color = "Predicted Price"), size = 0.75, alpha = 0.7) +
-  labs(title = "Comparison of Predicted and Actual Prices",
+  labs(title = "Comparison of Prices",
        subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
        x = "Size (m²)",
        y = "Rental Price (CHF)",
@@ -883,7 +894,7 @@ line_plot <- ggplot(results_df, aes(x = Index)) +
   coord_cartesian(xlim = c(0, 150), ylim = c(0, 8000)) +
   scale_color_manual(values = c("Actual Price" = "black", "Predicted Price" = "#9C8AE6")) +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
     plot.subtitle = element_text(hjust = 0.5, size = 10),
     axis.title = element_text(size = 10),
     legend.text = element_text(size = 8),
@@ -929,14 +940,14 @@ long_results_df <- limited_results_df %>%
 # Plot box plots of the predicted and actual prices
 box_plot <- ggplot(long_results_df, aes(x = Type, y = Price, fill = Type)) +
   geom_boxplot(alpha = 0.7) +
-  labs(title = "Distribution Prices for Properties under 150m²",
+  labs(title = "Distribution Prices",
        x = "Type",
        y = "Rental Price (CHF)") +
   scale_fill_manual(values = c("Actual" = "grey", "Predicted" = "#9C8AE6")) +
   theme_minimal() +
   coord_cartesian(ylim = c(0, 6000)) +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
     plot.subtitle = element_text(hjust = 0.5, size = 10),
     axis.title = element_text(size = 10),
     legend.position = "none"
