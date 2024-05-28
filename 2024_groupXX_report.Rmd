@@ -70,31 +70,75 @@ opts_chunk$set(
 
 # Introduction
 
-Zug Estates focuses on developing, managing, and marketing properties in the Zug region, Switzerland. They prioritize centrally located sites for sustainable, multi-use development. Their portfolio is concentrated in Zug and Risch Rotkreuz, featuring a mix of residential, office, retail, hotel, and service spaces. The company aims for long-term property retention and development, driving value creation through sustainable designs and active management
+**Zug Estates (SWX: ZUGN)** focuses on developing, managing, and marketing properties in the Zug region, Switzerland. As a company, they prioritize centrally located sites for sustainable, multi-use development.  
 
-Zug Estates, a major real estate player in Zug, Switzerland, might be looking to invest in other parts of the country for several reasons. Here's a comprehensive breakdown:
+Their portfolio is concentrated in **Zug** and **Risch Rotkreuz**, featuring a mix of **residential**, **office**, **retail**, **hotel**, and **service spaces**. The company aims for long-term property retention and development, driving value creation through sustainable designs and active management.
 
--   **Risk Reduction:** The real estate market can be volatile. By spreading their investments across different cantons (Swiss states), Zug Estates reduces the risk associated with a downturn in Zug's market. They might target areas with strong growth potential or a different property mix to complement their Zug portfolio. This diversification provides a buffer and ensures a more stable income stream.
+**Zug Estates**, a major real estate player in Zug, Switzerland, might be looking to invest in other parts of the country for several reasons. Here’s a comprehensive breakdown: 
 
--   **Saturated Market:** Perhaps the Zug market is saturated, meaning there are limited opportunities for profitable investments. Expanding to other areas allows Zug Estates to tap into new markets with higher potential returns. They might find regions with a greater need for the kind of development they specialize in, offering exciting growth possibilities.
 
--   **Connecting the Landscape:** Zug Estates' investments might have a strategic element beyond just individual properties. They could be acquiring properties near transportation hubs or in developing commercial centers. This could be a way to connect different areas of Switzerland through their investments, potentially influencing the overall development landscape.
+- **Risk Reduction:** By spreading their investments across different cantons (Swiss states), Zug Estates reduces the risk associated with a downturn in Zug’s market.
 
--   **Reputation and Knowledge:** Over time, Zug Estates has likely built a strong reputation for high-quality development and property management within Zug. Expanding to other cantons allows them to leverage this reputation. They can attract partnerships with local developers or win contracts for projects in new areas based on their proven track record. Essentially, they bring their successful model to other parts of Switzerland.
 
--   **Capitalizing on Demand:** Zug Estates might be strategically responding to broader market trends across Switzerland. Perhaps there's a growing demand for specific property types, like student housing or retirement communities, in certain regions. By investing in these areas, they can capitalize on these trends and meet those demands, ensuring their portfolio remains relevant and profitable. .
+- **Saturated Market:**  Zug market could be saturated, meaning there are limited opportunities for profitable investments. Expanding to other areas allows Zug Estates to tap into new markets with higher potential returns.
 
-## Dataset "Homegate..."
 
-... Rodrigo ...
+- **Connecting the Landscape:** Zug Estates’ investments might have a strategic element beyond just individual properties. They could be acquiring properties near transportation hubs or in developing commercial centers.
 
-## Motivation and Goal
 
-... Rodrigo ...
+- **Reputation and Knowledge:** Over time, Zug Estates has built a strong reputation for high-quality development and property management within Zug. Expanding to other cantons allows them to leverage this reputation. They can attract partnerships with local developers or win contracts for projects in new areas based on their proven track record. Essentially, they bring their successful model to other parts of Switzerland. 
+
+
+- **Capitalizing on Demand:** Zug Estates might be strategically responding to broader market trends across Switzerland. Perhaps there’s a growing demand for specific property types, like student housing or retirement communities, in certain regions. 
+
+We will focus on satisfying Zug Estates as a client looking to expand their operations.
+
+## Motivation and Goal 
+
+**WP Carey**, a prominent **Real Estate Investment Trust (REIT)** known for its diversified portfolio of commercial properties, has recently announced its strategic decision to **exit the Swiss market**. This move marks a significant shift in the company’s investment strategy, focusing more on markets where they see greater **potential for growth and stability**. As part of this exit, **WP Carey** has successfully negotiated the sale of its assets located in central Switzerland to **Zug Estates**, a leading Swiss real estate company with a strong presence in the Zug region. 
+
+<br>
+![](images/wp carey.JPG){width=4in}
+<br>
+
+The **assets sold** include a mix of **high-value commercial properties**, **office buildings**, and **mixed-use developments** that have been integral to **WP Carey’s Swiss portfolio**. This transaction allows **WP Carey** to reallocate capital towards more lucrative opportunities in other markets, while Zug Estates stands to benefit significantly from the acquisition. By integrating these prime assets into their existing portfolio, **Zug Estates** can enhance its market position and leverage the strategic locations of these properties to **attract new tenants** and **increase rental income**. This acquisition underscores **Zug Estates** commitment to expanding its footprint in central Switzerland and reinforces its reputation as a **key player** in the **Swiss Real Estate market**. 
+
+<br>
+![](images/swissinfo.JPG){width=10in}
+<br>
+
+Our team is deeply motivated to help Zug Estates by enhancing our understanding of the real estate market in Central Switzerland. The company's strategic approach has always attracted our attention, given our recurring interest in real estate investment. We believe that the future of Central Switzerland and Zug is bright, and this project represents a unique opportunity to contribute to that growth. By leveraging our collective expertise, we aim to provide valuable insights that will help maximize the potential of these newly acquired assets. 
+
+For our analysis we will focus on residential real estate due to the data limitations. 
+
+**Disclaimer:** *This is a fictional situation created to demonstrate students' ability to work with real datasets in situations that could occur in the real world.* 
+
+
+## Dataset “Homegate” and “Federal Statistic Office” 
+
+We used two data sources for this study: 
+
+First, **Homegate**, a **leading Swiss Real Estate platform**, has long been the go-to resource for individuals and businesses looking to buy, sell, or rent properties in Switzerland. Known for its extensive listings and user-friendly interface, **Homegate** provides detailed information on a wide range of properties across the country.  
+
+<br>
+![](images/homegate.JPG){width=4in}
+<br>
+
+We have obtained a comprehensive dataset of properties listed on Homegate, which will be invaluable for Zug Estates in evaluating these assets and determining the best use for them. This dataset includes detailed characteristics of the properties such as **Property_ID**, **FirstDay_Online**, **LastDay_Online**, **Type**, **Customer_ID**, **Customer_Segment**, **Category**, **Price_Gross**, **Size_m2**, **Canton**, **Nr_rooms**, **Package_ID**, and **Package_Product**. 
+
+This private data has been obtained through legitimate channels and not via scraping, ensuring their accuracy and reliability. With this rich dataset, we will perform an in-depth analysis for Zug Estates to help them understand market trends, property performance, and customer preferences. 
+
+Second, **the Federal Statistical Office (FSO) in Switzerland** offers a wealth of regional statistics that are essential for understanding the diverse characteristics of the country's cantons. 
+
+<br>
+![](images/federal.JPG){width=14in}
+<br>
+
+Among these resources are the regional portraits and key figures, which provide detailed portraits of each canton. These profiles include crucial data points such as **Canton**, **Canton_Name**, **Canton_Capital**, **GDP_2020_21**, **GDP_per**, Population, **Area_km2**, **Density**, **Official_Language_1**, **Official_Language_2**, and **Official_Language_3.** This information is invaluable for stakeholders looking to gain insights into the economic, demographic, and cultural landscape of Switzerland. 
 
 ## Project Structure
 
-... Rodrigo ...
+*... ¿deberiamos borrar? ...*
 
 ## Navigating the Report: Understanding the Hidden R Code
 
