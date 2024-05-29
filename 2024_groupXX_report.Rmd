@@ -629,9 +629,31 @@ It is also made clear in our findings, that although the number of rooms is a go
 <br>
 
 # GLM - Generalised Linear - Binomial
- 
+
+```{r GLM Binomial 0, echo=FALSE}
+# Load libraries
+library(readr)
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(readxl)
+library(openxlsx)
+library(lubridate)
+library(mgcv)
+library(splines)
+library(ROSE)
+--------------------------------------------------------------------------------
+# Binomial
+--------------------------------------------------------------------------------
+# Read the data from an Excel file and create a binary outcome variable
+enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx") %>%
+  mutate(fast.sale = ifelse(Days_Difference <= 17, 1, 0))  # Binary outcome: 1 if Days_Difference <= 17, else 0
+```   
+
 ## Purpose and Target
-Quick sales or rentals are crucial for Zug Estates in the commercial real estate world. Fast transactions minimize vacancy periods, ensuring steady cash flow and maximizing returns on investment. This efficiency not only benefits property owners by reducing holding costs but also attracts potential clients who value quick and smooth processes. 
+
+Quick sales or rentals are crucial for Zug Estates in the commercial real estate world. Fast transactions minimize vacancy periods, ensuring steady cash flow and maximizing returns on investment. 
+This efficiency not only benefits property owners by reducing holding costs but also attracts potential clients who value quick and smooth processes. 
 
 We decided to use a Generalized Linear Model, Binomial to modelize it. 
 
@@ -639,10 +661,7 @@ We decided to use a Generalized Linear Model, Binomial to modelize it.
 
 Before jumping into the model, we needed to do some adjustments to the data: 
     
- ```{r GLM Binomial 1, echo=FALSE, warning=FALSE}
-enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx") %>% 
-  mutate(fast.sale = ifelse(Days_Difference <= 17, 1, 0))
-  
+```{r GLM Binomial 1, echo=FALSE, warning=FALSE}
 mean(enc_data$Days_Difference)  
 ```   
 
@@ -666,10 +685,7 @@ In summary, the logistic regression model indicates that Price_Gross, certain Ca
 
     - **Canton_num4:** Positive effect, significant (p-value = 0.000767) 
 
- 
-
 Properties in Canton_num3 and Canton_num4 have significantly higher odds of quick sales, suggesting these areas are in high demand or have market conditions conducive to faster transactions. This two canton are equivalent to X and Y which mean that the probabilities of a quick sale in Canton_num3 are approximately 17.46 times greater than in the reference canton  and for Canton_num4 are approximately 2.27 times higher than in the baseline canton. 
-
 
 ```{r GLM Binomial 2, echo=FALSE, warning=FALSE}
 coef <- coef(modelo_glm_binomial) 
@@ -765,7 +781,7 @@ When interpreting the price, for example, we can see that a 1% increase in Size_
 - The red line is the line of perfect prediction, where the predicted values would exactly equal the actual values (i.e., [Ecuación]y=x). Ideally, all points would lie on this line if the model predictions were perfect. 
 
  
-```{r GLM Poisson 2, echo=FALSE, warning=FALSE}
+```{r GLM Poisson 3, echo=FALSE, warning=FALSE}
 predicted_values_test_quasi_log <- predict(quasipoisson.model, newdata = test_set, type = "response") 
 test_set$fitted_values_quasi_log <- predicted_values_test_quasi_log 
 plot(test_set$Nr_rooms, test_set$fitted_values_quasi_log,  
@@ -1361,36 +1377,44 @@ Neural networks on the other hand, are more flexible and powerful when it comes 
 
 In summary, both are good options for our purpose. In the future, if considering to use either one, the size, shape and complexity of the available dataset will play a pivotal role in the selection of the best model to use for finding possible "golden goose" properties. This is not, however, meant to be interpreted as: "There is only one right answer". As a suggestion, when faced with a list of properties to choose from, both models may be used to gain valuable insight, and both would provide similar results with some slight variations, which can only be interpreted then.
 
-# Outlook for Rental Price Prediction
+#Outlook 
 
-We present our top recommendations for future enhancements in both this project and the broader domain of predicting rental prices in the real estate market.
+We would like to highlight our top four recommendations for improvements in future endeavors related to this project and more broadly in the field of employee attrition. 
 
-## Data Quality and Quantity
+## Data Quality and Amount 
 
-Future endeavors could benefit from exploring ensemble methods, which amalgamate the strengths of various models to improve overall efficacy in predicting rental prices. Augmenting the dataset may enhance the performance of specific models, particularly neural networks tailored for rental price prediction. Moreover, incorporating additional predictive variables related to rental properties could facilitate the training of more sophisticated models.
+Future studies could benefit from investigating ensemble methods, which merge the advantages of various models to boost overall efficacy. We suggest that a larger dataset might enhance the performance of specific models like neural networks. Furthermore, gathering additional predictive variables could facilitate the training of more sophisticated models. 
 
-## Validation of Models
+The primary focus of our project was centered on identifying general predictors of attrition. This objective shaped our analytical approach and the methodologies we employed, and provided a foundation for understanding the key predictors. An extension of our analysis would be to change the focus and predict the probabilities of employee attrition, rather than solely classifying outcomes. This approach would enable us to personalize interventions more effectively, tailoring strategies to the specific likelihood of an employee’s departure. 
 
-Due to time constraints and project scope, extensive validation and testing for all models were not possible. Employing techniques such as cross-validation and regularization during the training phase would be imperative to elevate the overall quality and performance of developed models. Furthermore, exploring interactions between variables specific to rental prices can provide deeper insights into model performance.
+## Enhanced Validation of Models 
 
-## Balancing Model Complexity and Performance
+Due to the time constraints and scope of this project, we couldn’t conduct extensive validation and testing for all models. Implementing more techniques such as cross-validation and regularization in the training phase would be necessary to enhance the overall quality and performance of the developed models. Moreover, testing interactions was at short-cut in this project. In 
 
-This project underscores the delicate balance between model complexity and performance in predicting rental prices. While sophisticated models, such as Generalized Additive Models (GAM) and Support Vector Machines (SVM), excel at identifying complex patterns, they may not always yield the most accurate predictions, especially concerning specificity in rental price prediction. Hence, it's crucial to align model complexity with the intended application to achieve optimal results in rental price prediction.
+## Model Complexity vs. Performance 
 
-## Data Privacy and Ethics
+The study underscored the delicate balance between model complexity and performance. Although more sophisticated models, as seen in the GAM and SVM sections, are adept at identifying complex patterns, they don’t always guarantee the most accurate predictions in every situation, particularly regarding specificity. When developing a model for a company, it’s essential to clearly articulate the model’s intended purpose and application to determine the most appropriate solution. 
 
-Considering the sensitive nature of personal data related to rental properties, it's paramount for companies to exercise caution and ethical consideration when utilizing property-related data for rental price prediction. Thoughtful selection of predictors can mitigate bias and ensure fair treatment of all properties, particularly those from underrepresented regions.
+## Data Privacy and Ethics 
 
-# Personal Reflections
+While we have pointed out that various stakeholders can gain from these models, it’s crucial to note that the personal data used here, such as marital status, is highly sensitive in non-fictional datasets. Companies should thoughtfully consider which data points to utilize about their employees. Relying on certain predictors can potentially introduce significant bias, particularly against underrepresented groups within the organization. 
 
-This project has provided invaluable learning experiences, allowing us to delve into the realm of predicting rental prices in the real estate market and hone our skills. While challenges were encountered, particularly with complex models like neural networks for rental price prediction, we appreciate the opportunity to experiment and grow. Moving forward, we recognize the importance of establishing common measures for model comparison and the ethical implications of data usage in rental price prediction. Ultimately, we're proud of our report and grateful for the knowledge gained throughout this journey.
+# Personal Learnings 
 
-# Implementation of Generative AI
+This project was a great opportunity for us to learn about machine learning and develop our skills. We really enjoyed experimenting with different models, which is why our report is so long - we had a lot of work to cut down. 
 
-The implementation of generative AI, particularly through platforms like OpenAI's GPT-3, has significantly enhanced our project by providing invaluable assistance across various facets. Its advanced natural language processing capabilities have proven invaluable in a wide range of tasks, from data exploration to model development and report writing.
+Our models are of solid quality, but we didn’t get to explore every detail or use all the methods perfectly. For example, our early graphical analysis could be improved by using methods better suited to different types of data than just correlation coefficients, or validation of different models is not fully implemented (CSV). The neural network component, in particular, posed significant challenges. Our results here were not as robust as we had hoped, possibly due to limitations in the amount of data available. This experience highlighted the importance of having a substantial dataset for neural network models to truly excel. 
 
-Generative AI has assisted us in navigating complex technical challenges and refining our methodologies more efficiently by offering insights, suggestions, and alternative approaches. Furthermore, it has contributed to enhancing our creativity and generating innovative ideas, thereby enriching our analysis and enabling us to uncover hidden insights within our data.
+An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing metrics. In our case, relying solely on accuracy as a metric wasn’t appropriate due to the unbalanced nature of the dataset. 
 
-In summary, Generative AI has served as an invaluable assistant, prompting new insights, facilitating problem-solving, and ultimately contributing to the success and advancement of our project.
+## Implementation of Generative AI
 
-# References
+It’s important to note that OpenAI’s Chat-GPT and Google’s Gemini LLMs were valuable resources when we were faced with difficult debugging problems. However, we made a point of understanding, modifying and correcting the suggested code independently to ensure that our final work was truly our own and not a mere replication of the solutions provided. 
+
+In the end, we’re happy with the end result of our report, and even happier with how much we learned along the way. 
+
+# Extra 
+
+Our team sent this project proposal to the investor relations email at Zug Estates a week ago, driven by the thought that it might be interesting to reach out given our current search for internships in data science with their esteemed company. We are thrilled to share that Zug Estates has responded positively, expressing that the concept is highly intriguing and that they would like to meet us. We are excited to announce that we will be meeting at their offices in the heart of Zug to discuss this further in the week of the 24th of June. 
+
+#References 
