@@ -628,33 +628,158 @@ It is also made clear in our findings, that although the number of rooms is a go
 
 <br>
 
+# GLM - Generalised Linear - Binomial
+ 
+## Purpose and Target
+Quick sales or rentals are crucial for Zug Estates in the commercial real estate world. Fast transactions minimize vacancy periods, ensuring steady cash flow and maximizing returns on investment. This efficiency not only benefits property owners by reducing holding costs but also attracts potential clients who value quick and smooth processes. 
+
+We decided to use a Generalized Linear Model, Binomial to modelize it. 
+
+## Interpretation
+
+Before jumping into the model, we needed to do some adjustments to the data: 
+    
+ ```{r GLM Binomial 1, echo=FALSE, warning=FALSE}
+enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx") %>% 
+  mutate(fast.sale = ifelse(Days_Difference <= 17, 1, 0))
+  
+mean(enc_data$Days_Difference)  
+```   
+
+The average time it takes an owner to rent out a flat or house is 16 days. Therefore, we have taken the average as a reference, if a property takes less than 17 days it is categorised as 'Fast sale' and coded as 1, otherwise it is coded as 0. 
+
+Then we decided to divide the data set (enc_data) into two subsets: one for training (train_set) and another for testing (test_set). The training set is used to tune the model, while the test set is used to evaluate the performance of the model. We will use it later. 
+
+In summary, the logistic regression model indicates that Price_Gross, certain Canton categories, and Customer_Segment have significant effects on the likelihood of a quick sale. Specifically, higher prices decrease the probability, while certain regions (Canton_num3 and Canton_num4) and customer segments have varying influences. The fit of the model is reasonable, as indicated by the reduction in deviance and the AIC value. Mas concreatmente, podemos extraer informacion muy interesante que relfexionaremos tras analizar mas en profunidad el modelo. 
+
+- **Price_Gross:** The negative coefficient indicates that higher gross prices are associated with lower probabilities of a quick sale. This suggests that properties priced higher may take longer to sell, likely due to a smaller pool of potential buyers or perceived overvaluation. However the coefieicnete is so small que no se puede desestimar. Sorpresivamente para Zug Estates el precio no parece jugar un papel significativo. 
+
+- **Nr_rooms:** Not significant (p-value = 0.296563), which implies that the number of rooms may not be a decisive factor for quick sales in Central Switzerland. 
+
+- **Size_m2:** Not significant (p-value = 0.703451), thus, the size of the property alone does not strongly influence quick sales. 
+
+- **Canton_num:**  
+
+    - **Canton_num2:** Negative effect, not significant (p-value = 0.07185) 
+
+    - **Canton_num3:** Positive effect, significant (p-value = 0.006502) 
+
+    - **Canton_num4:** Positive effect, significant (p-value = 0.000767) 
+
+ 
+
+Properties in Canton_num3 and Canton_num4 have significantly higher odds of quick sales, suggesting these areas are in high demand or have market conditions conducive to faster transactions. This two canton are equivalent to X and Y which mean that the probabilities of a quick sale in Canton_num3 are approximately 17.46 times greater than in the reference canton  and for Canton_num4 are approximately 2.27 times higher than in the baseline canton. 
+
+
+```{r GLM Binomial 2, echo=FALSE, warning=FALSE}
+coef <- coef(modelo_glm_binomial) 
+odds_ratios <- exp(coef) 
+print(odds_ratios)  
+```
+
+This is important for the Zug-based company's future property operations. 
+
+Later we have added to the original dataset a new column named fitted_values to the training set (train_set). This column contains the predicted probabilities obtained from the fitted model. The fitted values are the predicted probabilities that the dependent variable (fast.sale) equals 1 (i.e., a quick sale) for each observation in the training set. 
+
+```{r GLM Binomial 3, echo=FALSE, warning=FALSE}
+fitted_values_train <- fitted(binomial.model) 
+train_set$fitted_values <- fitted_values_train 
+head(train_set[, c("fast.sale", "fitted_values")]) 
+```
+
+Finally, we have made Predictions on the Test Set. The interpretation is the interpretation of the actual outcome , if it was a quick sale (1) or not (0). For example, in the first case, the model  predicted a 78.5% probability of a quick sale. This prediction is quite accurate and confident. 
+
+```{r GLM Binomial 4, echo=FALSE, warning=FALSE}
+predicted_probabilities_test <- predict(binomial.model, test_set, type = "response") 
+test_set$fitted_values <- predicted_probabilities_test 
+head(test_set[, c("fast.sale", "fitted_values")]) 
+```
+
+To measure the quality of the model so that Zug Estates can make adequate predictions: 
+
+```{r GLM Binomial 5, echo=FALSE, warning=FALSE}
+predicted_classes <- ifelse(predicted_probabilities_test > 0.5, 1, 0) 
+actual_classes <- test_set$fast.sale 
+conf_matrix <- table(Predicted = predicted_classes, Actual = actual_classes) 
+conf_matrix_percent <- prop.table(conf_matrix) * 100 
+print(round(conf_matrix_percent, 2)) 
+print(conf_matrix) 
+```
+
+## Conclusion
+
+Without being exhaustive, here are some conclusions about the model:
+
+- **False Negatives (FN):** The model incorrectly predicted 15 instances as not quick sales (0) when they were quick sales (1), which is 7.77% of the total predictions. This indicates missed opportunities where the model failed to identify actual quick sales. 
+
+- **True Positives (TP):** The model correctly predicted 129 instances as quick sales (1), which is 66.84% of the total predictions. This shows a strong performance in correctly identifying quick sales. 
+
+Finalmente respeto a performance metrics que son estandares en Machine learning: 
+
+```{r GLM Binomial, echo=FALSE, warning=FALSE}
+precision <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(predicted_classes == 1) 
+recall <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(actual_classes == 1) 
+accuracy <- sum(predicted_classes == actual_classes) / length(actual_classes) 
+print(paste("Precision:", precision)) 
+print(paste("Recall:", recall)) 
+print(paste("Accuracy:", accuracy)) 
+```
+
+- **Precision** indicates how reliable the model is when it predicts a quick sale. With a precision of 77.2%, the model has a moderate false positive rate, meaning some of the predicted quick sales are actually not quick sales. 
+
+- **Recall** measures how well the model identifies actual quick sales. With a high recall of 89.6%, the model successfully identifies most of the quick sales, indicating a low false negative rate. 
+
+- **Accuracy** provides an overall assessment of model performance. With an accuracy of 72.5%, the model correctly predicts the outcome for a majority of the cases but still makes errors in a significant number of cases. 
+
+
 # GLM - Generalised Linear - Poisson
 
-```{r GLM - Generalised Linear - Binomial, echo=FALSE, warning=FALSE}
-
-
-```
-
 ## Purpose and Target
+Following the line of what was written on these lines, we want to provide Zug estates with a tool that allows predicting how many rooms would need a house to fit a market. For this we will use Quasi Poisson model, which is a variant of the Poisson regression model that is used to handle overdispersion in the data. Instead of assuming that the variance is equal to the mean (as in Poisson), the quasi-Poisson model allows the variance to be a function of the mean, but more flexible. 
+
+For Zug Estates, understanding what properties are in demand is key. By predicting the number of rooms accurately, they can sell or rent properties faster. This reduces vacancy periods, keeps cash flow steady, and boosts investment returns. It also lowers holding costs and speeds up transactions, making property owners and clients happy with quick, smooth processes. 
 
 ## Interpretation
 
-## Conclusion
+We decided to perform a logarithmic transformation on specific columns within two data sets: train_set and test_set. By applying these transformations, our code is preparing the train_set and test_set for better performance in subsequent glm model.  
 
-<br>
-
-# GLM - Generalised Linear - Binomial
-
-```{r Generalised Linear Model with family set to Binomial, echo=FALSE, warning=FALSE}
-
-
+```{r GLM Poisson 1, echo=FALSE, warning=FALSE}
+train_set$log_Price_Gross <- log(train_set$Price_Gross + 1) 
+train_set$log_Size_m2 <- log(train_set$Size_m2 + 1) 
+test_set$log_Price_Gross <- log(test_set$Price_Gross + 1) 
+test_set$log_Size_m2 <- log(test_set$Size_m2 + 1) 
 ```
 
-## Purpose and Target
+This is the model: 
 
-## Interpretation
+```{r GLM Poisson 2, echo=FALSE, warning=FALSE}
+quasipoisson.model <- glm(Nr_rooms ~ log_Price_Gross + log_Size_m2 + Category_num + Canton_num, family = quasipoisson, data = train_set) 
+```
 
-## Conclusion
+The model takes into account a previous logarithmic transformation that we have done so it must be interpreted in those terms, since it must fit what we want to put into it. The relevance of the price and the square meters in addition to one of the cantons to calculate the number of rooms is attested by the p value having statistical significance. However, whether or not the apartment is being rented by a professional or several of the cantons is not relevant, since its value is greater than 0.05. 
+
+When interpreting the price, for example, we can see that a 1% increase in Size_m2 increases the expected count of rooms by 𝑒0.00593205≈1.00593, or approximately 0.593%. 
+
+- Each point on the scatter plot represents a pair of actual and predicted values for a particular observation in the test set. 
+
+- The red line is the line of perfect prediction, where the predicted values would exactly equal the actual values (i.e., [Ecuación]y=x). Ideally, all points would lie on this line if the model predictions were perfect. 
+
+ 
+```{r GLM Poisson 2, echo=FALSE, warning=FALSE}
+predicted_values_test_quasi_log <- predict(quasipoisson.model, newdata = test_set, type = "response") 
+test_set$fitted_values_quasi_log <- predicted_values_test_quasi_log 
+plot(test_set$Nr_rooms, test_set$fitted_values_quasi_log,  
+     main = "Actual vs Predicted Values for Nr_rooms (Log Transformed Quasi-Poisson)",  
+     xlab = "Actual Nr_rooms",  
+     ylab = "Predicted Nr_rooms") 
+abline(0, 1, col = "red") 
+```
+
+This scatter plot demonstrates that the Quasi-Poisson model with log-transformed predictors effectively captures the overall trend. As the actual number of rooms increases, the predicted values also rise correspondingly, indicating that the model successfully identifies the general relationship between the predictors and the target variable. 
+
+The trend highlights the model's capability to generalize well across the range of data points, reflecting a solid understanding of the underlying patterns in the dataset. 
+
+Despite some deviations from the line of perfect prediction (in red,), the model shows a promising performance. The increasing dispersion of points with higher actual values suggests that while the model is less precise for larger counts of rooms, it still maintains a coherent predictive behavior.  
 
 <br>
 
