@@ -403,8 +403,9 @@ Poisson</a></li>
 Model</a></li>
 <li><a href="#neural-network" id="toc-neural-network"><span class="toc-section-number">9</span> Neural Network</a></li>
 <li><a href="#support-vector-machine" id="toc-support-vector-machine"><span class="toc-section-number">10</span> Support Vector Machine</a></li>
-<li><a href="#personal-learnings" id="toc-personal-learnings"><span class="toc-section-number">11</span> Personal Learnings</a></li>
-<li><a href="#extra" id="toc-extra"><span class="toc-section-number">12</span> Extra</a></li>
+<li><a href="#outlook" id="toc-outlook"><span class="toc-section-number">11</span> Outlook</a></li>
+<li><a href="#personal-learnings" id="toc-personal-learnings"><span class="toc-section-number">12</span> Personal Learnings</a></li>
+<li><a href="#references" id="toc-references"><span class="toc-section-number">13</span> References</a></li>
 </ul>
 </div>
 
@@ -425,6 +426,7 @@ font-size: 16px;
 line-height: 0.8;
 }
 </style>
+<p><br></p>
 <div id="introduction" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
 <p><strong>Zug Estates (SWX: ZUGN)</strong> focuses on developing,
@@ -555,8 +557,13 @@ crucial data points such as <strong>Canton</strong>,
 stakeholders looking to gain insights into the economic, demographic,
 and cultural landscape of Switzerland.</p>
 </div>
-<div id="navigating-the-report-understanding-the-hidden-r-code" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> Navigating the
+<div id="project-structure" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Project
+Structure</h2>
+<p><em>Complete</em></p>
+</div>
+<div id="navigating-the-report-understanding-the-hidden-r-code" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> Navigating the
 Report: Understanding the Hidden R Code</h2>
 <p>This report is based on R code that was used to explore, train, and
 test various models on the data. To maintain a clean and accessible
@@ -608,7 +615,6 @@ Analysis</h1>
 on the main variable of interest: <strong>rental prices</strong>. Our
 primary goal is to develop predictive models for rental prices of both
 apartments and houses.</p>
-<p><br></p>
 <div id="data-preparation-and-preliminary-analysis" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Data Preparation and
 Preliminary Analysis</h2>
@@ -759,12 +765,14 @@ number of rooms. Properties with 3 to 4 rooms are the most common, which
 aligns with the predominance of smaller property sizes seen in the
 previous chart.</p>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><br></p>
 </div>
 </div>
 </div>
 <div id="data-modeling" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Data Modeling</h1>
-<p><strong>falta explicacion</strong></p>
+<p><em>Complete</em></p>
+<p><br></p>
 </div>
 <div id="linear-model" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> Linear Model</h1>
@@ -1120,6 +1128,7 @@ performance. With an accuracy of 72.5%, the model correctly predicts the
 outcome for a majority of the cases but still makes errors in a
 significant number of cases.</p></li>
 </ul>
+<p><br></p>
 </div>
 </div>
 <div id="glm---generalised-linear---poisson" class="section level1" number="7">
@@ -1669,10 +1678,15 @@ some remodeling and updating the living space, its perceived value may
 be brought to a new high. This is what we try to predict with this
 model: the potential of a specific property and to discern if it could
 be a lucrative investment for Zug Estates.</p>
+<details>
+<summary>
+Click to see the NN Confusion Matrix
+</summary>
 <pre><code>##           Reference
 ## Prediction   0   1
 ##          0 142   7
 ##          1   0  44</code></pre>
+</details>
 <p><em>Confusion Matrix of the Neural Network’s performance.</em></p>
 <p>As seen in the previous matrix, the model’s performance on
 categorizing properties into possible high-ticket or not is quite good.
@@ -1727,16 +1741,26 @@ acquire.</p>
 </div>
 <div id="interpretation-5" class="section level2" number="10.2">
 <h2><span class="header-section-number">10.2</span> Interpretation</h2>
+<p><strong>Neural Network Performance</strong></p>
+<details>
+<summary>
+Click to see the NN Confusion Matrix
+</summary>
 <pre><code>##           Reference
 ## Prediction   0   1
 ##          0 142   7
 ##          1   0  44</code></pre>
-<p><em>Neural Network Performance</em></p>
+</details>
+<p><strong>SVM Performance</strong></p>
+<details>
+<summary>
+Click to see the SVM Confusion Matrix
+</summary>
 <pre><code>##           Reference
 ## Prediction   0   1
 ##          0 143   8
 ##          1   2  40</code></pre>
-<p><em>SVM Performance</em></p>
+</details>
 <p>As we can see, comparing the two confusion matrices, the Neural
 Network has slightly better accuracy than the SVM. Though at first
 glance it may seem like the better option, there are several advantages
@@ -1762,13 +1786,16 @@ answer”. As a suggestion, when faced with a list of properties to choose
 from, both models may be used to gain valuable insight, and both would
 provide similar results with some slight variations, which can only be
 interpreted then.</p>
-<p>#Outlook</p>
+<p><br></p>
+</div>
+</div>
+<div id="outlook" class="section level1" number="11">
+<h1><span class="header-section-number">11</span> Outlook</h1>
 <p>We would like to highlight our top four recommendations for
 improvements in future endeavors related to this project and more
 broadly in the field of employee attrition.</p>
-</div>
-<div id="data-quality-and-amount" class="section level2" number="10.4">
-<h2><span class="header-section-number">10.4</span> Data Quality and
+<div id="data-quality-and-amount" class="section level2" number="11.1">
+<h2><span class="header-section-number">11.1</span> Data Quality and
 Amount</h2>
 <p>Future studies could benefit from investigating ensemble methods,
 which merge the advantages of various models to boost overall efficacy.
@@ -1785,8 +1812,8 @@ rather than solely classifying outcomes. This approach would enable us
 to personalize interventions more effectively, tailoring strategies to
 the specific likelihood of an employee’s departure.</p>
 </div>
-<div id="enhanced-validation-of-models" class="section level2" number="10.5">
-<h2><span class="header-section-number">10.5</span> Enhanced Validation
+<div id="enhanced-validation-of-models" class="section level2" number="11.2">
+<h2><span class="header-section-number">11.2</span> Enhanced Validation
 of Models</h2>
 <p>Due to the time constraints and scope of this project, we couldn’t
 conduct extensive validation and testing for all models. Implementing
@@ -1795,8 +1822,8 @@ training phase would be necessary to enhance the overall quality and
 performance of the developed models. Moreover, testing interactions was
 at short-cut in this project. In</p>
 </div>
-<div id="model-complexity-vs.-performance" class="section level2" number="10.6">
-<h2><span class="header-section-number">10.6</span> Model Complexity
+<div id="model-complexity-vs.-performance" class="section level2" number="11.3">
+<h2><span class="header-section-number">11.3</span> Model Complexity
 vs. Performance</h2>
 <p>The study underscored the delicate balance between model complexity
 and performance. Although more sophisticated models, as seen in the GAM
@@ -1806,8 +1833,8 @@ particularly regarding specificity. When developing a model for a
 company, it’s essential to clearly articulate the model’s intended
 purpose and application to determine the most appropriate solution.</p>
 </div>
-<div id="data-privacy-and-ethics" class="section level2" number="10.7">
-<h2><span class="header-section-number">10.7</span> Data Privacy and
+<div id="data-privacy-and-ethics" class="section level2" number="11.4">
+<h2><span class="header-section-number">11.4</span> Data Privacy and
 Ethics</h2>
 <p>While we have pointed out that various stakeholders can gain from
 these models, it’s crucial to note that the personal data used here,
@@ -1816,10 +1843,11 @@ Companies should thoughtfully consider which data points to utilize
 about their employees. Relying on certain predictors can potentially
 introduce significant bias, particularly against underrepresented groups
 within the organization.</p>
+<p><br></p>
 </div>
 </div>
-<div id="personal-learnings" class="section level1" number="11">
-<h1><span class="header-section-number">11</span> Personal
+<div id="personal-learnings" class="section level1" number="12">
+<h1><span class="header-section-number">12</span> Personal
 Learnings</h1>
 <p>This project was a great opportunity for us to learn about machine
 learning and develop our skills. We really enjoyed experimenting with
@@ -1841,21 +1869,20 @@ meaningful comparison can be made using the measures. We also learned
 the importance of considering the data set when choosing metrics. In our
 case, relying solely on accuracy as a metric wasn’t appropriate due to
 the unbalanced nature of the dataset.</p>
-<div id="implementation-of-generative-ai" class="section level2" number="11.1">
-<h2><span class="header-section-number">11.1</span> Implementation of
+<div id="implementation-of-generative-ai" class="section level2" number="12.1">
+<h2><span class="header-section-number">12.1</span> Implementation of
 Generative AI</h2>
 <p>It’s important to note that OpenAI’s Chat-GPT and Google’s Gemini
 LLMs were valuable resources when we were faced with difficult debugging
-problems. However, we made a point of understanding, modifying and
-correcting the suggested code independently to ensure that our final
-work was truly our own and not a mere replication of the solutions
-provided.</p>
+problems.</p>
+<p>However, we made a point of understanding, modifying and correcting
+the suggested code independently to ensure that our final work was truly
+our own and not a mere replication of the solutions provided.</p>
 <p>In the end, we’re happy with the end result of our report, and even
 happier with how much we learned along the way.</p>
 </div>
-</div>
-<div id="extra" class="section level1" number="12">
-<h1><span class="header-section-number">12</span> Extra</h1>
+<div id="extra" class="section level2" number="12.2">
+<h2><span class="header-section-number">12.2</span> Extra</h2>
 <p>Our team sent this project proposal to the investor relations email
 at Zug Estates a week ago, driven by the thought that it might be
 interesting to reach out given our current search for internships in
@@ -1864,7 +1891,11 @@ Zug Estates has responded positively, expressing that the concept is
 highly intriguing and that they would like to meet us. We are excited to
 announce that we will be meeting at their offices in the heart of Zug to
 discuss this further in the week of the 24th of June.</p>
-<p>#References</p>
+<p><br></p>
+</div>
+</div>
+<div id="references" class="section level1" number="13">
+<h1><span class="header-section-number">13</span> References</h1>
 </div>
 </div><!-- /.entry-content -->
 </article>

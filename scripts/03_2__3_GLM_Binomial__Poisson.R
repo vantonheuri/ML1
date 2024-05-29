@@ -13,6 +13,8 @@ library(splines)
 library(ROSE)
 
 --------------------------------------------------------------------------------
+# Binomial
+--------------------------------------------------------------------------------
   
 # Read the data from an Excel file and create a binary outcome variable
 enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx") %>%

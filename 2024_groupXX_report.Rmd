@@ -68,6 +68,8 @@ opts_chunk$set(
   message = FALSE)
 ```
 
+<br>
+
 # Introduction
 
 **Zug Estates (SWX: ZUGN)** focuses on developing, managing, and marketing properties in the Zug region, Switzerland. As a company, they prioritize centrally located sites for sustainable, multi-use development.  
@@ -136,6 +138,10 @@ Second, **the Federal Statistical Office (FSO) in Switzerland** offers a wealth 
 
 Among these resources are the regional portraits and key figures, which provide detailed portraits of each canton. These profiles include crucial data points such as **Canton**, **Canton_Name**, **Canton_Capital**, **GDP_2020_21**, **GDP_per**, Population, **Area_km2**, **Density**, **Official_Language_1**, **Official_Language_2**, and **Official_Language_3.** This information is invaluable for stakeholders looking to gain insights into the economic, demographic, and cultural landscape of Switzerland. 
 
+## Project Structure
+
+*Complete*
+
 ## Navigating the Report: Understanding the Hidden R Code
 
 This report is based on R code that was used to explore, train, and test various models on the data. To maintain a clean and accessible format, much of this code is hidden within the document.
@@ -183,8 +189,6 @@ library(splines)
 # Exploratory Data Analysis
 
 This chapter thoroughly explores the dataset, with a specific focus on the main variable of interest: **rental prices**. Our primary goal is to develop predictive models for rental prices of both apartments and houses.
-
-<br>
 
 ## Data Preparation and Preliminary Analysis
 
@@ -449,9 +453,13 @@ grid.arrange(plot_effect_rooms, plot_distribution_rooms, ncol = 2, widths = c(3,
 
 ```
 
+<br>
+
 # Data Modeling
 
-**falta explicacion**
+*Complete*
+
+<br>
 
 # Linear Model
 
@@ -816,6 +824,7 @@ print(paste("Accuracy:", accuracy))
 
 - **Accuracy** provides an overall assessment of model performance. With an accuracy of 72.5%, the model correctly predicts the outcome for a majority of the cases but still makes errors in a significant number of cases. 
 
+<br>
 
 # GLM - Generalised Linear - Poisson
 
@@ -1311,7 +1320,11 @@ With this transformation, we had created a binary classification problem: is thi
 
 After classifying the properties into either category, we were able to analyze the model's performance on the dataset. If successful, this Neural Network will be a great tool in the future to predict a possible acquisition's performance over time. Properties may be acquired at lower prices, and may not be very attractive at the time of purchase, but with some remodeling and updating the living space, its perceived value may be brought to a new high. This is what we try to predict with this model: the potential of a specific property and to discern if it could be a lucrative investment for Zug Estates.
 
-```{r NN Findings, echo=FALSE}
+<details>
+
+<summary>Click to see the NN Confusion Matrix</summary>
+
+```{r NN Findings, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 # Confusion matrix
 roundedresults <- sapply(maxmin_results, round, digits = 0)
 roundedresultsdf <- data.frame(roundedresults)
@@ -1320,6 +1333,8 @@ nn_conf <- confusionMatrix(as.factor(roundedresultsdf$prediction),
                            dnn=c("Prediction", "Reference"))
 nn_conf$table
 ```
+
+</details>
 
 *Confusion Matrix of the Neural Network's performance.*
 
@@ -1438,13 +1453,25 @@ svm_predictions <- predict(svm_model, newdata = test_data_without_target)
 
 ## Interpretation
 
-```{r Re-NN Performance, echo=FALSE}
+**Neural Network Performance**
+
+<details>
+
+<summary>Click to see the NN Confusion Matrix</summary>
+
+```{r Re-NN Performance, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 nn_conf$table
 ```
 
-*Neural Network Performance*
+</details>
 
-```{r SVM Confusion Matrix, echo=FALSE}
+**SVM Performance**
+
+<details>
+
+<summary>Click to see the SVM Confusion Matrix</summary>
+
+```{r SVM Confusion Matrix, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 
 # Calculate confusion matrix
 svm_confusion <- confusionMatrix(as.factor(svm_predictions), as.factor(test_data$High_Ticket))
@@ -1453,7 +1480,8 @@ svm_confusion$table
 
 ```
 
-*SVM Performance*
+</details>
+
 
 As we can see, comparing the two confusion matrices, the Neural Network has slightly better accuracy than the SVM. Though at first glance it may seem like the better option, there are several advantages and disadvantages between the two models.
 
@@ -1510,13 +1538,13 @@ An important lesson we learned was the need to establish common measures in adva
 
 ## Implementation of Generative AI
 
-It’s important to note that OpenAI’s Chat-GPT and Google’s Gemini LLMs were valuable resources when we were faced with difficult debugging problems. However, we made a point of understanding, modifying and correcting the suggested code independently to ensure that our final work was truly our own and not a mere replication of the solutions provided. 
+It’s important to note that OpenAI’s Chat-GPT and Google’s Gemini LLMs were valuable resources when we were faced with difficult debugging problems. 
+
+However, we made a point of understanding, modifying and correcting the suggested code independently to ensure that our final work was truly our own and not a mere replication of the solutions provided. 
 
 In the end, we’re happy with the end result of our report, and even happier with how much we learned along the way. 
 
-<br>
-
-# Extra 
+## Extra 
 
 Our team sent this project proposal to the investor relations email at Zug Estates a week ago, driven by the thought that it might be interesting to reach out given our current search for internships in data science with their esteemed company. We are thrilled to share that Zug Estates has responded positively, expressing that the concept is highly intriguing and that they would like to meet us. We are excited to announce that we will be meeting at their offices in the heart of Zug to discuss this further in the week of the 24th of June. 
 
