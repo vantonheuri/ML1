@@ -136,10 +136,6 @@ Second, **the Federal Statistical Office (FSO) in Switzerland** offers a wealth 
 
 Among these resources are the regional portraits and key figures, which provide detailed portraits of each canton. These profiles include crucial data points such as **Canton**, **Canton_Name**, **Canton_Capital**, **GDP_2020_21**, **GDP_per**, Population, **Area_km2**, **Density**, **Official_Language_1**, **Official_Language_2**, and **Official_Language_3.** This information is invaluable for stakeholders looking to gain insights into the economic, demographic, and cultural landscape of Switzerland. 
 
-## Project Structure
-
-*... ¿deberiamos borrar? ...*
-
 ## Navigating the Report: Understanding the Hidden R Code
 
 This report is based on R code that was used to explore, train, and test various models on the data. To maintain a clean and accessible format, much of this code is hidden within the document.
@@ -177,6 +173,7 @@ library(pROC)
 library(reshape2)
 library(tidyr)
 library(kableExtra)
+library(splines)
 ```
 
 </details>
@@ -630,24 +627,58 @@ It is also made clear in our findings, that although the number of rooms is a go
 
 # GLM - Generalised Linear - Binomial
 
-```{r GLM Binomial 0, echo=FALSE}
-# Load libraries
-library(readr)
-library(ggplot2)
-library(stringr)
-library(dplyr)
-library(readxl)
-library(openxlsx)
-library(lubridate)
-library(mgcv)
-library(splines)
-library(ROSE)
---------------------------------------------------------------------------------
-# Binomial
---------------------------------------------------------------------------------
-# Read the data from an Excel file and create a binary outcome variable
-enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx") %>%
-  mutate(fast.sale = ifelse(Days_Difference <= 17, 1, 0))  # Binary outcome: 1 if Days_Difference <= 17, else 0
+```{r GLM Binomial, echo=FALSE, warning=FALSE}
+# Read data
+enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
+enc_data <- enc_data %>%
+  mutate(fast.sale = ifelse(Days_Difference <= 17, 1, 0))
+
+# Split the data into training and testing sets
+set.seed(71)
+split_ratio <- 0.8
+training_indices <- sample(1:nrow(enc_data), size = nrow(enc_data) * split_ratio, replace = FALSE)
+train_set <- enc_data[training_indices, ]
+test_set <- enc_data[-training_indices, ]
+
+# Fit a binomial logistic regression model to predict fast sale
+binomial.model <- glm(fast.sale ~ Price_Gross + Nr_rooms + Size_m2 + Canton_num + Customer_Segment_num + Category_num, family = binomial, data = train_set)
+
+# Calculate and print odds ratios from the model coefficients
+coef <- coef(binomial.model)
+odds_ratios <- exp(coef)
+
+# Get and display fitted values (predicted probabilities) for the training set
+fitted_values_train <- fitted(binomial.model)
+train_set$fitted_values <- fitted_values_train
+
+# Predict probabilities for the test set and display the first few predictions
+predicted_probabilities_test <- predict(binomial.model, test_set, type = "response")
+test_set$fitted_values <- predicted_probabilities_test
+
+# Convert predicted probabilities to binary outcomes using a 0.5 threshold
+predicted_classes <- ifelse(predicted_probabilities_test > 0.5, 1, 0)
+actual_classes <- test_set$fast.sale
+
+# Create and print the confusion matrix
+conf_matrix <- table(Predicted = predicted_classes, Actual = actual_classes)
+conf_matrix_percent <- prop.table(conf_matrix) * 100
+
+# Calculate precision, recall, and accuracy and print them
+precision <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(predicted_classes == 1)
+recall <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(actual_classes == 1)
+accuracy <- sum(predicted_classes == actual_classes) / length(actual_classes)
+
+# Fit a quasi-Poisson regression model to predict the number of rooms (Nr_rooms)
+modelo_quasi_poisson <- glm(Nr_rooms ~ Price_Gross + Size_m2, family = quasipoisson, data = train_set)
+
+# Predict values for the test set and calculate mean squared error (MSE)
+predicted_values_test_quasi <- predict(modelo_quasi_poisson, newdata = test_set, type = "response")
+test_set$fitted_values_quasi <- predicted_values_test_quasi
+
+mse_test_quasi <- mean((test_set$Nr_rooms - test_set$fitted_values_quasi)^2)
+
+# Calculate and print root mean squared error (RMSE)
+rmse_test_quasi <- sqrt(mse_test_quasi)
 ```   
 
 ## Purpose and Target
@@ -660,10 +691,16 @@ We decided to use a Generalized Linear Model, Binomial to modelize it.
 ## Interpretation
 
 Before jumping into the model, we needed to do some adjustments to the data: 
-    
-```{r GLM Binomial 1, echo=FALSE, warning=FALSE}
+
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 1, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 mean(enc_data$Days_Difference)  
 ```   
+
+</details>
 
 The average time it takes an owner to rent out a flat or house is 16 days. Therefore, we have taken the average as a reference, if a property takes less than 17 days it is categorised as 'Fast sale' and coded as 1, otherwise it is coded as 0. 
 
@@ -687,40 +724,66 @@ In summary, the logistic regression model indicates that Price_Gross, certain Ca
 
 Properties in Canton_num3 and Canton_num4 have significantly higher odds of quick sales, suggesting these areas are in high demand or have market conditions conducive to faster transactions. This two canton are equivalent to X and Y which mean that the probabilities of a quick sale in Canton_num3 are approximately 17.46 times greater than in the reference canton  and for Canton_num4 are approximately 2.27 times higher than in the baseline canton. 
 
-```{r GLM Binomial 2, echo=FALSE, warning=FALSE}
-coef <- coef(modelo_glm_binomial) 
-odds_ratios <- exp(coef) 
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 2, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+coef <- coef(binomial.model)
+odds_ratios <- exp(coef)
 print(odds_ratios)  
-```
+```   
+
+</details>
 
 This is important for the Zug-based company's future property operations. 
 
 Later we have added to the original dataset a new column named fitted_values to the training set (train_set). This column contains the predicted probabilities obtained from the fitted model. The fitted values are the predicted probabilities that the dependent variable (fast.sale) equals 1 (i.e., a quick sale) for each observation in the training set. 
 
-```{r GLM Binomial 3, echo=FALSE, warning=FALSE}
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 3, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 fitted_values_train <- fitted(binomial.model) 
 train_set$fitted_values <- fitted_values_train 
 head(train_set[, c("fast.sale", "fitted_values")]) 
-```
+```   
+
+</details>
 
 Finally, we have made Predictions on the Test Set. The interpretation is the interpretation of the actual outcome , if it was a quick sale (1) or not (0). For example, in the first case, the model  predicted a 78.5% probability of a quick sale. This prediction is quite accurate and confident. 
 
-```{r GLM Binomial 4, echo=FALSE, warning=FALSE}
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 4, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 predicted_probabilities_test <- predict(binomial.model, test_set, type = "response") 
 test_set$fitted_values <- predicted_probabilities_test 
 head(test_set[, c("fast.sale", "fitted_values")]) 
-```
+```   
+
+</details>
+
 
 To measure the quality of the model so that Zug Estates can make adequate predictions: 
 
-```{r GLM Binomial 5, echo=FALSE, warning=FALSE}
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 5, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 predicted_classes <- ifelse(predicted_probabilities_test > 0.5, 1, 0) 
 actual_classes <- test_set$fast.sale 
 conf_matrix <- table(Predicted = predicted_classes, Actual = actual_classes) 
 conf_matrix_percent <- prop.table(conf_matrix) * 100 
 print(round(conf_matrix_percent, 2)) 
 print(conf_matrix) 
-```
+```   
+
+</details>
+
 
 ## Conclusion
 
@@ -730,16 +793,22 @@ Without being exhaustive, here are some conclusions about the model:
 
 - **True Positives (TP):** The model correctly predicted 129 instances as quick sales (1), which is 66.84% of the total predictions. This shows a strong performance in correctly identifying quick sales. 
 
-Finalmente respeto a performance metrics que son estandares en Machine learning: 
+Finally, with respect to performance metrics that are standard in Machine Learning:
 
-```{r GLM Binomial, echo=FALSE, warning=FALSE}
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 6, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 precision <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(predicted_classes == 1) 
 recall <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(actual_classes == 1) 
 accuracy <- sum(predicted_classes == actual_classes) / length(actual_classes) 
 print(paste("Precision:", precision)) 
 print(paste("Recall:", recall)) 
 print(paste("Accuracy:", accuracy)) 
-```
+```   
+
+</details>
 
 - **Precision** indicates how reliable the model is when it predicts a quick sale. With a precision of 77.2%, the model has a moderate false positive rate, meaning some of the predicted quick sales are actually not quick sales. 
 
@@ -759,18 +828,30 @@ For Zug Estates, understanding what properties are in demand is key. By predicti
 
 We decided to perform a logarithmic transformation on specific columns within two data sets: train_set and test_set. By applying these transformations, our code is preparing the train_set and test_set for better performance in subsequent glm model.  
 
-```{r GLM Poisson 1, echo=FALSE, warning=FALSE}
+<details>
+
+<summary>*Click to see the code*</summary>
+
+```{r GLM Poisson 1, echo=FALSE, class.source = "fold-show"}
 train_set$log_Price_Gross <- log(train_set$Price_Gross + 1) 
 train_set$log_Size_m2 <- log(train_set$Size_m2 + 1) 
 test_set$log_Price_Gross <- log(test_set$Price_Gross + 1) 
 test_set$log_Size_m2 <- log(test_set$Size_m2 + 1) 
-```
+```   
 
-This is the model: 
+</details>
 
-```{r GLM Poisson 2, echo=FALSE, warning=FALSE}
+Here the **model**: 
+
+<details>
+
+<summary>*Click to see the code*</summary>
+
+```{r GLM Poisson 2, echo=FALSE, class.source = "fold-show"}
 quasipoisson.model <- glm(Nr_rooms ~ log_Price_Gross + log_Size_m2 + Category_num + Canton_num, family = quasipoisson, data = train_set) 
-```
+```   
+
+</details>
 
 The model takes into account a previous logarithmic transformation that we have done so it must be interpreted in those terms, since it must fit what we want to put into it. The relevance of the price and the square meters in addition to one of the cantons to calculate the number of rooms is attested by the p value having statistical significance. However, whether or not the apartment is being rented by a professional or several of the cantons is not relevant, since its value is greater than 0.05. 
 
@@ -784,11 +865,19 @@ When interpreting the price, for example, we can see that a 1% increase in Size_
 ```{r GLM Poisson 3, echo=FALSE, warning=FALSE}
 predicted_values_test_quasi_log <- predict(quasipoisson.model, newdata = test_set, type = "response") 
 test_set$fitted_values_quasi_log <- predicted_values_test_quasi_log 
-plot(test_set$Nr_rooms, test_set$fitted_values_quasi_log,  
-     main = "Actual vs Predicted Values for Nr_rooms (Log Transformed Quasi-Poisson)",  
-     xlab = "Actual Nr_rooms",  
-     ylab = "Predicted Nr_rooms") 
-abline(0, 1, col = "red") 
+
+ggplot(test_set, aes(x = Nr_rooms, y = fitted_values_quasi_log)) +
+  geom_point(alpha = 0.7, color = "#9C8AE6") +  
+  geom_abline(intercept = 0, slope = 1, color = "black") +  
+  labs(title = "Actual vs Predicted Values for Nr. of Rooms (Log Transformed Quasi-Poisson)",
+       x = "Actual Nr. of Rooms",
+       y = "Predicted Nr. of Rooms") +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0, 8)) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
+    axis.title = element_text(size = 10)
+  )
 ```
 
 This scatter plot demonstrates that the Quasi-Poisson model with log-transformed predictors effectively captures the overall trend. As the actual number of rooms increases, the predicted values also rise correspondingly, indicating that the model successfully identifies the general relationship between the predictors and the target variable. 
@@ -1166,10 +1255,6 @@ This foundational analysis helps Zug Estates refine rental price predictions to 
 
 
 ```{r NeuralNet - Base, echo=FALSE}
-# Required Packages
-library(readxl)
-library(neuralnet)
-
 # Reading in data
 enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
 enc_data <- enc_data[, !(names(enc_data) %in% "X"), drop = TRUE]
@@ -1245,14 +1330,18 @@ As seen in the previous matrix, the model's performance on categorizing properti
 rounded_predictions <- round(pred_maxmin)
 data <- data.frame(predictions = factor(rounded_predictions, levels = c(0, 1), labels = c("Non-High Ticket", "High-Ticket")))
 
-
-# Create the histogram
+# Histogram
 ggplot(data, aes(x = predictions, fill = predictions)) +
-  geom_bar(color = "black", width = 0.5) +
+  geom_bar(stat = "count", color = "black", width = 0.5) +  # Use 'stat = "count"' to ensure it counts occurrences
   scale_x_discrete(name = "Predicted Class") +
   ylab("Frequency") +
   ggtitle("Rounded Predictions") +
-  scale_fill_manual(values = c("Non-High Ticket" = "skyblue", "High-Ticket" = "#9C8AE6"))
+  scale_fill_manual(values = c("Non-High Ticket" = "skyblue", "High-Ticket" = "#9C8AE6")) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
+    axis.title = element_text(size = 10)
+  )
 
 ```
 
@@ -1261,11 +1350,18 @@ ggplot(data, aes(x = predictions, fill = predictions)) +
 As we can see, not many values actually fall into the category of High-Ticket properties, so having a tool like this network will be beneficial in catching such opportunities early on and maximizing added value and profits for the real estate company.
 
 ```{r NN Predictions Visual, echo=FALSE}
-
 # Predictions: roundedresultsdf
-ggplot(roundedresultsdf, aes(x=actual, y=prediction)) + 
-  geom_jitter(width = 0.1, height = 0.1, color="#9C8AE6", alpha=0.5) + 
-  labs(title = "Test Data: Actual vs Predicted", x="Actual", y="Predicted")
+ggplot(roundedresultsdf, aes(x = actual, y = prediction)) +
+  geom_jitter(width = 0.1, height = 0.1, color = "#9C8AE6", alpha = 0.5) +  # Jitter to avoid overplotting
+  labs(title = "Test Data | Actual vs Predicted", 
+       x = "Actual", 
+       y = "Predicted") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
+    axis.title = element_text(size = 10)
+  )
+
 ```
 
 *In this visual we can better appreciate the behavior of the model's predictions*
@@ -1281,6 +1377,7 @@ Having a tool such as this in Zug Estates' arsenal will most definitely provide 
 <br>
 
 # Support Vector Machine
+
 ## Purpose and Target
 
 Though the Neural Network presented great results, we wanted to make sure to validate that it was the optimal choice for classification in our case. Support Vector Machines (SVMs henceforth) also excel at binary classification problems, so we wanted to create one and train it on the same data in order to visualize and compare performance, to ensure we use the better performing model for recommending properties to acquire.
@@ -1377,7 +1474,9 @@ Neural networks on the other hand, are more flexible and powerful when it comes 
 
 In summary, both are good options for our purpose. In the future, if considering to use either one, the size, shape and complexity of the available dataset will play a pivotal role in the selection of the best model to use for finding possible "golden goose" properties. This is not, however, meant to be interpreted as: "There is only one right answer". As a suggestion, when faced with a list of properties to choose from, both models may be used to gain valuable insight, and both would provide similar results with some slight variations, which can only be interpreted then.
 
-#Outlook 
+<br>
+
+# Outlook 
 
 We would like to highlight our top four recommendations for improvements in future endeavors related to this project and more broadly in the field of employee attrition. 
 
@@ -1399,6 +1498,8 @@ The study underscored the delicate balance between model complexity and performa
 
 While we have pointed out that various stakeholders can gain from these models, it’s crucial to note that the personal data used here, such as marital status, is highly sensitive in non-fictional datasets. Companies should thoughtfully consider which data points to utilize about their employees. Relying on certain predictors can potentially introduce significant bias, particularly against underrepresented groups within the organization. 
 
+<br>
+
 # Personal Learnings 
 
 This project was a great opportunity for us to learn about machine learning and develop our skills. We really enjoyed experimenting with different models, which is why our report is so long - we had a lot of work to cut down. 
@@ -1413,8 +1514,12 @@ It’s important to note that OpenAI’s Chat-GPT and Google’s Gemini LLMs wer
 
 In the end, we’re happy with the end result of our report, and even happier with how much we learned along the way. 
 
+<br>
+
 # Extra 
 
 Our team sent this project proposal to the investor relations email at Zug Estates a week ago, driven by the thought that it might be interesting to reach out given our current search for internships in data science with their esteemed company. We are thrilled to share that Zug Estates has responded positively, expressing that the concept is highly intriguing and that they would like to meet us. We are excited to announce that we will be meeting at their offices in the heart of Zug to discuss this further in the week of the 24th of June. 
 
-#References 
+<br>
+
+# References 
