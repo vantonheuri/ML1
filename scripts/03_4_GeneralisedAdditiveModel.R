@@ -12,6 +12,8 @@ library(ggplot2)
 library(mgcv)
 library(dplyr)
 library(caret)
+install.packages("gridExtra")
+library(gridExtra)
 
 --------------------------------------------------------------------------------
 
@@ -167,7 +169,7 @@ par(mfrow = c(2, 2))
 plot(gam.properties.combined, residuals = TRUE, cex = 2)
 
 --------------------------------------------------------------------------------
-# Train Best model: GAM with interaction
+# Train Best model: GAM with interaction | NEW DATA
   
 # Define the number of folds for cross-validation
 set.seed(123)
@@ -228,12 +230,6 @@ new_data <- new_data %>%
 # Preview the new dataset with predictions
 head(new_data)
 
-# Plot the predictions
-ggplot(test_data, aes(x = Size_m2, y = Predicted_Price)) +
-  geom_line(color = "blue") +
-  labs(title = "Predicted Prices vs. Size_m2", x = "Size (m²)", y = "Predicted Price (Gross)") +
-  theme_minimal()
-
 
 # Plot the predictions
 ggplot(new_data, aes(x = Size_m2, y = Predicted_Price)) +
@@ -241,8 +237,9 @@ ggplot(new_data, aes(x = Size_m2, y = Predicted_Price)) +
   labs(title = "Predicted Prices vs. Size_m2", x = "Size (m²)", y = "Predicted Price (Gross)") +
   theme_minimal()
 
+
 --------------------------------------------------------------------------------
-  
+# Train Best model: GAM with interaction | Test Data with Cross Validation
 
 # Define the number of folds for cross-validation
 set.seed(123)
@@ -251,6 +248,8 @@ folds <- createFolds(d.properties$Price_Gross, k = 10, list = TRUE)
 # Initialize vectors to store predictions and actual prices
 all_predictions <- c()
 all_actuals <- c()  
+rmse_values <- c()
+
 
 # Perform cross-validation
 for(i in 1:length(folds)) {
@@ -289,26 +288,30 @@ results_df <- results_df %>%
 
 # Plot the predicted vs. actual prices as lines
 line_plot <- ggplot(results_df, aes(x = Index)) +
-  geom_line(aes(y = Actual, color = "Actual Price"), size = 0.3, alpha = 0.7) +
-  geom_line(aes(y = Predicted, color = "Predicted Price"), size = 0.7, linetype = "dashed", alpha = 0.7) +
+  geom_line(aes(y = Actual, color = "Actual Price"), size = 0.5, alpha = 0.7) +
+  geom_line(aes(y = Predicted, color = "Predicted Price"), size = 0.75, alpha = 0.7) +
   labs(title = "Comparison of Predicted and Actual Prices",
        subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
-       x = "Index",
-       y = "Price (Gross)",
+       x = "Size (m²)",
+       y = "Rental Price (CHF)",
        color = "Legend") +
   theme_minimal() +
-  scale_color_manual(values = c("Actual Price" = "grey", "Predicted Price" = "#9C8AE6")) +
+  coord_cartesian(xlim = c(50, 150), ylim = c(0, 8000)) +
+  scale_color_manual(values = c("Actual Price" = "black", "Predicted Price" = "#9C8AE6")) +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12),
-    axis.title = element_text(size = 12),
-    legend.title = element_text(size = 12),
-    legend.text = element_text(size = 10)
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 10),
+    axis.title = element_text(size = 10),
+    legend.text = element_text(size = 8),
+    legend.position = c(0.8, 0.9), 
+    legend.background = element_rect(fill = "white", colour = "black", size = 0.2), 
+    legend.title = element_blank(),
+    legend.margin = margin(t = 5, r = 20, b = 5, l = 10)
   )
 
 # Limit the data to properties with sizes up to 500 m²
 limited_data <- d.properties %>%
-  filter(Size_m2 <= 500)
+  filter(Size_m2 <= 150)
 
 # Initialize vectors to store predictions and actual prices for limited data
 limited_predictions <- c()
@@ -342,472 +345,23 @@ long_results_df <- limited_results_df %>%
 # Plot box plots of the predicted and actual prices
 box_plot <- ggplot(long_results_df, aes(x = Type, y = Price, fill = Type)) +
   geom_boxplot(alpha = 0.7) +
-  labs(title = "Distribution of Predicted and Actual Prices for Properties ≤ 500m²",
+  labs(title = "Distribution Prices for Properties under 150m²",
        x = "Type",
-       y = "Price (Gross)") +
+       y = "Rental Price (CHF)") +
   scale_fill_manual(values = c("Actual" = "grey", "Predicted" = "#9C8AE6")) +
   theme_minimal() +
+  coord_cartesian(ylim = c(0, 6000)) +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    axis.title = element_text(size = 12),
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 10),
+    axis.title = element_text(size = 10),
     legend.position = "none"
   )
 
 # Combine both plots into one figure
 grid.arrange(line_plot, box_plot, ncol = 2)
 
-
-# Plot the predicted vs. actual prices as lines
-line_plot <- ggplot(results_df, aes(x = Index)) +
-  geom_line(aes(y = Actual, color = "Actual Price"), size = 0.3, alpha = 0.7) +
-  geom_line(aes(y = Predicted, color = "Predicted Price"), size = 0.7, linetype = "dashed", alpha = 0.7) +
-  labs(title = "Comparison of Predicted and Actual Prices for Properties ≤ 500m²",
-       subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
-       x = "Index",
-       y = "Price (Gross)",
-       color = "Legend") +
-  theme_minimal() +
-  scale_color_manual(values = c("Actual Price" = "grey", "Predicted Price" = "#9C8AE6")) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12),
-    axis.title = element_text(size = 12),
-    legend.title = element_text(size = 12),
-    legend.text = element_text(size = 10),
-    legend.position = "top"
-  )
-
-------
-  
-  
-  # Load necessary libraries
-  library(mgcv)
-library(dplyr)
-library(caret)
-library(ggplot2)
-library(tidyr)
-library(gridExtra)
-
-# Define the number of folds for cross-validation
-set.seed(123)
-folds <- createFolds(d.properties$Price_Gross, k = 10, list = TRUE)
-
-# Initialize vectors to store predictions and actual prices for limited data
-all_predictions <- c()
-all_actuals <- c()
-all_size_m2 <- c()
-
-# Perform cross-validation for limited data
-for(i in 1:length(folds)) {
-  # Split the data into training and testing sets
-  test_indices <- folds[[i]]
-  train_data <- d.properties[-test_indices, ]
-  test_data <- d.properties[test_indices, ]
-  
-  # Fit the model on the training data
-  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
-  
-  # Predict on the test data
-  predictions <- predict(gam_model, newdata = test_data)
-  
-  # Filter predictions, actual values, and Size_m2 to Size_m2 <= 500
-  limited_predictions <- predictions[test_data$Size_m2 <= 500]
-  limited_actuals <- test_data$Price_Gross[test_data$Size_m2 <= 500]
-  limited_size_m2 <- test_data$Size_m2[test_data$Size_m2 <= 500]
-  
-  # Store the filtered predictions, actual values, and Size_m2
-  all_predictions <- c(all_predictions, limited_predictions)
-  all_actuals <- c(all_actuals, limited_actuals)
-  all_size_m2 <- c(all_size_m2, limited_size_m2)
-  
-  # Calculate RMSE for the current fold
-  rmse <- sqrt(mean((limited_predictions - limited_actuals)^2))
-  rmse_values <- c(rmse_values, rmse)
-}
-
-# Calculate the average RMSE across all folds
-average_rmse <- mean(rmse_values)
-
-# Print the average RMSE
-print(average_rmse)
-
-# Create a data frame with predictions, actual values, and Size_m2
-results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals, Size_m2 = all_size_m2)
-
-# Bin the data by Size_m2 with steps of 10 m² and calculate mean prices for each bin
-results_df <- results_df %>%
-  mutate(Size_m2_bin = cut(Size_m2, breaks = seq(0, 500, by = 10), include.lowest = TRUE, right = FALSE)) %>%
-  group_by(Size_m2_bin) %>%
-  summarize(mean_predicted = mean(Predicted), mean_actual = mean(Actual)) %>%
-  mutate(Size_m2_bin = as.numeric(gsub("[^0-9]", "", as.character(Size_m2_bin))))
-
-# Plot the binned mean predicted vs. actual prices
-line_plot <- ggplot(results_df, aes(x = Size_m2_bin)) +
-  geom_line(aes(y = mean_actual, color = "Actual Price"), size = 0.7, alpha = 0.7) +
-  geom_line(aes(y = mean_predicted, color = "Predicted Price"), size = 0.7, linetype = "dashed", alpha = 0.7) +
-  labs(title = "Comparison of Predicted and Actual Prices for Properties ≤ 500m²",
-       subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
-       x = "Size (m²)",
-       y = "Price (Gross)",
-       color = "Legend") +
-  theme_minimal() +
-  scale_color_manual(values = c("Actual Price" = "grey", "Predicted Price" = "#9C8AE6")) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12),
-    axis.title = element_text(size = 12),
-    legend.title = element_text(size = 12),
-    legend.text = element_text(size = 10),
-    legend.position = "top"
-  )
-
-# Create a data frame with predictions and actual values for limited data
-limited_results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals)
-
-# Combine the predicted and actual prices into a single column for plotting
-long_results_df <- limited_results_df %>%
-  pivot_longer(cols = c("Predicted", "Actual"), names_to = "Type", values_to = "Price")
-
-# Plot box plots of the predicted and actual prices
-box_plot <- ggplot(long_results_df, aes(x = Type, y = Price, fill = Type)) +
-  geom_boxplot(alpha = 0.7) +
-  labs(title = "Distribution of Predicted and Actual Prices for Properties ≤ 500m²",
-       x = "Type",
-       y = "Price (Gross)") +
-  scale_fill_manual(values = c("Actual" = "grey", "Predicted" = "#9C8AE6")) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    axis.title = element_text(size = 12),
-    legend.position = "none"
-  )
-
-# Combine both plots into one figure
-grid.arrange(line_plot, box_plot, ncol = 2)
-
----------
-  
-  
-  # Load necessary libraries
-  library(mgcv)
-library(dplyr)
-library(caret)
-library(ggplot2)
-library(tidyr)
-library(gridExtra)
-
-# Define the number of folds for cross-validation
-set.seed(123)
-folds <- createFolds(d.properties$Price_Gross, k = 10, list = TRUE)
-
-# Initialize vectors to store predictions and actual prices for limited data
-all_predictions <- c()
-all_actuals <- c()
-all_size_m2 <- c()
-
-# Perform cross-validation for limited data
-for(i in 1:length(folds)) {
-  # Split the data into training and testing sets
-  test_indices <- folds[[i]]
-  train_data <- d.properties[-test_indices, ]
-  test_data <- d.properties[test_indices, ]
-  
-  # Fit the model on the training data
-  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
-  
-  # Predict on the test data
-  predictions <- predict(gam_model, newdata = test_data)
-  
-  # Filter predictions, actual values, and Size_m2 to Size_m2 <= 500
-  limited_predictions <- predictions[test_data$Size_m2 <= 500]
-  limited_actuals <- test_data$Price_Gross[test_data$Size_m2 <= 500]
-  limited_size_m2 <- test_data$Size_m2[test_data$Size_m2 <= 500]
-  
-  # Store the filtered predictions, actual values, and Size_m2
-  all_predictions <- c(all_predictions, limited_predictions)
-  all_actuals <- c(all_actuals, limited_actuals)
-  all_size_m2 <- c(all_size_m2, limited_size_m2)
-  
-  # Calculate RMSE for the current fold
-  rmse <- sqrt(mean((limited_predictions - limited_actuals)^2))
-  rmse_values <- c(rmse_values, rmse)
-}
-
-# Calculate the average RMSE across all folds
-average_rmse <- mean(rmse_values)
-
-# Print the average RMSE
-print(average_rmse)
-
-# Create a data frame with predictions, actual values, and Size_m2
-results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals, Size_m2 = all_size_m2)
-
-# Bin the data by Size_m2 with steps of 10 m² and calculate mean prices for each bin
-results_df <- results_df %>%
-  mutate(Size_m2_bin = cut(Size_m2, breaks = seq(0, 500, by = 10), include.lowest = TRUE, right = FALSE)) %>%
-  group_by(Size_m2_bin) %>%
-  summarize(mean_predicted = mean(Predicted), mean_actual = mean(Actual)) %>%
-  mutate(Size_m2_bin = as.numeric(gsub("[^0-9]", "", as.character(Size_m2_bin))))
-
-# Plot the binned mean predicted vs. actual prices
-line_plot <- ggplot(results_df, aes(x = Size_m2_bin)) +
-  geom_line(aes(y = mean_actual, color = "Actual Price"), size = 0.7, alpha = 0.7) +
-  geom_line(aes(y = mean_predicted, color = "Predicted Price"), size = 0.7, linetype = "dashed", alpha = 0.7) +
-  scale_x_continuous(breaks = seq(0, 500, by = 50)) +
-  labs(title = "Comparison of Predicted and Actual Prices for Properties ≤ 500m²",
-       subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
-       x = "Size (m²)",
-       y = "Price (Gross)",
-       color = "Legend") +
-  theme_minimal() +
-  scale_color_manual(values = c("Actual Price" = "grey", "Predicted Price" = "#9C8AE6")) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12),
-    axis.title = element_text(size = 12),
-    legend.title = element_text(size = 12),
-    legend.text = element_text(size = 10),
-    legend.position = "top"
-  )
-
-# Create a data frame with predictions and actual values for limited data
-limited_results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals)
-
-# Combine the predicted and actual prices into a single column for plotting
-long_results_df <- limited_results_df %>%
-  pivot_longer(cols = c("Predicted", "Actual"), names_to = "Type", values_to = "Price")
-
-# Plot box plots of the predicted and actual prices
-box_plot <- ggplot(long_results_df, aes(x = Type, y = Price, fill = Type)) +
-  geom_boxplot(alpha = 0.7) +
-  labs(title = "Distribution of Predicted and Actual Prices for Properties ≤ 500m²",
-       x = "Type",
-       y = "Price (Gross)") +
-  scale_fill_manual(values = c("Actual" = "grey", "Predicted" = "#9C8AE6")) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    axis.title = element_text(size = 12),
-    legend.position = "none"
-  )
-
-# Combine both plots into one figure
-grid.arrange(line_plot, box_plot, ncol = 2)
-
-
-
------------
-  
-  
-  # Load necessary libraries
-  library(mgcv)
-library(dplyr)
-library(caret)
-library(ggplot2)
-library(tidyr)
-library(gridExtra)
-
-# Define the number of folds for cross-validation
-set.seed(123)
-folds <- createFolds(d.properties$Price_Gross, k = 10, list = TRUE)
-
-# Initialize vectors to store predictions and actual prices
-all_predictions <- c()
-all_actuals <- c()
-all_size_m2 <- c()
-
-# Perform cross-validation
-for(i in 1:length(folds)) {
-  # Split the data into training and testing sets
-  test_indices <- folds[[i]]
-  train_data <- d.properties[-test_indices, ]
-  test_data <- d.properties[test_indices, ]
-  
-  # Fit the model on the training data
-  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
-  
-  # Predict on the test data
-  predictions <- predict(gam_model, newdata = test_data)
-  
-  # Store the predictions, actual values, and Size_m2
-  all_predictions <- c(all_predictions, predictions)
-  all_actuals <- c(all_actuals, test_data$Price_Gross)
-  all_size_m2 <- c(all_size_m2, test_data$Size_m2)
-  
-  # Calculate RMSE for the current fold
-  rmse <- sqrt(mean((predictions - test_data$Price_Gross)^2))
-  rmse_values <- c(rmse_values, rmse)
-}
-
-# Calculate the average RMSE across all folds
-average_rmse <- mean(rmse_values)
-
-# Print the average RMSE
-print(average_rmse)
-
-# Create a data frame with predictions, actual values, and Size_m2
-results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals, Size_m2 = all_size_m2)
-
-# Bin the data by Size_m2 with steps of 10 m² and calculate mean prices for each bin
-results_df <- results_df %>%
-  mutate(Size_m2_bin = cut(Size_m2, breaks = seq(min(Size_m2), max(Size_m2), by = 10), include.lowest = TRUE, right = FALSE)) %>%
-  group_by(Size_m2_bin) %>%
-  summarize(mean_predicted = mean(Predicted), mean_actual = mean(Actual)) %>%
-  mutate(Size_m2_bin = as.numeric(gsub("[^0-9]", "", as.character(Size_m2_bin))))
-
-# Plot the binned mean predicted vs. actual prices
-line_plot <- ggplot(results_df, aes(x = Size_m2_bin)) +
-  geom_line(aes(y = mean_actual, color = "Actual Price"), size = 0.7, alpha = 0.7) +
-  geom_line(aes(y = mean_predicted, color = "Predicted Price"), size = 0.7, linetype = "dashed", alpha = 0.7) +
-  labs(title = "Comparison of Predicted and Actual Prices for All Properties",
-       subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
-       x = "Size (m²)",
-       y = "Price (Gross)",
-       color = "Legend") +
-  theme_minimal() +
-  scale_color_manual(values = c("Actual Price" = "grey", "Predicted Price" = "#9C8AE6")) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12),
-    axis.title = element_text(size = 12),
-    legend.title = element_text(size = 12),
-    legend.text = element_text(size = 10),
-    legend.position = "top"
-  )
-
-# Create a data frame with predictions and actual values
-limited_results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals)
-
-# Combine the predicted and actual prices into a single column for plotting
-long_results_df <- limited_results_df %>%
-  pivot_longer(cols = c("Predicted", "Actual"), names_to = "Type", values_to = "Price")
-
-# Plot box plots of the predicted and actual prices
-box_plot <- ggplot(long_results_df, aes(x = Type, y = Price, fill = Type)) +
-  geom_boxplot(alpha = 0.7) +
-  labs(title = "Distribution of Predicted and Actual Prices for All Properties",
-       x = "Type",
-       y = "Price (Gross)") +
-  scale_fill_manual(values = c("Actual" = "grey", "Predicted" = "#9C8AE6")) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    axis.title = element_text(size = 12),
-    legend.position = "none"
-  )
-
-# Combine both plots into one figure
-grid.arrange(line_plot, box_plot, ncol = 2)
-
-
-
-# Load necessary libraries
-library(mgcv)
-library(dplyr)
-library(caret)
-library(ggplot2)
-library(tidyr)
-library(gridExtra)
-
-# Define the number of folds for cross-validation
-set.seed(123)
-folds <- createFolds(d.properties$Price_Gross, k = 10, list = TRUE)
-
-# Initialize vectors to store predictions and actual prices
-all_predictions <- c()
-all_actuals <- c()
-all_size_m2 <- c()
-
-# Perform cross-validation
-for(i in 1:length(folds)) {
-  # Split the data into training and testing sets
-  test_indices <- folds[[i]]
-  train_data <- d.properties[-test_indices, ]
-  test_data <- d.properties[test_indices, ]
-  
-  # Fit the model on the training data
-  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
-  
-  # Predict on the test data
-  predictions <- predict(gam_model, newdata = test_data)
-  
-  # Store the predictions, actual values, and Size_m2
-  all_predictions <- c(all_predictions, predictions)
-  all_actuals <- c(all_actuals, test_data$Price_Gross)
-  all_size_m2 <- c(all_size_m2, test_data$Size_m2)
-  
-  # Calculate RMSE for the current fold
-  rmse <- sqrt(mean((predictions - test_data$Price_Gross)^2))
-  rmse_values <- c(rmse_values, rmse)
-}
-
-# Calculate the average RMSE across all folds
-average_rmse <- mean(rmse_values)
-
-# Print the average RMSE
-print(average_rmse)
-
-# Create a data frame with predictions, actual values, and Size_m2
-results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals, Size_m2 = all_size_m2)
-
-# Bin the data by Size_m2 with steps of 100 m² and calculate mean prices for each bin
-results_df <- results_df %>%
-  mutate(Size_m2_bin = cut(Size_m2, breaks = seq(0, max(Size_m2), by = 100), include.lowest = TRUE, right = FALSE)) %>%
-  group_by(Size_m2_bin) %>%
-  summarize(mean_predicted = mean(Predicted), mean_actual = mean(Actual)) %>%
-  mutate(Size_m2_bin = as.numeric(gsub("[^0-9]", "", as.character(Size_m2_bin))))
-
-# Plot the binned mean predicted vs. actual prices
-line_plot <- ggplot(results_df, aes(x = Size_m2_bin)) +
-  geom_line(aes(y = mean_actual, color = "Actual Price"), size = 0.7, alpha = 0.7) +
-  geom_line(aes(y = mean_predicted, color = "Predicted Price"), size = 0.7, linetype = "dashed", alpha = 0.7) +
-  scale_x_continuous(breaks = seq(0, max(results_df$Size_m2_bin, na.rm = TRUE), by = 100)) +
-  labs(title = "Comparison of Predicted and Actual Prices for All Properties",
-       subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
-       x = "Size (m²)",
-       y = "Price (Gross)",
-       color = "Legend") +
-  theme_minimal() +
-  scale_color_manual(values = c("Actual Price" = "grey", "Predicted Price" = "#9C8AE6")) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12),
-    axis.title = element_text(size = 12),
-    legend.title = element_text(size = 12),
-    legend.text = element_text(size = 10),
-    legend.position = "top"
-  )
-
-# Create a data frame with predictions and actual values
-limited_results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals)
-
-# Combine the predicted and actual prices into a single column for plotting
-long_results_df <- limited_results_df %>%
-  pivot_longer(cols = c("Predicted", "Actual"), names_to = "Type", values_to = "Price")
-
-# Plot box plots of the predicted and actual prices
-box_plot <- ggplot(long_results_df, aes(x = Type, y = Price, fill = Type)) +
-  geom_boxplot(alpha = 0.7) +
-  labs(title = "Distribution of Predicted and Actual Prices for All Properties",
-       x = "Type",
-       y = "Price (Gross)") +
-  scale_fill_manual(values = c("Actual" = "grey", "Predicted" = "#9C8AE6")) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    axis.title = element_text(size = 12),
-    legend.position = "none"
-  )
-
-# Combine both plots into one figure
-grid.arrange(line_plot, box_plot, ncol = 2)
-
-
-----
-  
   
 
 
-    
 
-  

@@ -8,7 +8,6 @@ output:
   prettydoc::html_pretty:
     theme: hpstr
     highlight: github
-    css: styles.css
     toc: yes
     toc_depth: 1
     # toc_float: yes
@@ -29,6 +28,37 @@ knit:
   citations: yes
 ---
 
+<style>
+
+body {font-size: 14px;}
+
+p {font-size: 14px;}
+
+h1{font-size: 17pt;}
+
+h2{font-size: 15pt;}
+
+h3,h4,h5,h6{font-size: 14pt;}
+
+div.r-plot {width: 60%; margin: auto;}
+
+img {
+  max-width: 60%; 
+  height: auto;
+  display: block;
+  margin: auto;
+}
+
+
+table {
+  font-size: 16px;
+  line-height: 0.8;
+}
+
+
+</style>
+
+
 ```{r setup, include = FALSE, warning = FALSE}
 library(knitr)
 opts_chunk$set(
@@ -38,33 +68,79 @@ opts_chunk$set(
   message = FALSE)
 ```
 
+<br>
+
 # Introduction
 
-Zug Estates focuses on developing, managing, and marketing properties in the Zug region, Switzerland. They prioritize centrally located sites for sustainable, multi-use development. Their portfolio is concentrated in Zug and Risch Rotkreuz, featuring a mix of residential, office, retail, hotel, and service spaces. The company aims for long-term property retention and development, driving value creation through sustainable designs and active management
+**Zug Estates (SWX: ZUGN)** focuses on developing, managing, and marketing properties in the Zug region, Switzerland. As a company, they prioritize centrally located sites for sustainable, multi-use development.  
 
-Zug Estates, a major real estate player in Zug, Switzerland, might be looking to invest in other parts of the country for several reasons. Here's a comprehensive breakdown:
+Their portfolio is concentrated in **Zug** and **Risch Rotkreuz**, featuring a mix of **residential**, **office**, **retail**, **hotel**, and **service spaces**. The company aims for long-term property retention and development, driving value creation through sustainable designs and active management.
 
--   **Risk Reduction:** The real estate market can be volatile. By spreading their investments across different cantons (Swiss states), Zug Estates reduces the risk associated with a downturn in Zug's market. They might target areas with strong growth potential or a different property mix to complement their Zug portfolio. This diversification provides a buffer and ensures a more stable income stream.
+**Zug Estates**, a major real estate player in Zug, Switzerland, might be looking to invest in other parts of the country for several reasons. Here’s a comprehensive breakdown: 
 
--   **Saturated Market:** Perhaps the Zug market is saturated, meaning there are limited opportunities for profitable investments. Expanding to other areas allows Zug Estates to tap into new markets with higher potential returns. They might find regions with a greater need for the kind of development they specialize in, offering exciting growth possibilities.
 
--   **Connecting the Landscape:** Zug Estates' investments might have a strategic element beyond just individual properties. They could be acquiring properties near transportation hubs or in developing commercial centers. This could be a way to connect different areas of Switzerland through their investments, potentially influencing the overall development landscape.
+- **Risk Reduction:** By spreading their investments across different cantons (Swiss states), Zug Estates reduces the risk associated with a downturn in Zug’s market.
 
--   **Reputation and Knowledge:** Over time, Zug Estates has likely built a strong reputation for high-quality development and property management within Zug. Expanding to other cantons allows them to leverage this reputation. They can attract partnerships with local developers or win contracts for projects in new areas based on their proven track record. Essentially, they bring their successful model to other parts of Switzerland.
 
--   **Capitalizing on Demand:** Zug Estates might be strategically responding to broader market trends across Switzerland. Perhaps there's a growing demand for specific property types, like student housing or retirement communities, in certain regions. By investing in these areas, they can capitalize on these trends and meet those demands, ensuring their portfolio remains relevant and profitable. .
+- **Saturated Market:**  Zug market could be saturated, meaning there are limited opportunities for profitable investments. Expanding to other areas allows Zug Estates to tap into new markets with higher potential returns.
 
-## Dataset "Homegate..."
 
-... Rodrigo ...
+- **Connecting the Landscape:** Zug Estates’ investments might have a strategic element beyond just individual properties. They could be acquiring properties near transportation hubs or in developing commercial centers.
 
-## Motivation and Goal
 
-... Rodrigo ...
+- **Reputation and Knowledge:** Over time, Zug Estates has built a strong reputation for high-quality development and property management within Zug. Expanding to other cantons allows them to leverage this reputation. They can attract partnerships with local developers or win contracts for projects in new areas based on their proven track record. Essentially, they bring their successful model to other parts of Switzerland. 
+
+
+- **Capitalizing on Demand:** Zug Estates might be strategically responding to broader market trends across Switzerland. Perhaps there’s a growing demand for specific property types, like student housing or retirement communities, in certain regions. 
+
+We will focus on satisfying Zug Estates as a client looking to expand their operations.
+
+## Motivation and Goal 
+
+**WP Carey**, a prominent **Real Estate Investment Trust (REIT)** known for its diversified portfolio of commercial properties, has recently announced its strategic decision to **exit the Swiss market**. This move marks a significant shift in the company’s investment strategy, focusing more on markets where they see greater **potential for growth and stability**. As part of this exit, **WP Carey** has successfully negotiated the sale of its assets located in central Switzerland to **Zug Estates**, a leading Swiss real estate company with a strong presence in the Zug region. 
+
+<br>
+![](images/wp carey.JPG){width=4in}
+<br>
+
+The **assets sold** include a mix of **high-value commercial properties**, **office buildings**, and **mixed-use developments** that have been integral to **WP Carey’s Swiss portfolio**. This transaction allows **WP Carey** to reallocate capital towards more lucrative opportunities in other markets, while Zug Estates stands to benefit significantly from the acquisition. By integrating these prime assets into their existing portfolio, **Zug Estates** can enhance its market position and leverage the strategic locations of these properties to **attract new tenants** and **increase rental income**. This acquisition underscores **Zug Estates** commitment to expanding its footprint in central Switzerland and reinforces its reputation as a **key player** in the **Swiss Real Estate market**. 
+
+<br>
+![](images/swissinfo.JPG){width=10in}
+<br>
+
+Our team is deeply motivated to help Zug Estates by enhancing our understanding of the real estate market in Central Switzerland. The company's strategic approach has always attracted our attention, given our recurring interest in real estate investment. We believe that the future of Central Switzerland and Zug is bright, and this project represents a unique opportunity to contribute to that growth. By leveraging our collective expertise, we aim to provide valuable insights that will help maximize the potential of these newly acquired assets. 
+
+For our analysis we will focus on residential real estate due to the data limitations. 
+
+**Disclaimer:** *This is a fictional situation created to demonstrate students' ability to work with real datasets in situations that could occur in the real world.* 
+
+
+## Dataset “Homegate” and “Federal Statistic Office” 
+
+We used two data sources for this study: 
+
+First, **Homegate**, a **leading Swiss Real Estate platform**, has long been the go-to resource for individuals and businesses looking to buy, sell, or rent properties in Switzerland. Known for its extensive listings and user-friendly interface, **Homegate** provides detailed information on a wide range of properties across the country.  
+
+<br>
+![](images/homegate.JPG){width=4in}
+<br>
+
+We have obtained a comprehensive dataset of properties listed on Homegate, which will be invaluable for Zug Estates in evaluating these assets and determining the best use for them. This dataset includes detailed characteristics of the properties such as **Property_ID**, **FirstDay_Online**, **LastDay_Online**, **Type**, **Customer_ID**, **Customer_Segment**, **Category**, **Price_Gross**, **Size_m2**, **Canton**, **Nr_rooms**, **Package_ID**, and **Package_Product**. 
+
+This private data has been obtained through legitimate channels and not via scraping, ensuring their accuracy and reliability. With this rich dataset, we will perform an in-depth analysis for Zug Estates to help them understand market trends, property performance, and customer preferences. 
+
+Second, **the Federal Statistical Office (FSO) in Switzerland** offers a wealth of regional statistics that are essential for understanding the diverse characteristics of the country's cantons. 
+
+<br>
+![](images/federal.JPG){width=14in}
+<br>
+
+Among these resources are the regional portraits and key figures, which provide detailed portraits of each canton. These profiles include crucial data points such as **Canton**, **Canton_Name**, **Canton_Capital**, **GDP_2020_21**, **GDP_per**, Population, **Area_km2**, **Density**, **Official_Language_1**, **Official_Language_2**, and **Official_Language_3.** This information is invaluable for stakeholders looking to gain insights into the economic, demographic, and cultural landscape of Switzerland. 
 
 ## Project Structure
 
-... Rodrigo ...
+*Complete*
 
 ## Navigating the Report: Understanding the Hidden R Code
 
@@ -103,6 +179,7 @@ library(pROC)
 library(reshape2)
 library(tidyr)
 library(kableExtra)
+library(splines)
 ```
 
 </details>
@@ -112,8 +189,6 @@ library(kableExtra)
 # Exploratory Data Analysis
 
 This chapter thoroughly explores the dataset, with a specific focus on the main variable of interest: **rental prices**. Our primary goal is to develop predictive models for rental prices of both apartments and houses.
-
-<br>
 
 ## Data Preparation and Preliminary Analysis
 
@@ -378,9 +453,13 @@ grid.arrange(plot_effect_rooms, plot_distribution_rooms, ncol = 2, widths = c(3,
 
 ```
 
+<br>
+
 # Data Modeling
 
-**falta explicacion**
+*Complete*
+
+<br>
 
 # Linear Model
 
@@ -554,33 +633,267 @@ It is also made clear in our findings, that although the number of rooms is a go
 
 <br>
 
-# GLM - Generalised Linear - Poisson
+# GLM - Generalised Linear - Binomial
 
-```{r GLM - Generalised Linear - Binomial, echo=FALSE, warning=FALSE}
+```{r GLM Binomial, echo=FALSE, warning=FALSE}
+# Read data
+enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
+enc_data <- enc_data %>%
+  mutate(fast.sale = ifelse(Days_Difference <= 17, 1, 0))
 
+# Split the data into training and testing sets
+set.seed(71)
+split_ratio <- 0.8
+training_indices <- sample(1:nrow(enc_data), size = nrow(enc_data) * split_ratio, replace = FALSE)
+train_set <- enc_data[training_indices, ]
+test_set <- enc_data[-training_indices, ]
 
-```
+# Fit a binomial logistic regression model to predict fast sale
+binomial.model <- glm(fast.sale ~ Price_Gross + Nr_rooms + Size_m2 + Canton_num + Customer_Segment_num + Category_num, family = binomial, data = train_set)
+
+# Calculate and print odds ratios from the model coefficients
+coef <- coef(binomial.model)
+odds_ratios <- exp(coef)
+
+# Get and display fitted values (predicted probabilities) for the training set
+fitted_values_train <- fitted(binomial.model)
+train_set$fitted_values <- fitted_values_train
+
+# Predict probabilities for the test set and display the first few predictions
+predicted_probabilities_test <- predict(binomial.model, test_set, type = "response")
+test_set$fitted_values <- predicted_probabilities_test
+
+# Convert predicted probabilities to binary outcomes using a 0.5 threshold
+predicted_classes <- ifelse(predicted_probabilities_test > 0.5, 1, 0)
+actual_classes <- test_set$fast.sale
+
+# Create and print the confusion matrix
+conf_matrix <- table(Predicted = predicted_classes, Actual = actual_classes)
+conf_matrix_percent <- prop.table(conf_matrix) * 100
+
+# Calculate precision, recall, and accuracy and print them
+precision <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(predicted_classes == 1)
+recall <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(actual_classes == 1)
+accuracy <- sum(predicted_classes == actual_classes) / length(actual_classes)
+
+# Fit a quasi-Poisson regression model to predict the number of rooms (Nr_rooms)
+modelo_quasi_poisson <- glm(Nr_rooms ~ Price_Gross + Size_m2, family = quasipoisson, data = train_set)
+
+# Predict values for the test set and calculate mean squared error (MSE)
+predicted_values_test_quasi <- predict(modelo_quasi_poisson, newdata = test_set, type = "response")
+test_set$fitted_values_quasi <- predicted_values_test_quasi
+
+mse_test_quasi <- mean((test_set$Nr_rooms - test_set$fitted_values_quasi)^2)
+
+# Calculate and print root mean squared error (RMSE)
+rmse_test_quasi <- sqrt(mse_test_quasi)
+```   
 
 ## Purpose and Target
 
+Quick sales or rentals are crucial for Zug Estates in the commercial real estate world. Fast transactions minimize vacancy periods, ensuring steady cash flow and maximizing returns on investment. 
+This efficiency not only benefits property owners by reducing holding costs but also attracts potential clients who value quick and smooth processes. 
+
+We decided to use a Generalized Linear Model, Binomial to modelize it. 
+
 ## Interpretation
 
+Before jumping into the model, we needed to do some adjustments to the data: 
+
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 1, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+mean(enc_data$Days_Difference)  
+```   
+
+</details>
+
+The average time it takes an owner to rent out a flat or house is 16 days. Therefore, we have taken the average as a reference, if a property takes less than 17 days it is categorised as 'Fast sale' and coded as 1, otherwise it is coded as 0. 
+
+Then we decided to divide the data set (enc_data) into two subsets: one for training (train_set) and another for testing (test_set). The training set is used to tune the model, while the test set is used to evaluate the performance of the model. We will use it later. 
+
+In summary, the logistic regression model indicates that Price_Gross, certain Canton categories, and Customer_Segment have significant effects on the likelihood of a quick sale. Specifically, higher prices decrease the probability, while certain regions (Canton_num3 and Canton_num4) and customer segments have varying influences. The fit of the model is reasonable, as indicated by the reduction in deviance and the AIC value. Mas concreatmente, podemos extraer informacion muy interesante que relfexionaremos tras analizar mas en profunidad el modelo. 
+
+- **Price_Gross:** The negative coefficient indicates that higher gross prices are associated with lower probabilities of a quick sale. This suggests that properties priced higher may take longer to sell, likely due to a smaller pool of potential buyers or perceived overvaluation. However the coefieicnete is so small que no se puede desestimar. Sorpresivamente para Zug Estates el precio no parece jugar un papel significativo. 
+
+- **Nr_rooms:** Not significant (p-value = 0.296563), which implies that the number of rooms may not be a decisive factor for quick sales in Central Switzerland. 
+
+- **Size_m2:** Not significant (p-value = 0.703451), thus, the size of the property alone does not strongly influence quick sales. 
+
+- **Canton_num:**  
+
+    - **Canton_num2:** Negative effect, not significant (p-value = 0.07185) 
+
+    - **Canton_num3:** Positive effect, significant (p-value = 0.006502) 
+
+    - **Canton_num4:** Positive effect, significant (p-value = 0.000767) 
+
+Properties in Canton_num3 and Canton_num4 have significantly higher odds of quick sales, suggesting these areas are in high demand or have market conditions conducive to faster transactions. This two canton are equivalent to X and Y which mean that the probabilities of a quick sale in Canton_num3 are approximately 17.46 times greater than in the reference canton  and for Canton_num4 are approximately 2.27 times higher than in the baseline canton. 
+
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 2, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+coef <- coef(binomial.model)
+odds_ratios <- exp(coef)
+print(odds_ratios)  
+```   
+
+</details>
+
+This is important for the Zug-based company's future property operations. 
+
+Later we have added to the original dataset a new column named fitted_values to the training set (train_set). This column contains the predicted probabilities obtained from the fitted model. The fitted values are the predicted probabilities that the dependent variable (fast.sale) equals 1 (i.e., a quick sale) for each observation in the training set. 
+
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 3, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+fitted_values_train <- fitted(binomial.model) 
+train_set$fitted_values <- fitted_values_train 
+head(train_set[, c("fast.sale", "fitted_values")]) 
+```   
+
+</details>
+
+Finally, we have made Predictions on the Test Set. The interpretation is the interpretation of the actual outcome , if it was a quick sale (1) or not (0). For example, in the first case, the model  predicted a 78.5% probability of a quick sale. This prediction is quite accurate and confident. 
+
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 4, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+predicted_probabilities_test <- predict(binomial.model, test_set, type = "response") 
+test_set$fitted_values <- predicted_probabilities_test 
+head(test_set[, c("fast.sale", "fitted_values")]) 
+```   
+
+</details>
+
+
+To measure the quality of the model so that Zug Estates can make adequate predictions: 
+
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 5, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+predicted_classes <- ifelse(predicted_probabilities_test > 0.5, 1, 0) 
+actual_classes <- test_set$fast.sale 
+conf_matrix <- table(Predicted = predicted_classes, Actual = actual_classes) 
+conf_matrix_percent <- prop.table(conf_matrix) * 100 
+print(round(conf_matrix_percent, 2)) 
+print(conf_matrix) 
+```   
+
+</details>
+
+
 ## Conclusion
+
+Without being exhaustive, here are some conclusions about the model:
+
+- **False Negatives (FN):** The model incorrectly predicted 15 instances as not quick sales (0) when they were quick sales (1), which is 7.77% of the total predictions. This indicates missed opportunities where the model failed to identify actual quick sales. 
+
+- **True Positives (TP):** The model correctly predicted 129 instances as quick sales (1), which is 66.84% of the total predictions. This shows a strong performance in correctly identifying quick sales. 
+
+Finally, with respect to performance metrics that are standard in Machine Learning:
+
+<details>
+
+<summary>*Click to see the results*</summary>
+
+```{r GLM Binomial 6, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+precision <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(predicted_classes == 1) 
+recall <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(actual_classes == 1) 
+accuracy <- sum(predicted_classes == actual_classes) / length(actual_classes) 
+print(paste("Precision:", precision)) 
+print(paste("Recall:", recall)) 
+print(paste("Accuracy:", accuracy)) 
+```   
+
+</details>
+
+- **Precision** indicates how reliable the model is when it predicts a quick sale. With a precision of 77.2%, the model has a moderate false positive rate, meaning some of the predicted quick sales are actually not quick sales. 
+
+- **Recall** measures how well the model identifies actual quick sales. With a high recall of 89.6%, the model successfully identifies most of the quick sales, indicating a low false negative rate. 
+
+- **Accuracy** provides an overall assessment of model performance. With an accuracy of 72.5%, the model correctly predicts the outcome for a majority of the cases but still makes errors in a significant number of cases. 
 
 <br>
 
-# GLM - Generalised Linear - Binomial
-
-```{r Generalised Linear Model with family set to Binomial, echo=FALSE, warning=FALSE}
-
-
-```
+# GLM - Generalised Linear - Poisson
 
 ## Purpose and Target
+Following the line of what was written on these lines, we want to provide Zug estates with a tool that allows predicting how many rooms would need a house to fit a market. For this we will use Quasi Poisson model, which is a variant of the Poisson regression model that is used to handle overdispersion in the data. Instead of assuming that the variance is equal to the mean (as in Poisson), the quasi-Poisson model allows the variance to be a function of the mean, but more flexible. 
+
+For Zug Estates, understanding what properties are in demand is key. By predicting the number of rooms accurately, they can sell or rent properties faster. This reduces vacancy periods, keeps cash flow steady, and boosts investment returns. It also lowers holding costs and speeds up transactions, making property owners and clients happy with quick, smooth processes. 
 
 ## Interpretation
 
-## Conclusion
+We decided to perform a logarithmic transformation on specific columns within two data sets: train_set and test_set. By applying these transformations, our code is preparing the train_set and test_set for better performance in subsequent glm model.  
+
+<details>
+
+<summary>*Click to see the code*</summary>
+
+```{r GLM Poisson 1, echo=FALSE, class.source = "fold-show"}
+train_set$log_Price_Gross <- log(train_set$Price_Gross + 1) 
+train_set$log_Size_m2 <- log(train_set$Size_m2 + 1) 
+test_set$log_Price_Gross <- log(test_set$Price_Gross + 1) 
+test_set$log_Size_m2 <- log(test_set$Size_m2 + 1) 
+```   
+
+</details>
+
+Here the **model**: 
+
+<details>
+
+<summary>*Click to see the code*</summary>
+
+```{r GLM Poisson 2, echo=FALSE, class.source = "fold-show"}
+quasipoisson.model <- glm(Nr_rooms ~ log_Price_Gross + log_Size_m2 + Category_num + Canton_num, family = quasipoisson, data = train_set) 
+```   
+
+</details>
+
+The model takes into account a previous logarithmic transformation that we have done so it must be interpreted in those terms, since it must fit what we want to put into it. The relevance of the price and the square meters in addition to one of the cantons to calculate the number of rooms is attested by the p value having statistical significance. However, whether or not the apartment is being rented by a professional or several of the cantons is not relevant, since its value is greater than 0.05. 
+
+When interpreting the price, for example, we can see that a 1% increase in Size_m2 increases the expected count of rooms by 𝑒0.00593205≈1.00593, or approximately 0.593%. 
+
+- Each point on the scatter plot represents a pair of actual and predicted values for a particular observation in the test set. 
+
+- The red line is the line of perfect prediction, where the predicted values would exactly equal the actual values (i.e., [Ecuación]y=x). Ideally, all points would lie on this line if the model predictions were perfect. 
+
+ 
+```{r GLM Poisson 3, echo=FALSE, warning=FALSE}
+predicted_values_test_quasi_log <- predict(quasipoisson.model, newdata = test_set, type = "response") 
+test_set$fitted_values_quasi_log <- predicted_values_test_quasi_log 
+
+ggplot(test_set, aes(x = Nr_rooms, y = fitted_values_quasi_log)) +
+  geom_point(alpha = 0.7, color = "#9C8AE6") +  
+  geom_abline(intercept = 0, slope = 1, color = "black") +  
+  labs(title = "Actual vs Predicted Values for Nr. of Rooms (Log Transformed Quasi-Poisson)",
+       x = "Actual Nr. of Rooms",
+       y = "Predicted Nr. of Rooms") +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0, 8)) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
+    axis.title = element_text(size = 10)
+  )
+```
+
+This scatter plot demonstrates that the Quasi-Poisson model with log-transformed predictors effectively captures the overall trend. As the actual number of rooms increases, the predicted values also rise correspondingly, indicating that the model successfully identifies the general relationship between the predictors and the target variable. 
+
+The trend highlights the model's capability to generalize well across the range of data points, reflecting a solid understanding of the underlying patterns in the dataset. 
+
+Despite some deviations from the line of perfect prediction (in red,), the model shows a promising performance. The increasing dispersion of points with higher actual values suggests that while the model is less precise for larger counts of rooms, it still maintains a coherent predictive behavior.  
 
 <br>
 
@@ -744,29 +1057,32 @@ summary(gam.properties.interaction)
 
 ## Conclusion
 
-## Conclusion
-
 ### Model Comparison Table
 
-As can be seen in the table and in the summaries of each model, based on the adjusted R-squared and the explained variance, the best fitting model is the GAM with interaction terms.
+As can be seen in the table and in the summaries of each model, based on the adjusted R-squared and the explained variance, the best fitting model is the GAM with interaction terms. 
+
 
 This model explains 44.9% of the variability in Price_Gross and includes significant interactions between **Size_m2** and **Nr_rooms**.
 
+
 ```{r Table GAMs Comparison, echo=FALSE, warning = FALSE}
+# Load the kableExtra library
+library(kableExtra)
+
 # Create the data frame for model comparison
 model_comparison <- data.frame(
   Model = c("GAM - Size_m2", "GAM - Full", "GAM - Filtered", "GAM - Log", "GAM - Interaction"),
-  `R-squared (Adj)` = c(0.389, 0.413, 0.431, 0.388, 0.449),
-  `Deviance Explained` = c("39.5%", "41.9%", "43.9%", "39.6%", "45.7%"),
-  `GCV Score` = c(754590, 726970, 685020, 759320, 683690)
+  `R_squared_Adj` = c(0.389, 0.413, 0.431, 0.388, 0.449),
+  `Deviance_Explained` = c("39.5%", "41.9%", "43.9%", "39.6%", "45.7%"),
+  `GCV_Score` = c(754590, 726970, 685020, 759320, 683690)
 )
 
 # Create the table with styling
-kbl(model_comparison, caption = "Model Comparison Summary", align = "l") %>%
+kbl(model_comparison, align = "l") %>%
   kable_classic(full_width = F, html_font = "Segoe UI") %>%
-  kable_styling(latex_options = c("striped", "hold_position"), position = "center", full_width = FALSE) %>%
-  column_spec(1, bold = TRUE, width = "5cm") %>%
-  column_spec(2:4, width = "3cm") %>%
+  kable_styling(latex_options = c("striped", "hold_position"), position = "center", font_size = 10) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:4, width = "2cm") %>%
   row_spec(0, background = "#9C8AE6", color = "white", bold = TRUE)
 ```
 
@@ -784,69 +1100,167 @@ These steps will help in further refining the model and ensuring more accurate p
 
 ## Model Predictions
 
-In this analysis, we aimed to predict property prices using a Generalised Additive Model (GAM) based on several factors including property size (Size_m2), days difference (Days_Difference), number of rooms (Nr_rooms), GDP per capita (GDP_per), population, area (Area_km2) and density. We first performed a 10-fold cross-validation to assess the performance of the model and found the average RMSE to be an appropriate measure of model accuracy.
+The analysis aims to forecast rental prices for houses and apartments. Noticing that the highest volume of rental prices falls within the range of 50 to 150 square meters, we have decided to focus our prediction on rental prices within this segment. This size range can be understood as a key market segment for Zug Estates, given its commercial relevance.
 
-Following cross-validation, we fitted the GAM model to the full dataset to more accurately capture the underlying patterns. To understand the effect of property size on predicted prices, we generated a new dataset with Size_m2 values ranging from 50 to 500 m² and predicted prices using the fitted model. The other predictors were randomly sampled from the original dataset to maintain variability.
+**Methodology used**
 
-```{r NeuralNet - Base, echo=FALSE}
-# Required Packages
-library(readxl)
-library(neuralnet)
+- **Cross-validation:** A 10-fold cross-validation was used to increase the robustness of the model, involving repeated training and testing.
 
-# Reading in data
-enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
-enc_data <- enc_data[, !(names(enc_data) %in% "X"), drop = TRUE]
+- **Model fitting:** as we have seen in the Model Comparison Table, we choosed the GAM - Interaction Model which included between its predictors including property size, listing period, number of rooms, GDP per capita, population, area and population density, and an interaction between property size and number of rooms.
 
-# Feature Engineering
-enc_data$Price_per_m2 <- enc_data$Price_Gross / enc_data$Size_m2
-q3 <- median(enc_data$Price_per_m2) + IQR(enc_data$Price_per_m2) / 2
-enc_data$High_Ticket <- enc_data$Price_per_m2 > q3
-enc_data$High_Ticket <- ifelse(enc_data$High_Ticket, 1, 0)
+**Performance metrics** 
 
-# Declaring Categorical Variables
-enc_data$Canton_num <- as.numeric(as.factor(enc_data$Canton_num))
-enc_data$Customer_Segment_num <- as.numeric(as.factor(enc_data$Customer_Segment_num))
-enc_data$Category_num <- as.numeric(as.factor(enc_data$Category_num))
-enc_data$Nr_rooms <- as.numeric(enc_data$Nr_rooms) # Treating Nr_rooms as continuous
-enc_data$Package_Product_num <- as.numeric(as.factor(enc_data$Package_Product_num))
+- **RMSE:** The accuracy of the model in predicting rental prices was measured by the RMSE, which averaged CHF 1005.04 across all replicates, indicating the model's predictive ability.
+ 
 
-# Normalizing the data
-normalize <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
+<br>
+
+```{r GAM Plot, echo=FALSE, warning = FALSE}
+# Train Best model: GAM with interaction | Test Data with Cross Validation
+# Define the number of folds for cross-validation
+set.seed(123)
+folds <- createFolds(d.properties$Price_Gross, k = 10, list = TRUE)
+
+# Initialize vectors
+all_predictions <- c()
+all_actuals <- c()  
+rmse_values <- c()
+
+
+# Perform cross-validation
+for(i in 1:length(folds)) {
+  # Split the data into training and testing sets
+  test_indices <- folds[[i]]
+  train_data <- d.properties[-test_indices, ]
+  test_data <- d.properties[test_indices, ]
+  
+  # Fit the model on the training data
+  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
+  
+  # Predict on the test data
+  predictions <- predict(gam_model, newdata = test_data)
+  
+  # Store the predictions and actual values
+  all_predictions <- c(all_predictions, predictions)
+  all_actuals <- c(all_actuals, test_data$Price_Gross)
+  
+  # Calculate RMSE for the current fold
+  rmse <- sqrt(mean((predictions - test_data$Price_Gross)^2))
+  rmse_values <- c(rmse_values, rmse)
 }
 
-features <- subset(enc_data, select = -High_Ticket)
-maxmindf_features <- as.data.frame(lapply(features, normalize))
+# Calculate the average RMSE across all folds
+average_rmse <- mean(rmse_values)
 
-High_Ticket <- enc_data$High_Ticket
-maxmindf <- cbind(High_Ticket, maxmindf_features)
+# Print the average RMSE
+#print(average_rmse)
 
-# Split into train and test sets
-set.seed(36)
-smpl <- sample.int(n = nrow(maxmindf), size = floor(0.8 * nrow(maxmindf)), replace = FALSE)
-train_maxmin <- maxmindf[smpl, ]
-test_maxmin <- maxmindf[-smpl, ]
+# Create a data frame with predictions and actual values
+results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals)
 
-# Modeling
-model_maxmin <- neuralnet(High_Ticket ~ ., data = train_maxmin, hidden = c(3, 8, 5), linear.output = FALSE)
+# Create an index for each test instance
+results_df <- results_df %>%
+  mutate(Index = 1:nrow(results_df))
 
+# Plot the predicted vs. actual prices as lines
+line_plot <- ggplot(results_df, aes(x = Index)) +
+  geom_line(aes(y = Actual, color = "Actual Price"), size = 0.5, alpha = 0.7) +
+  geom_line(aes(y = Predicted, color = "Predicted Price"), size = 0.75, alpha = 0.7) +
+  labs(title = "Comparison of Prices",
+       subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
+       x = "Size (m²)",
+       y = "Rental Price (CHF)",
+       color = "Legend") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 150), ylim = c(0, 8000)) +
+  scale_color_manual(values = c("Actual Price" = "black", "Predicted Price" = "#9C8AE6")) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 10),
+    axis.title = element_text(size = 10),
+    legend.text = element_text(size = 8),
+    legend.position = c(0.85, 0.9), 
+    legend.background = element_rect(fill = "white", colour = "black", size = 0.2), 
+    legend.title = element_blank(),
+    legend.margin = margin(t = 5, r = 20, b = 5, l = 10)
+  )
 
-# Predicting
-pred_maxmin <- predict(model_maxmin, test_maxmin)
+# Limit the data to properties with sizes up to 500 m²
+limited_data <- d.properties %>%
+  filter(Size_m2 <= 150)
 
-# Testing the Accuracy of the models
-maxmin_results <- data.frame(actual = test_maxmin$High_Ticket, prediction = pred_maxmin)
+# Initialize vectors to store predictions and actual prices for limited data
+limited_predictions <- c()
+limited_actuals <- c()
+
+# Perform cross-validation for limited data
+for(i in 1:length(folds)) {
+  # Split the data into training and testing sets
+  test_indices <- folds[[i]]
+  train_data <- limited_data[-test_indices, ]
+  test_data <- limited_data[test_indices, ]
+  
+  # Fit the model on the training data
+  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
+  
+  # Predict on the test data
+  predictions <- predict(gam_model, newdata = test_data)
+  
+  # Store the predictions and actual values
+  limited_predictions <- c(limited_predictions, predictions)
+  limited_actuals <- c(limited_actuals, test_data$Price_Gross)
+}
+
+# Create a data frame with predictions and actual values for limited data
+limited_results_df <- data.frame(Predicted = limited_predictions, Actual = limited_actuals)
+
+# Combine the predicted and actual prices into a single column for plotting
+long_results_df <- limited_results_df %>%
+  pivot_longer(cols = c("Predicted", "Actual"), names_to = "Type", values_to = "Price")
+
+# Plot box plots of the predicted and actual prices
+box_plot <- ggplot(long_results_df, aes(x = Type, y = Price, fill = Type)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Distribution Prices",
+       x = "Type",
+       y = "Rental Price (CHF)") +
+  scale_fill_manual(values = c("Actual" = "grey", "Predicted" = "#9C8AE6")) +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0, 6000)) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 10),
+    axis.title = element_text(size = 10),
+    legend.position = "none"
+  )
+
+# Arrange both plots side by side with specific widths and padding
+grid.arrange(line_plot, box_plot, ncol = 2, widths = c(3, 2), padding = unit(1, "lines"))
 ```
+**Results**
+
+- **Price comparison:** Visual comparison showed the variability between predicted (purple) and actual (black) prices, with some variation across different property sizes.
+
+- **Price distribution:** Predicted prices showed a narrower interquartile range and fewer extremes compared to actual prices, suggesting under-prediction of outliers.
+
+
+To conclude we can say that The GAM model is reasonably effective at predicting rental prices for smaller properties, capturing general trends despite some variation.
+
+**Recommendations**
+
+- **Refine the model:** Consider additional predictors or interactions to improve accuracy.
+
+- **Outlier analysis:** Investigate causes of outliers to refine predictions.
+
+- **Focus on target segment:** Ensure data accuracy for properties under 150 square metres to align with market interest.
+
+This foundational analysis helps Zug Estates refine rental price predictions to maintain competitiveness and market insight.
 
 <br>
 
 # Neural Network
 
 ```{r NeuralNet - Base, echo=FALSE}
-# Required Packages
-library(readxl)
-library(neuralnet)
-
 # Reading in data
 enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
 enc_data <- enc_data[, !(names(enc_data) %in% "X"), drop = TRUE]
@@ -903,7 +1317,11 @@ With this transformation, we had created a binary classification problem: is thi
 
 After classifying the properties into either category, we were able to analyze the model's performance on the dataset. If successful, this Neural Network will be a great tool in the future to predict a possible acquisition's performance over time. Properties may be acquired at lower prices, and may not be very attractive at the time of purchase, but with some remodeling and updating the living space, its perceived value may be brought to a new high. This is what we try to predict with this model: the potential of a specific property and to discern if it could be a lucrative investment for Zug Estates.
 
-```{r NN Findings, echo=FALSE}
+<details>
+
+<summary>Click to see the NN Confusion Matrix</summary>
+
+```{r NN Findings, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 # Confusion matrix
 roundedresults <- sapply(maxmin_results, round, digits = 0)
 roundedresultsdf <- data.frame(roundedresults)
@@ -912,6 +1330,8 @@ nn_conf <- confusionMatrix(as.factor(roundedresultsdf$prediction),
                            dnn=c("Prediction", "Reference"))
 nn_conf$table
 ```
+
+</details>
 
 *Confusion Matrix of the Neural Network's performance.*
 
@@ -922,14 +1342,18 @@ As seen in the previous matrix, the model's performance on categorizing properti
 rounded_predictions <- round(pred_maxmin)
 data <- data.frame(predictions = factor(rounded_predictions, levels = c(0, 1), labels = c("Non-High Ticket", "High-Ticket")))
 
-
-# Create the histogram
+# Histogram
 ggplot(data, aes(x = predictions, fill = predictions)) +
-  geom_bar(color = "black", width = 0.5) +
+  geom_bar(stat = "count", color = "black", width = 0.5) +  # Use 'stat = "count"' to ensure it counts occurrences
   scale_x_discrete(name = "Predicted Class") +
   ylab("Frequency") +
   ggtitle("Rounded Predictions") +
-  scale_fill_manual(values = c("Non-High Ticket" = "skyblue", "High-Ticket" = "#9C8AE6"))
+  scale_fill_manual(values = c("Non-High Ticket" = "skyblue", "High-Ticket" = "#9C8AE6")) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
+    axis.title = element_text(size = 10)
+  )
 
 ```
 
@@ -938,11 +1362,18 @@ ggplot(data, aes(x = predictions, fill = predictions)) +
 As we can see, not many values actually fall into the category of High-Ticket properties, so having a tool like this network will be beneficial in catching such opportunities early on and maximizing added value and profits for the real estate company.
 
 ```{r NN Predictions Visual, echo=FALSE}
-
 # Predictions: roundedresultsdf
-ggplot(roundedresultsdf, aes(x=actual, y=prediction)) + 
-  geom_jitter(width = 0.1, height = 0.1, color="#9C8AE6", alpha=0.5) + 
-  labs(title = "Test Data: Actual vs Predicted", x="Actual", y="Predicted")
+ggplot(roundedresultsdf, aes(x = actual, y = prediction)) +
+  geom_jitter(width = 0.1, height = 0.1, color = "#9C8AE6", alpha = 0.5) +  # Jitter to avoid overplotting
+  labs(title = "Test Data | Actual vs Predicted", 
+       x = "Actual", 
+       y = "Predicted") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
+    axis.title = element_text(size = 10)
+  )
+
 ```
 
 *In this visual we can better appreciate the behavior of the model's predictions*
@@ -1018,13 +1449,25 @@ svm_predictions <- predict(svm_model, newdata = test_data_without_target)
 
 ## Interpretation
 
-```{r Re-NN Performance, echo=FALSE}
+**Neural Network Performance**
+
+<details>
+
+<summary>Click to see the NN Confusion Matrix</summary>
+
+```{r Re-NN Performance, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 nn_conf$table
 ```
 
-*Neural Network Performance*
+</details>
 
-```{r SVM Confusion Matrix, echo=FALSE}
+**SVM Performance**
+
+<details>
+
+<summary>Click to see the SVM Confusion Matrix</summary>
+
+```{r SVM Confusion Matrix, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 
 # Calculate confusion matrix
 svm_confusion <- confusionMatrix(as.factor(svm_predictions), as.factor(test_data$High_Ticket))
@@ -1033,7 +1476,8 @@ svm_confusion$table
 
 ```
 
-*SVM Performance*
+</details>
+
 
 As we can see, comparing the two confusion matrices, the Neural Network has slightly better accuracy than the SVM. Though at first glance it may seem like the better option, there are several advantages and disadvantages between the two models.
 
@@ -1054,36 +1498,52 @@ Neural networks on the other hand, are more flexible and powerful when it comes 
 
 In summary, both are good options for our purpose. In the future, if considering to use either one, the size, shape and complexity of the available dataset will play a pivotal role in the selection of the best model to use for finding possible "golden goose" properties. This is not, however, meant to be interpreted as: "There is only one right answer". As a suggestion, when faced with a list of properties to choose from, both models may be used to gain valuable insight, and both would provide similar results with some slight variations, which can only be interpreted then.
 
-# Outlook for Rental Price Prediction
+<br>
 
-We present our top recommendations for future enhancements in both this project and the broader domain of predicting rental prices in the real estate market.
+# Outlook 
 
-## Data Quality and Quantity
+We would like to highlight our top four recommendations for improvements in future endeavors related to this project and more broadly in the field of employee attrition. 
 
-Future endeavors could benefit from exploring ensemble methods, which amalgamate the strengths of various models to improve overall efficacy in predicting rental prices. Augmenting the dataset may enhance the performance of specific models, particularly neural networks tailored for rental price prediction. Moreover, incorporating additional predictive variables related to rental properties could facilitate the training of more sophisticated models.
+## Data Quality and Amount 
 
-## Validation of Models
+Future studies could benefit from investigating ensemble methods, which merge the advantages of various models to boost overall efficacy. We suggest that a larger dataset might enhance the performance of specific models like neural networks. Furthermore, gathering additional predictive variables could facilitate the training of more sophisticated models. 
 
-Due to time constraints and project scope, extensive validation and testing for all models were not possible. Employing techniques such as cross-validation and regularization during the training phase would be imperative to elevate the overall quality and performance of developed models. Furthermore, exploring interactions between variables specific to rental prices can provide deeper insights into model performance.
+The primary focus of our project was centered on identifying general predictors of attrition. This objective shaped our analytical approach and the methodologies we employed, and provided a foundation for understanding the key predictors. An extension of our analysis would be to change the focus and predict the probabilities of employee attrition, rather than solely classifying outcomes. This approach would enable us to personalize interventions more effectively, tailoring strategies to the specific likelihood of an employee’s departure. 
 
-## Balancing Model Complexity and Performance
+## Enhanced Validation of Models 
 
-This project underscores the delicate balance between model complexity and performance in predicting rental prices. While sophisticated models, such as Generalized Additive Models (GAM) and Support Vector Machines (SVM), excel at identifying complex patterns, they may not always yield the most accurate predictions, especially concerning specificity in rental price prediction. Hence, it's crucial to align model complexity with the intended application to achieve optimal results in rental price prediction.
+Due to the time constraints and scope of this project, we couldn’t conduct extensive validation and testing for all models. Implementing more techniques such as cross-validation and regularization in the training phase would be necessary to enhance the overall quality and performance of the developed models. Moreover, testing interactions was at short-cut in this project. In 
 
-## Data Privacy and Ethics
+## Model Complexity vs. Performance 
 
-Considering the sensitive nature of personal data related to rental properties, it's paramount for companies to exercise caution and ethical consideration when utilizing property-related data for rental price prediction. Thoughtful selection of predictors can mitigate bias and ensure fair treatment of all properties, particularly those from underrepresented regions.
+The study underscored the delicate balance between model complexity and performance. Although more sophisticated models, as seen in the GAM and SVM sections, are adept at identifying complex patterns, they don’t always guarantee the most accurate predictions in every situation, particularly regarding specificity. When developing a model for a company, it’s essential to clearly articulate the model’s intended purpose and application to determine the most appropriate solution. 
 
-# Personal Reflections
+## Data Privacy and Ethics 
 
-This project has provided invaluable learning experiences, allowing us to delve into the realm of predicting rental prices in the real estate market and hone our skills. While challenges were encountered, particularly with complex models like neural networks for rental price prediction, we appreciate the opportunity to experiment and grow. Moving forward, we recognize the importance of establishing common measures for model comparison and the ethical implications of data usage in rental price prediction. Ultimately, we're proud of our report and grateful for the knowledge gained throughout this journey.
+While we have pointed out that various stakeholders can gain from these models, it’s crucial to note that the personal data used here, such as marital status, is highly sensitive in non-fictional datasets. Companies should thoughtfully consider which data points to utilize about their employees. Relying on certain predictors can potentially introduce significant bias, particularly against underrepresented groups within the organization. 
 
-# Implementation of Generative AI
+<br>
 
-The implementation of generative AI, particularly through platforms like OpenAI's GPT-3, has significantly enhanced our project by providing invaluable assistance across various facets. Its advanced natural language processing capabilities have proven invaluable in a wide range of tasks, from data exploration to model development and report writing.
+# Personal Learnings 
 
-Generative AI has assisted us in navigating complex technical challenges and refining our methodologies more efficiently by offering insights, suggestions, and alternative approaches. Furthermore, it has contributed to enhancing our creativity and generating innovative ideas, thereby enriching our analysis and enabling us to uncover hidden insights within our data.
+This project was a great opportunity for us to learn about machine learning and develop our skills. We really enjoyed experimenting with different models, which is why our report is so long - we had a lot of work to cut down. 
 
-In summary, Generative AI has served as an invaluable assistant, prompting new insights, facilitating problem-solving, and ultimately contributing to the success and advancement of our project.
+Our models are of solid quality, but we didn’t get to explore every detail or use all the methods perfectly. For example, our early graphical analysis could be improved by using methods better suited to different types of data than just correlation coefficients, or validation of different models is not fully implemented (CSV). The neural network component, in particular, posed significant challenges. Our results here were not as robust as we had hoped, possibly due to limitations in the amount of data available. This experience highlighted the importance of having a substantial dataset for neural network models to truly excel. 
 
-# References
+An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing metrics. In our case, relying solely on accuracy as a metric wasn’t appropriate due to the unbalanced nature of the dataset. 
+
+## Implementation of Generative AI
+
+It’s important to note that OpenAI’s Chat-GPT and Google’s Gemini LLMs were valuable resources when we were faced with difficult debugging problems. 
+
+However, we made a point of understanding, modifying and correcting the suggested code independently to ensure that our final work was truly our own and not a mere replication of the solutions provided. 
+
+In the end, we’re happy with the end result of our report, and even happier with how much we learned along the way. 
+
+## Extra 
+
+Our team sent this project proposal to the investor relations email at Zug Estates a week ago, driven by the thought that it might be interesting to reach out given our current search for internships in data science with their esteemed company. We are thrilled to share that Zug Estates has responded positively, expressing that the concept is highly intriguing and that they would like to meet us. We are excited to announce that we will be meeting at their offices in the heart of Zug to discuss this further in the week of the 24th of June. 
+
+<br>
+
+# References 
