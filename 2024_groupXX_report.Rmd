@@ -748,7 +748,7 @@ summary(gam.properties.interaction)
 
 ### Model Comparison Table
 
-As can be seen in the table and in the summaries of each model, based on the adjusted R-squared and the explained variance, the best fitting model is the GAM with interaction terms. 
+As can be seen in the table and in the summaries of each model, based on the adjusted R-squared and the explained variance, the best fitting model is the GAM with interaction terms.
 
 This model explains 44.9% of the variability in Price_Gross and includes significant interactions between **Size_m2** and **Nr_rooms**.
 
@@ -770,7 +770,6 @@ kbl(model_comparison, caption = "Model Comparison Summary", align = "l") %>%
   row_spec(0, background = "#9C8AE6", color = "white", bold = TRUE)
 ```
 
-
 ### Next Steps
 
 **1. Higher-Order Polynomial Terms:** Explore cubic or higher-order terms.
@@ -782,7 +781,6 @@ kbl(model_comparison, caption = "Model Comparison Summary", align = "l") %>%
 **4. Cross-Validation:** Perform cross-validation to validate model robustness.
 
 These steps will help in further refining the model and ensuring more accurate predictions for property prices.
-
 
 ## Model Predictions
 
@@ -843,7 +841,6 @@ maxmin_results <- data.frame(actual = test_maxmin$High_Ticket, prediction = pred
 <br>
 
 # Neural Network
-
 
 ```{r NeuralNet - Base, echo=FALSE}
 # Required Packages
@@ -961,6 +958,7 @@ Having a tool such as this in Zug Estates' arsenal will most definitely provide 
 <br>
 
 # Support Vector Machine
+
 ## Purpose and Target
 
 Though the Neural Network presented great results, we wanted to make sure to validate that it was the optimal choice for classification in our case. Support Vector Machines (SVMs henceforth) also excel at binary classification problems, so we wanted to create one and train it on the same data in order to visualize and compare performance, to ensure we use the better performing model for recommending properties to acquire.
