@@ -1,7 +1,7 @@
 ---
 title: |
   ![](images/LogoZugEstates.png){width=4in}   
-  Real Estate Pricing
+  <span class="real-estate-pricing">Real Estate Pricing</span>
 author: "Victor Anton, Rodrigo Gonzalez & Carlos Leon"
 date: "Machine Learning 1 - 05 June 2024"
 output: 
@@ -10,20 +10,11 @@ output:
     highlight: github
     toc: yes
     toc_depth: 1
-    # toc_float: yes
     number_sections: yes
-    #code_folding: hide
   pdf_document:
     toc: yes
     toc_depth: 3
-  # html_document:
-  #   toc: yes
-  #   toc_depth: 2
-  #   toc_float: true
-  #   number_sections: yes
-  #   code_folding: hide
-  #   theme: cerulean
-  #   highlight: tango
+
 knit:
   citations: yes
 ---
@@ -50,12 +41,42 @@ img {
   margin: auto;
 }
 
-
 table {
   font-size: 16px;
   line-height: 0.8;
 }
 
+/* New Styles for the header */
+header {
+  background: linear-gradient(to right,#7A6CBF, #675A9E);
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.real-estate-pricing {
+  font-size: 18pt;
+  font-weight: normal;
+  display: block;
+  margin-top: 10px;
+}
+
+header h1 {
+  font-size: 30pt;
+  margin: 0;
+}
+
+header h2 {
+  font-size: 16pt;
+  margin: 5px 0;
+  font-weight: normal;
+}
+
+header h3 {
+  font-size: 14pt;
+  margin: 5px 0;
+  font-weight: normal;
+}
 
 </style>
 ```
@@ -980,7 +1001,8 @@ The graph shows the relationship between Size_m2 and Price_Gross using a quadrat
 gg.density.site <- ggplot(data = d.properties, mapping = aes(y = Price_Gross, x = Size_m2)) + 
   geom_point(alpha = 0.6, size = 0.8, color = "#9C8AE6") +
   labs(title = "Effect of Size on Gross Price", x = "Size (m²)", y = "Gross Price (CHF)") +  
-  theme_minimal() +  
+  theme_minimal() + 
+  xlim(0, 1000) +
   theme(legend.position = "none",
         plot.title = element_text(size = 11),
         axis.title.x = element_text(size = 9),
@@ -1094,10 +1116,11 @@ To explore interactions, a GAM including interaction terms was fitted:
 gam.properties.interaction <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by=Nr_rooms), data = d.properties)
 summary(gam.properties.interaction)
 ```
-
 </details>
 
-```{r GAM plot, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+*Adjusted R-squared: 0.449, explaining 44.9% of variability. Significant interaction: s(Size_m2):Nr_rooms.*
+
+```{r GAM plot 1, echo=FALSE, warning = FALSE}
 # Filter data for Size_m2 < 300
 d.properties.filtered <- d.properties %>% filter(Size_m2 < 300)
 
@@ -1107,20 +1130,16 @@ d.properties.filtered <- d.properties.filtered %>% mutate(log_Size_m2 = log(Size
 # Fit the GAM with the transformed variable and interaction
 gam.properties.combined <- gam(Price_Gross ~ s(log_Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = d.properties.filtered)
 
-# Summary of the combined model
-summary(gam.properties.combined)
-
-# Visualize the smooth term
-par(mfrow = c(2, 2))
+# Plot
+par(mfrow = c(1, 2), mar = c(2, 2, 2, 2))
 plot(gam.properties.combined, residuals = TRUE, cex = 2)
 ```
+
 The plots show that larger properties generally command higher rents, but this effect is less significant when considering the number of rooms.
 
 - **Log-transformed property size** has a strong positive effect on rental prices.
 
 - **Property size adjusted by the number of rooms** has a minimal effect on rental prices.
-
-*Adjusted R-squared: 0.449, explaining 44.9% of variability. Significant interaction: s(Size_m2):Nr_rooms.*
 
 ## Conclusion
 
@@ -1179,7 +1198,7 @@ The analysis aims to forecast rental prices for houses and apartments. Noticing 
 
 <br>
 
-```{r GAM Plot, echo=FALSE, warning = FALSE}
+```{r GAM Plot 2, echo=FALSE, warning = FALSE}
 # Train Best model: GAM with interaction | Test Data with Cross Validation
 # Define the number of folds for cross-validation
 set.seed(123)
@@ -1658,35 +1677,35 @@ In summary, both the NN and SVM are good options for our purpose. In the future,
 
 We would like to highlight our top four recommendations for improvements in future endeavors related to this project and more broadly in the field of employee attrition.
 
-## Data Quality and Amount
+## Data Quality and Amount 
+ 
+The dataset is somewhat limited due to the niche nature of the listings market, which is not massive by any means. Moreover, our focus has been concentrated on a few select cantons, further restricting the breadth of data available. Additionally, the data exhibited imbalances in several respects, such as the proportion of houses versus apartments, and disparities among different cantons. Despite these limitations, we have managed to overcome these challenges to a considerable extent, ensuring that our analyses remain robust and insightful. 
 
-Future studies could benefit from investigating ensemble methods, which merge the advantages of various models to boost overall efficacy. We suggest that a larger dataset might enhance the performance of specific models like neural networks. Furthermore, gathering additional predictive variables could facilitate the training of more sophisticated models.
+## Enhanced Validation of Models 
 
-The primary focus of our project was centered on identifying general predictors of attrition. This objective shaped our analytical approach and the methodologies we employed, and provided a foundation for understanding the key predictors. An extension of our analysis would be to change the focus and predict the probabilities of employee attrition, rather than solely classifying outcomes. This approach would enable us to personalize interventions more effectively, tailoring strategies to the specific likelihood of an employee’s departure.
+Due to time constraints and the project's scope, we couldn't conduct extensive validation and testing for all models. Implementing more techniques during the training phase would be essential to improve the overall quality and performance of the developed models. Additionally, testing interactions was limited in this project. 
 
-## Enhanced Validation of Models
+##  Model Complexity vs. Performance 
 
-Due to the time constraints and scope of this project, we couldn’t conduct extensive validation and testing for all models. Implementing more techniques such as cross-validation and regularization in the training phase would be necessary to enhance the overall quality and performance of the developed models. Moreover, testing interactions was at short-cut in this project. In
+In our project, we tested many different machine learning models to find the best ones. While more complex models can sometimes perform better, they can also overfit the data, meaning they work well on training data but not on new, unseen data. 
 
-## Model Complexity vs. Performance
+To avoid overfitting, we decided to use models that are better at generalizing to new data in the long term. These models might not capture every tiny detail in the training data, but they are more reliable and work better in real-world situations. 
 
-The study underscored the delicate balance between model complexity and performance. Although more sophisticated models, as seen in the GAM and SVM sections, are adept at identifying complex patterns, they don’t always guarantee the most accurate predictions in every situation, particularly regarding specificity. When developing a model for a company, it’s essential to clearly articulate the model’s intended purpose and application to determine the most appropriate solution.
+By carefully selecting models that balance complexity and performance, we ensure that our results are accurate and useful over time. This approach helps us achieve strong, dependable outcomes for our analyses. 
 
-## Data Privacy and Ethics
+## Personal Learnings
 
-While we have pointed out that various stakeholders can gain from these models, it’s crucial to note that the personal data used here, such as marital status, is highly sensitive in non-fictional datasets. Companies should thoughtfully consider which data points to utilize about their employees. Relying on certain predictors can potentially introduce significant bias, particularly against underrepresented groups within the organization.
+This project was a great opportunity for us to implement our knowledge of machine learning and develop our skills. We really enjoyed experimenting with different models, which is why our report is so long - we had a lot of work to cut down. 
+
+Our models are of solid quality, but we didn’t get to explore every detail or use all the methods perfectly. For example, our early graphical analysis could be improved by using methods better suited to different types of data than only correlation coefficients, and our validation of different models is not fully implemented (CSV).
+
+The neural network model, in particular, posed significant challenges, as hyper parameter tuning can be a real challenge, and needs a balance between efficiency and simplicity to ensure good results as well as memory efficiency. Our results here were not as robust as we had hoped, possibly due to limitations in the amount of data available. This experience highlighted the importance of having a substantial dataset for neural network models to truly excel. 
+
+An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing which metrics to analyze. In our case, relying solely on accuracy as a metric wasn’t appropriate due to the unbalanced nature of the dataset.
 
 <br>
 
-# Personal Learnings
-
-This project was a great opportunity for us to learn about machine learning and develop our skills. We really enjoyed experimenting with different models, which is why our report is so long - we had a lot of work to cut down.
-
-Our models are of solid quality, but we didn’t get to explore every detail or use all the methods perfectly. For example, our early graphical analysis could be improved by using methods better suited to different types of data than just correlation coefficients, or validation of different models is not fully implemented (CSV). The neural network component, in particular, posed significant challenges. Our results here were not as robust as we had hoped, possibly due to limitations in the amount of data available. This experience highlighted the importance of having a substantial dataset for neural network models to truly excel.
-
-An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing metrics. In our case, relying solely on accuracy as a metric wasn’t appropriate due to the unbalanced nature of the dataset.
-
-## Implementation of Generative AI
+# Implementation of Generative AI
 
 It’s important to note that OpenAI’s Chat-GPT and Google’s Gemini LLMs were valuable resources when we were faced with difficult debugging problems.
 
@@ -1696,10 +1715,35 @@ These LLMs were also a great aid when creating interesting visual aids and clari
 
 In the end, we’re happy with the end result of our report, and even happier with how much we learned along the way.
 
-## Extra
+<br>
 
-Our team sent this project proposal to the investor relations email at Zug Estates a week ago, driven by the thought that it might be interesting to reach out given our current search for internships in data science with their esteemed company. We are thrilled to share that Zug Estates has responded positively, expressing that the concept is highly intriguing and that they would like to meet us. We are excited to announce that we will be meeting at their offices in the heart of Zug to discuss this further in the week of the 24th of June.
+# Conclusion  
+
+This project has provided a comprehensive analysis of the real estate market in Central Switzerland, specifically tailored to the needs of Zug Estates. By leveraging various machine learning models, we have developed robust methods for predicting rental prices, understanding market trends, and identifying high-value properties. Our exploration included linear models, Generalized Linear Models (GLM), Generalized Additive Models (GAM), neural networks, and support vector machines (SVM), each offering unique insights and validating our predictions. Despite the limitations in our dataset and time constraints, we have successfully demonstrated the potential for advanced data-driven strategies to enhance real estate investment decisions and improve overall market understanding. 
+
+Our findings underscore the importance of balancing model complexity with performance to avoid overfitting and ensure generalizability. We emphasized models that generalize well in the long term, ensuring reliable predictions across different market conditions. 
+
+This project represents a significant step towards more informed, data-driven decision-making in the real estate sector, aligning with Zug Estates' strategic goals and expanding their competitive edge in the market while it also aligns with our desire to keep learning. 
+
+  
+# Continuation of the project with Zug Estates. 
+
+After completing our work, we considered that it could be interesting to share our project with Zug Estates due to our passion for the subject and its relevance to them. We believe that our findings and efforts align well with the interests of Zug Estates, making it a valuable collaboration opportunity. 
+
+Therefore, we have written to the Zug Estates Team to explore the possibility of continuing this endeavor together. 
+
+<br> ![](images/email.jpg){width="14in"} <br>
+
+Looking forward to their response. 
 
 <br>
 
-# References
+# References 
+
+- *[1] Homegate. (n.d.). Retrieved June 4, 2024, from https://www.homegate.ch/en*
+
+- *[2] Swissinfo. (2023, April 25). Residential property prices continue to rise in Switzerland. Retrieved June 4, 2024, from https://www.swissinfo.ch/eng/business/residential-property-prices-continue-to-rise-in-switzerland/49166334*
+
+- *[3] OpenAI. (n.d.). Retrieved June 4, 2024, from https://openai.com/es-ES/*
+
+- *[4] Google. (n.d.). Gemini. Retrieved June 4, 2024, from https://gemini.google.com/app*
