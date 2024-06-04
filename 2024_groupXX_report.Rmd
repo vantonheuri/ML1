@@ -1,29 +1,20 @@
 ---
 title: |
   ![](images/LogoZugEstates.png){width=4in}   
-  Real Estate Pricing
+  <span class="real-estate-pricing">Real Estate Pricing</span>
 author: "Victor Anton, Rodrigo Gonzalez & Carlos Leon"
 date: "Machine Learning 1 - 05 June 2024"
 output: 
-  pdf_document:
-    toc: yes
-    toc_depth: 3
   prettydoc::html_pretty:
     theme: hpstr
     highlight: github
     toc: yes
     toc_depth: 1
-    # toc_float: yes
     number_sections: yes
-    #code_folding: hide
-  # html_document:
-  #   toc: yes
-  #   toc_depth: 2
-  #   toc_float: true
-  #   number_sections: yes
-  #   code_folding: hide
-  #   theme: cerulean
-  #   highlight: tango
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+
 knit:
   citations: yes
 ---
@@ -50,12 +41,42 @@ img {
   margin: auto;
 }
 
-
 table {
   font-size: 16px;
   line-height: 0.8;
 }
 
+/* New Styles for the header */
+header {
+  background: linear-gradient(to right,#7A6CBF, #675A9E);
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.real-estate-pricing {
+  font-size: 18pt;
+  font-weight: normal;
+  display: block;
+  margin-top: 10px;
+}
+
+header h1 {
+  font-size: 30pt;
+  margin: 0;
+}
+
+header h2 {
+  font-size: 16pt;
+  margin: 5px 0;
+  font-weight: normal;
+}
+
+header h3 {
+  font-size: 14pt;
+  margin: 5px 0;
+  font-weight: normal;
+}
 
 </style>
 ```
