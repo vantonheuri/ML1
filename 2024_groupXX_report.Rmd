@@ -443,7 +443,7 @@ grid.arrange(plot_effect_rooms, plot_distribution_rooms, ncol = 2, widths = c(3,
 
 # Data Modeling
 
-*Complete*
+In order to predict rental prices for the real estate company Zug Estates, we used different models, optimised them and fitted them with different features. Specifically, we used a linear model, a generalised linear model with Poisson and binomial families, a generalised additive model, a neural network and a support vector machine. These different approaches allowed us to develop a robust model tailored to the unique characteristics of the property market.
 
 <br>
 
@@ -1096,6 +1096,29 @@ summary(gam.properties.interaction)
 ```
 
 </details>
+
+```{r GAM plot, echo=FALSE, warning = FALSE, class.source = "fold-show"}
+# Filter data for Size_m2 < 300
+d.properties.filtered <- d.properties %>% filter(Size_m2 < 300)
+
+# Transform the Size_m2 variable
+d.properties.filtered <- d.properties.filtered %>% mutate(log_Size_m2 = log(Size_m2))
+
+# Fit the GAM with the transformed variable and interaction
+gam.properties.combined <- gam(Price_Gross ~ s(log_Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = d.properties.filtered)
+
+# Summary of the combined model
+summary(gam.properties.combined)
+
+# Visualize the smooth term
+par(mfrow = c(2, 2))
+plot(gam.properties.combined, residuals = TRUE, cex = 2)
+```
+The plots show that larger properties generally command higher rents, but this effect is less significant when considering the number of rooms.
+
+- **Log-transformed property size** has a strong positive effect on rental prices.
+
+- **Property size adjusted by the number of rooms** has a minimal effect on rental prices.
 
 *Adjusted R-squared: 0.449, explaining 44.9% of variability. Significant interaction: s(Size_m2):Nr_rooms.*
 
