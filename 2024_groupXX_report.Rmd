@@ -1681,11 +1681,6 @@ These LLMs were also a great aid when creating interesting visual aids and clari
 
 In the end, we’re happy with the end result of our report, and even happier with how much we learned along the way.
 
-## Extra
-
-<<<<<<< HEAD
-Our team sent this project proposal to the investor relations email at Zug Estates a week ago, driven by the thought that it might be interesting to reach out given our current search for internships in data science with their esteemed company. We are thrilled to share that Zug Estates has responded positively, expressing that the concept is highly intriguing and that they would like to meet us. We are excited to announce that we will be meeting at their offices in the heart of Zug to discuss this further in the week of the 24th of June.
-=======
 # Conclusion  
 
 This project has provided a comprehensive analysis of the real estate market in Central Switzerland, specifically tailored to the needs of Zug Estates. By leveraging various machine learning models, we have developed robust methods for predicting rental prices, understanding market trends, and identifying high-value properties. Our exploration included linear models, Generalized Linear Models (GLM), Generalized Additive Models (GAM), neural networks, and support vector machines (SVM), each offering unique insights and validating our predictions. Despite the limitations in our dataset and time constraints, we have successfully demonstrated the potential for advanced data-driven strategies to enhance real estate investment decisions and improve overall market understanding. 
@@ -1695,7 +1690,7 @@ Our findings underscore the importance of balancing model complexity with perfor
 This project represents a significant step towards more informed, data-driven decision-making in the real estate sector, aligning with Zug Estates' strategic goals and expanding their competitive edge in the market while it also aligns with our desire to keep learning. 
 
   
-# Follow our Journey with Zug Estates
+# Following our Journey with Zug Estates
 
 After completing our work, we considered that it could be interesting to share our project with Zug Estates due to our passion for the subject and its relevance to them. We believe that our findings and efforts align well with the interests of Zug Estates, making it a valuable collaboration opportunity. 
 
@@ -1704,7 +1699,6 @@ Therefore, we have written to the Zug Estates Team to explore the possibility of
 <br> ![](images/email.jpg){width="14in"} <br>
 
 Looking forward to their response. 
->>>>>>> 0943d511f1cecbd27322974e63c1a9fbe0b06f63
 
 <br>
 
