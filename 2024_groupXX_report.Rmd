@@ -580,7 +580,7 @@ lm_plot2 <- data.frame(rel_data$Category_num, rel_data$Price_Gross)
 
 colors <- ifelse(rel_data$Category_num<1.5, "#9C8AE6", "skyblue")
 
-plot(rel_data$Category_num, rel_data$Price_Gross, xlab="", ylab="Price_Gross", main="Price of a Rental Property as a Result of the Customer Category", col=colors, pch=19, xlim=c(0.5,2.5), xaxt="n")
+plot(rel_data$Category_num, rel_data$Price_Gross, xlab="", ylab="Rental Price of Property", main="Price of a Rental Property as a Result of the Customer Category", col=colors, pch=19, xlim=c(0.5,2.5), xaxt="n")
 axis(1, at=c(1,2), labels = c("Category 1", "Category 2"))
 ```
 
@@ -588,7 +588,8 @@ In this diagram we can observe that, though there are fewer instances of Categor
 
 ```{r LM First Model Plot, echo=FALSE}
 
-plot(lm_plot1, xlab="Nr_Rooms", ylab="Price_Gross", main="Price of a Rental Property as a result of the Number of Rooms", col="#9C8AE6")
+plot(lm_plot1, xlab="Number of Rooms", ylab="Rental Price of Property", main="Price of a Rental Property as a result of the Number of Rooms", col="#9C8AE6", xlim=c(0,8), ylim=c(0,10000),
+     cex=0.8)
 
 ```
 
@@ -596,7 +597,8 @@ In the illustration above, we depict the relationship between the number of room
 
 ```{r 3LM Plots, echo=FALSE}
 # Plot
-plot(rel_data$Nr_rooms, rel_data$Price_Gross, pch=19, main="Multiple Linear Models", xlab="Number of Rooms", ylab="Price_Gross", cex=0.5)
+plot(rel_data$Nr_rooms, rel_data$Price_Gross, pch=19, main="Multiple Linear Models", xlab="Number of Rooms", ylab="Rental Price of Property", cex=0.8, xlim=c(0,8), ylim=c(0,10000),
+     col="#9C8AE6")
 
 # Lines
 abline(all_lm_model, col=rgb(156/255, 138/255, 230/255, 0.7), lwd=2, lty=1)
@@ -1444,7 +1446,7 @@ ggplot() +
                      labels=c("Non-High Ticket", "High-Ticket")) +
   labs(title = "Decision Boundary of the Neural Network Model",
        x = "Size (m^2)", 
-       y = "Price Gross") +
+       y = "Rental Price (CHF)") +
   theme_minimal() +
   theme(
     plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
