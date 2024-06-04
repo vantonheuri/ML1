@@ -59,14 +59,7 @@ table {
 
 </style>
 ```
-```{r setup, include = FALSE, warning = FALSE}
-library(knitr)
-opts_chunk$set(
-  echo = TRUE,
-  eval = TRUE,
-  warning = FALSE,
-  message = FALSE)
-```
+
 
 <br>
 
@@ -150,7 +143,8 @@ In this report the following libraries are used.
 
 <summary>*Click to see all libraries*</summary>
 
-```{r libraries, class.source = "fold-show"}
+
+```{.r .fold-show}
 # used libraries
 library(readr)
 library(ggplot2)
@@ -208,9 +202,16 @@ The dataset for our Exploratory Data Analysis includes the following columns.
 
 <summary>*Click to see all column names*</summary>
 
-```{r EDA dataset column names, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-df_total <- read_excel("data/data_cleaned/data_total.xlsx")
-colnames(df_total)
+
+```
+##  [1] "Canton"              "Property_ID"         "FirstDay_Online"    
+##  [4] "LastDay_Online"      "Type"                "Customer_ID"        
+##  [7] "Customer_Segment"    "Category"            "Price_Gross"        
+## [10] "Size_m2"             "Nr_rooms"            "Package_ID"         
+## [13] "Package_Product"     "Canton_Name"         "Canton_Capital"     
+## [16] "GDP_2020_21"         "GDP_per"             "Population"         
+## [19] "Area_km2"            "Density"             "Official_Language_1"
+## [22] "Official_Language_2" "Official_Language_3"
 ```
 
 </details>
@@ -221,9 +222,13 @@ Finally, the dataset for our Modeling includes the following columns.
 
 <summary>*Click to see all column names*</summary>
 
-```{r Modeling dataset column names, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
-colnames(enc_data)
+
+```
+##  [1] "Canton_num"           "Days_Difference"      "Customer_Segment_num"
+##  [4] "Category_num"         "Nr_rooms"             "Package_Product_num" 
+##  [7] "GDP_2020_21"          "GDP_per"              "Population"          
+## [10] "Area_km2"             "Density"              "Size_m2"             
+## [13] "Price_Gross"
 ```
 
 </details>
@@ -236,27 +241,7 @@ colnames(enc_data)
 
 This bar chart shows the distribution of properties across different cantons in Switzerland. Zurich (ZH) has the highest number of properties listed, followed by Vaud (VD) and Aargau (AG), highlighting regional differences in property availability.
 
-```{r Properties per Canton, echo=FALSE, warning = FALSE}
-# Counting properties per Canton and arranging them from highest to lowest
-properties_per_canton <- df_total %>%
-  group_by(Canton) %>%
-  summarise(Count = n()) %>%
-  arrange(desc(Count)) # Arrange in descending order of count
-
-# Define colors for specific cantons
-highlight_cantons <- c("ZG", "ZH", "AG", "LU")
-properties_per_canton$color <- ifelse(properties_per_canton$Canton %in% highlight_cantons, "#9C8AE6", "skyblue")
-
-# Creating the vertical bar chart with colored bars for specific cantons
-ggplot(properties_per_canton, aes(x = reorder(Canton, -Count), y = Count, fill = color)) +
-  geom_bar(stat = "identity", color = "black") +
-  geom_text(aes(label = Count), vjust = -0.5, color = "black", size = 2.2) + # Data labels above bars
-  scale_fill_identity() + # Use the colors defined in the data frame
-  labs(title = "Properties per Canton", x = "Canton", y = "Count of Properties") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), # Rotate x-axis labels for better readability
-        plot.title = element_text(hjust = 0.5))
-```
+![](2024_groupXX_report_files/figure-latex/Properties per Canton-1.pdf)<!-- --> 
 
 ### Average Rental Price per Canton
 
@@ -266,79 +251,13 @@ The second chart focuses on our study cantons of Zurich, Lucerne, Aargau and Zug
 
 These charts highlight the significant regional differences in rental costs within Switzerland, which is useful for market analysis, investment decisions and policy formulation.
 
-```{r, echo=FALSE, warning=FALSE}
-# Function to format numbers as thousands (K)
-format_k <- function(x) {
-  paste0(round(x / 1000, 1), "K")
-}
-
-# Order of top 10 cantons based on average rental price
-top_cantons <- df_total %>%
-  group_by(Canton) %>%
-  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
-  arrange(desc(Average_Price_Gross)) %>%
-  slice(1:10) %>%
-  .$Canton
-
-df_total_top_10 <- df_total %>%
-  filter(Canton %in% top_cantons) %>%
-  mutate(Canton = factor(Canton, levels = top_cantons))
-
-# Plot top 10 cantons
-plot_top_10 <- ggplot(df_total_top_10, aes(x = Canton, y = Price_Gross)) +
-  stat_summary(fun = "mean", geom = "bar", fill = "skyblue", color = "black", width = 0.8) +
-  geom_text(stat = "summary", fun = mean, aes(label = format_k(..y..)), vjust = -0.3, size = 2.5) +
-  labs(title = "Average Rental Price | Top 10", x = "", y = "Average Price (CHF)") +
-  scale_y_continuous(labels = format_k) + 
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
-        axis.title.y = element_text(size = 9),
-        plot.title = element_text(size = 11))
-
-highlight_cantons <- c("ZG", "ZH", "AG", "LU")
-
-# Filter data for highlighted cantons 
-highlighted_data <- df_total %>%
-  filter(Canton %in% highlight_cantons) %>%
-  group_by(Canton) %>%
-  summarise(Average_Price_Gross = mean(Price_Gross, na.rm = TRUE)) %>%
-  arrange(desc(Average_Price_Gross)) 
-
-highlighted_data$Canton <- factor(highlighted_data$Canton, levels = highlighted_data$Canton)
-
-# Plot use case cantons
-plot_highlighted <- ggplot(highlighted_data, aes(x = Canton, y = Average_Price_Gross)) +
-  geom_bar(stat = "identity", fill = "#9C8AE6", color = "black", width = 0.8) +
-  geom_text(aes(label = format_k(Average_Price_Gross)), vjust = -0.3, size = 2.5) +
-  labs(title = "Average Rental Price | Use Case", x = "", y = "Average Price (CHF)") +
-  scale_y_continuous(labels = format_k) + 
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
-        axis.title.y = element_text(size = 9),
-        plot.title = element_text(size = 11))
-
-# Arrange both plots side by side with specific widths
-grid.arrange(plot_top_10, plot_highlighted, ncol = 2, widths = c(3, 2))
-```
+![](2024_groupXX_report_files/figure-latex/unnamed-chunk-1-1.pdf)<!-- --> 
 
 ### Differences in rental prices between different customer segment
 
 The box plot compare the gross rental prices between private and professional customer segments. Prices for private customers are generally lower and less varied than those for professionals, indicating a potential market segmentation by rental price.
 
-```{r Differences in rental prices between different customer segment, echo=FALSE, warning=FALSE}
-ggplot(df_total, aes(x = Customer_Segment, y = Price_Gross, fill = Customer_Segment)) +
-  geom_boxplot(outlier.size = 1.5, alpha = 0.7) + 
-  scale_fill_manual(values = c("Private" = "skyblue", "Professional" = "#9C8AE6")) + 
-  ylim(750, 4500) +
-  #coord_cartesian(ylim = c(0, quantile(df_total$Price_Gross, 0.95, na.rm = TRUE))) + 
-  labs(title = "Rental Prices by Customer Segment", x = "Customer Segment", y = "Gross Price (CHF)") +
-  theme_minimal() +
-  theme(legend.position = "none", 
-        axis.title.x = element_text(size = 9),
-        axis.title.y = element_text(size = 9),
-        axis.text.x = element_text(size = 8),
-        axis.text.y = element_text(size =8))
-```
+![](2024_groupXX_report_files/figure-latex/Differences in rental prices between different customer segment-1.pdf)<!-- --> 
 
 ### Influence of Property Size on Rental Price
 
@@ -352,49 +271,7 @@ This trend is consistent across both the highlighted and other cantons, suggesti
 
 This histogram highlights that the majority of properties fall within smaller size brackets, with a steep drop-off as property size increases. This distribution suggests that smaller properties are more common in the market.
 
-```{r Property Size and Rental Price, echo=FALSE, warning = FALSE}
-# Define a new factor variable for canton groups
-df_filtered <- df_total %>%
-  mutate(canton_group = ifelse(Canton %in% c("ZH", "AG", "LU", "ZG"), 
-                               "ZH, AG, LU & ZG", 
-                               "Rest of Cantons"))
-
-# Scatter Plot
-plot_scatter_size <- ggplot(df_filtered, aes(x = Size_m2, y = Price_Gross, color = canton_group)) +
-  geom_point(size = 1, alpha = 0.8) +
-  scale_color_manual(values = c("ZH, AG, LU & ZG" = "#9C8AE6", 
-                                "Rest of Cantons" = "grey")) +
-  geom_smooth(method = "lm", aes(group = 1), color = "black", size = 0.5, se = FALSE) +
-  labs(title = "Correlation Between Property Size and Rental Price",
-       x = "Size (m²)", y = "Gross Price (CHF)") +
-  theme_minimal() +
-  coord_cartesian(xlim = c(0, 250), ylim = c(0, 8000)) + 
-  theme(legend.position = c(0.8, 0.9), 
-        legend.background = element_rect(fill = "white", colour = "black", size = 0.2), 
-        legend.title = element_blank(),
-        legend.margin = margin(t = 5, r = 20, b = 5, l = 10),
-        plot.title = element_text(size = 11),
-        axis.title.x = element_text(size = 9),
-        axis.title.y = element_text(size = 9),
-        axis.text.x = element_text(size = 8),
-        axis.text.y = element_text(size =8))
-
-# Histogram for Size_m2 with matched theme and limits
-plot_histogram_size <- ggplot(df_total, aes(x = Size_m2)) +
-  geom_histogram(bins = 30, fill = "#9C8AE6", color = "black") +
-  labs(title = "Distribution of Property Size", x = "Size (m²)", y = "Frequency") +
-  coord_cartesian(xlim = c(0, 350)) +  
-  theme_minimal() +
-  theme(legend.position = "none",
-        plot.title = element_text(size = 11),
-        axis.title.x = element_text(size = 9),
-        axis.title.y = element_text(size = 9),
-        axis.text.x = element_text(size = 8),
-        axis.text.y = element_text(size = 8))
-
-# Arrange both plots side by side with specific widths and padding
-grid.arrange(plot_scatter_size, plot_histogram_size, ncol = 2, widths = c(3, 2), padding = unit(1, "lines"))
-```
+![](2024_groupXX_report_files/figure-latex/Property Size and Rental Price-1.pdf)<!-- --> 
 
 ### Influence of Number of Rooms on Rental Price
 
@@ -406,42 +283,7 @@ This scatter plot explores how the number of rooms affects the gross rental pric
 
 The bar chart illustrates the frequency of properties based on the number of rooms. Properties with 3 to 4 rooms are the most common, which aligns with the predominance of smaller property sizes seen in the previous chart.
 
-```{r Number of Rooms, echo=FALSE, warning = FALSE}
-# Define filtering and factor setting for number of rooms related to rental price
-library(dplyr)
-df_filtered_rooms <- df_total %>%
-  filter(Price_Gross <= 400000) %>%
-  mutate(Nr_rooms = as.factor(Nr_rooms)) 
-
-# Scatter Plot: Effect of Number of Rooms on Rental Price
-plot_effect_rooms <- ggplot(df_filtered_rooms, aes(x = Nr_rooms, y = Price_Gross)) +
-  geom_point(alpha = 0.6, size = 1, color = "#9C8AE6") +
-  labs(title = "Effect of Number of Rooms on Rental Price", x = "Number of Rooms", y = "Gross Price (CHF)") +
-  theme_minimal() +
-  scale_y_log10() + # Apply logarithmic scale to y-axis for better visualization of data spread
-  theme(legend.position = "none",
-        plot.title = element_text(size = 11),
-        axis.title.x = element_text(size = 9),
-        axis.title.y = element_text(size = 9),
-        axis.text.x = element_text(size = 8),
-        axis.text.y = element_text(size = 8))
-
-# Histogram: Distribution of Number of Rooms
-plot_distribution_rooms <- ggplot(df_total, aes(x = Nr_rooms)) +
-  geom_histogram(bins = 30, fill = "#9C8AE6", color = "black") +
-  labs(title = "Distribution of Number of Rooms", x = "Number of Rooms", y = "Frequency") +
-  theme_minimal() +
-  theme(legend.position = "none",
-        plot.title = element_text(size = 11),
-        axis.title.x = element_text(size = 9),
-        axis.title.y = element_text(size = 9),
-        axis.text.x = element_text(size = 8),
-        axis.text.y = element_text(size = 8))
-
-# Arrange plots side by side
-grid.arrange(plot_effect_rooms, plot_distribution_rooms, ncol = 2, widths = c(3, 2), padding = unit(2, "lines"))
-
-```
+![](2024_groupXX_report_files/figure-latex/Number of Rooms-1.pdf)<!-- --> 
 
 <br>
 
@@ -453,70 +295,7 @@ grid.arrange(plot_effect_rooms, plot_distribution_rooms, ncol = 2, widths = c(3,
 
 # Linear Model
 
-```{r Linear Model, echo=FALSE, warning=FALSE}
-# Linear Model
-# Target Variable: Price_Gross
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Required Packages
-library(readxl)
-library(ggplot2)
-#---------------------------------------------------------------------------
-set.seed(71)
 
-#Splitting the data into training and testing
-split_ratio <- 0.8
-training_indices <- sample(1:nrow(enc_data), 
-                           size=nrow(enc_data) * split_ratio,
-                           replace=FALSE)
-
-train_set <- enc_data[training_indices,]
-test_set <- enc_data[-training_indices,]
-
-#Fit the model    data[, !(names(data) %in% column_to_exclude)]
-all_lm_model <- lm(Price_Gross ~ ., data=train_set)
-
-# Retraining with only relevant variables
-rel_data <- enc_data[, !(names(enc_data) %in% 
-                           c("Package_Product_num",
-                             "Type_num",
-                             "GDP_2020_21","GDP_per",
-                             "Population",
-                              "Area_km2", "Density")), drop = TRUE]
-
-rel_train_set <- rel_data[training_indices,]
-rel_test_set <- rel_data[-training_indices,]
-
-# Fit the model
-few_lm_model <- lm(Price_Gross ~ ., data=rel_train_set)
-
-# Retraining with fewer variables
-simp_data <- enc_data[, c("Nr_rooms", "Category_num", "Price_Gross")]
-
-simp_train_set <- simp_data[training_indices,]
-simp_test_set <- simp_data[-training_indices,]
-
-# Fit the model
-simple_lm_model <- lm(Price_Gross ~ ., data=simp_train_set)
-
-#Model Predictions
-all_lm_predictions <- predict(all_lm_model, newdata=test_set)
-few_lm_predictions <- predict(few_lm_model, 
-                              newdata=rel_test_set)
-simple_lm_predictions <- predict(simple_lm_model, 
-                                 newdata=simp_test_set)
-
-#Model Evaluation
-
-rmse <- sqrt(mean((all_lm_predictions - test_set$Price_Gross)^2))
-mae <- mean(abs(all_lm_predictions - test_set$Price_Gross))
-
-new_rmse <- sqrt(mean((few_lm_predictions - rel_test_set$Price_Gross)^2))
-new_mae <- mean(abs(few_lm_predictions - rel_test_set$Price_Gross))
-
-simp_rmse <- sqrt(mean((simple_lm_predictions - simp_test_set$Price_Gross)^2))
-simp_mae <- mean(abs(simple_lm_predictions - simp_test_set$Price_Gross))
-
-```
 
 ## Purpose and Target
 
@@ -530,8 +309,41 @@ The first model (*all_lm_model*) takes all available property features into acco
 
 <summary>*Click to see the summary of the first linear model*</summary>
 
-```{r First Linear model, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-summary(all_lm_model)
+
+```
+## 
+## Call:
+## lm(formula = Price_Gross ~ ., data = train_set)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2836.4  -509.0  -115.9   268.6  8519.2 
+## 
+## Coefficients: (6 not defined because of singularities)
+##                        Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)            -79.9609   139.5073  -0.573 0.566701    
+## Canton_num2            322.2563   143.9988   2.238 0.025516 *  
+## Canton_num3            -88.3072   158.5068  -0.557 0.577610    
+## Canton_num4            431.1805    93.7620   4.599 4.98e-06 ***
+## Days_Difference          4.5627     1.0754   4.243 2.48e-05 ***
+## Customer_Segment_num2  379.5067   104.9582   3.616 0.000319 ***
+## Category_num2         1324.3846   201.4030   6.576 8.99e-11 ***
+## Nr_rooms               288.6288    35.5431   8.121 1.87e-15 ***
+## Package_Product_num2   128.1776   139.4190   0.919 0.358194    
+## Package_Product_num3   -25.5366   142.2814  -0.179 0.857609    
+## Package_Product_num4         NA         NA      NA       NA    
+## GDP_2020_21                  NA         NA      NA       NA    
+## GDP_per                      NA         NA      NA       NA    
+## Population                   NA         NA      NA       NA    
+## Area_km2                     NA         NA      NA       NA    
+## Density                      NA         NA      NA       NA    
+## Size_m2                  2.4705     0.6631   3.726 0.000209 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 881 on 761 degrees of freedom
+## Multiple R-squared:  0.3678,	Adjusted R-squared:  0.3595 
+## F-statistic: 44.27 on 10 and 761 DF,  p-value: < 2.2e-16
 ```
 
 </details>
@@ -548,8 +360,33 @@ The next model ( *few_lm_model* ) we trained with fewer dependent variables, onl
 
 <summary>*Click to see the summary of the second linear model*</summary>
 
-```{r Few Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-summary(few_lm_model)
+
+```
+## 
+## Call:
+## lm(formula = Price_Gross ~ ., data = rel_train_set)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2840.5  -504.6  -124.3   257.5  8518.7 
+## 
+## Coefficients:
+##                        Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)            -86.0523   139.3439  -0.618 0.537054    
+## Canton_num2            322.6111   143.7943   2.244 0.025147 *  
+## Canton_num3            -84.3385   158.3760  -0.533 0.594520    
+## Canton_num4            434.7715    93.6368   4.643 4.04e-06 ***
+## Days_Difference          4.5514     1.0721   4.245 2.45e-05 ***
+## Customer_Segment_num2  413.9179    74.1661   5.581 3.32e-08 ***
+## Category_num2         1316.9668   200.4911   6.569 9.39e-11 ***
+## Nr_rooms               289.5100    35.5155   8.152 1.47e-15 ***
+## Size_m2                  2.4762     0.6628   3.736 0.000201 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 880.6 on 763 degrees of freedom
+## Multiple R-squared:  0.3667,	Adjusted R-squared:  0.3601 
+## F-statistic: 55.23 on 8 and 763 DF,  p-value: < 2.2e-16
 ```
 
 </details>
@@ -564,8 +401,12 @@ The last model generated took into account only *two* variable as a predictor: *
 
 <summary>*Click to see the summary of the third linear model*</summary>
 
-```{r Simple Model Summary, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-summary(simple_lm_model)$coef
+
+```
+##                Estimate Std. Error   t value     Pr(>|t|)
+## (Intercept)    442.3222  113.14728  3.909261 1.007483e-04
+## Nr_rooms       354.0830   32.54504 10.879783 9.663820e-26
+## Category_num2 1565.0616  209.67941  7.464069 2.274718e-13
 ```
 
 </details>
@@ -578,45 +419,15 @@ All three models offer us some insight into the behavior of rental prices for di
 
 For desired results, we will focus on the second model, which includes all the variables considered significant for the best results.
 
-```{r LM Price Vs Category, echo=FALSE}
-lm_plot1 <- data.frame(rel_data$Nr_rooms, rel_data$Price_Gross)
-lm_plot2 <- data.frame(rel_data$Category_num, rel_data$Price_Gross)
-
-colors <- ifelse(rel_data$Category_num<1.5, "#9C8AE6", "skyblue")
-
-plot(rel_data$Category_num, rel_data$Price_Gross, xlab="", ylab="Rental Price of Property", main="Price of a Rental Property as a Result of the Customer Category", col=colors, pch=19, xlim=c(0.5,2.5), xaxt="n")
-axis(1, at=c(1,2), labels = c("Category 1", "Category 2"))
-```
+![](2024_groupXX_report_files/figure-latex/LM Price Vs Category-1.pdf)<!-- --> 
 
 In this diagram we can observe that, though there are fewer instances of Category 2 (House) compared to Category 1 (Apartment), Category 2 properties tend to have higher rental prices. This does not, however, indicate that they may be the more lucrative option, as houses tend to incur other costs that are either not present, or the cost is split in the community, in the case of apartments.
 
-```{r LM First Model Plot, echo=FALSE}
-
-plot(lm_plot1, xlab="Number of Rooms", ylab="Rental Price of Property", main="Price of a Rental Property as a result of the Number of Rooms", col="#9C8AE6", xlim=c(0,8), ylim=c(0,10000),
-     cex=0.8)
-
-```
+![](2024_groupXX_report_files/figure-latex/LM First Model Plot-1.pdf)<!-- --> 
 
 In the illustration above, we depict the relationship between the number of rooms in a property and the gross price of the same. We can observe an upward trend, which leads to believe that a higher number of rooms leads to a higher price, which would make sense. This information must also be taken into consideration together with other variables, like the property's area in meters squared, average size of rooms, location, etc.
 
-```{r 3LM Plots, echo=FALSE}
-# Plot
-plot(rel_data$Nr_rooms, rel_data$Price_Gross, pch=19, main="Multiple Linear Models", xlab="Number of Rooms", ylab="Rental Price of Property", cex=0.8, xlim=c(0,8), ylim=c(0,10000),
-     col="#9C8AE6")
-
-# Lines
-abline(all_lm_model, col=rgb(156/255, 138/255, 230/255, 0.7), lwd=2, lty=1)
-abline(few_lm_model, col=rgb(0/255, 0/255, 0/255), lwd=2, lty=2)
-abline(simple_lm_model, col=rgb(135/255, 206/255, 250/255, 0.7), lwd=2, lty=1)
-
-# Legend
-legend("topright", legend=c("All Variables", "Relevant Variables", "One Variable"),
-       col=c(rgb(156/255, 138/255, 230/255, 0.7),
-             rgb(0/255, 0/255, 0/255),
-             rgb(135/255, 206/255, 250/255, 0.7)),
-       lwd=2, lty=c(1, 2, 1), cex=0.8)
-
-```
+![](2024_groupXX_report_files/figure-latex/3LM Plots-1.pdf)<!-- --> 
 
 *Looking closely, we can see that the model with all variables, and the one with relevant variables, have almost the exact same performance*
 
@@ -626,55 +437,21 @@ In the visual aid above, we can observe how each of these three models compare t
 
 Next, we will take a look at how these models make predictions, and compare them. Two of our models have been trained on practically the same data, as seen in the previous visuals, where we outlined that the first model is trained on ALL available variables in the data, and the second model is trained only on the relevant variables. So far it seems both of them will lead to very similar predictions, so we decided to test that theory below.
 
-```{r Model Evaluation Table, echo=FALSE}
-# Calculate predictions for each model
-all_lm_predictions <- predict(all_lm_model, newdata = test_set)
-few_lm_predictions <- predict(few_lm_model, newdata = test_set)
-simple_lm_predictions <- predict(simple_lm_model, newdata = test_set)
-
-# Calculate eval metrics for each model
-rmse_all <- sqrt(mean((all_lm_predictions - test_set$Price_Gross)^2))
-mae_all <- mean(abs(all_lm_predictions - test_set$Price_Gross))
-r_squared_all <- summary(all_lm_model)$r.squared
-adj_r_squared_all <- summary(all_lm_model)$adj.r.squared
-aic_all <- AIC(all_lm_model)
-bic_all <- BIC(all_lm_model)
-
-rmse_few <- sqrt(mean((few_lm_predictions - test_set$Price_Gross)^2))
-mae_few <- mean(abs(few_lm_predictions - test_set$Price_Gross))
-r_squared_few <- summary(few_lm_model)$r.squared
-adj_r_squared_few <- summary(few_lm_model)$adj.r.squared
-aic_few <- AIC(few_lm_model)
-bic_few <- BIC(few_lm_model)
-
-rmse_simple <- sqrt(mean((simple_lm_predictions - test_set$Price_Gross)^2))
-mae_simple <- mean(abs(simple_lm_predictions - test_set$Price_Gross))
-r_squared_simple <- summary(simple_lm_model)$r.squared
-adj_r_squared_simple <- summary(simple_lm_model)$adj.r.squared
-aic_simple <- AIC(simple_lm_model)
-bic_simple <- BIC(simple_lm_model)
-
-# Create a dataframe with metrics
-eval_metrics <- data.frame(
-  Model = c("All Variables", "Relevant Variables", "One Variable"),
-  RMSE = c(rmse_all, rmse_few, rmse_simple),
-  MAE = c(mae_all, mae_few, mae_simple),
-  R_Squared = c(r_squared_all, r_squared_few, r_squared_simple),
-  Adj_R_Squared = c(adj_r_squared_all, adj_r_squared_few, adj_r_squared_simple),
-  AIC = c(aic_all, aic_few, aic_simple),
-  BIC = c(bic_all, bic_few, bic_simple)
-)
-
-# Display the table
-# Create the table with styling
-kbl(eval_metrics, align = "l") %>%
-  kable_classic(full_width = F, html_font = "Segoe UI") %>%
-  kable_styling(latex_options = c("striped", "hold_position"), position = "center", font_size = 10) %>%
-  column_spec(1, bold = TRUE, width = "3cm") %>%
-  column_spec(2:7, width = "2cm") %>%
-  row_spec(0, background = "#9C8AE6", color = "white", bold = TRUE)
-
-```
+\begin{table}[!h]
+\centering\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{2cm}}
+\hline
+\cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Model}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{RMSE}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{MAE}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{R\_Squared}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Adj\_R\_Squared}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{AIC}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{BIC}}}\\
+\hline
+\textbf{\cellcolor{gray!10}{All Variables}} & \cellcolor{gray!10}{952.4202} & \cellcolor{gray!10}{587.2066} & \cellcolor{gray!10}{0.3678088} & \cellcolor{gray!10}{0.3595014} & \cellcolor{gray!10}{12673.74} & \cellcolor{gray!10}{12729.53}\\
+\hline
+\textbf{Relevant Variables} & 951.5899 & 584.5305 & 0.3667123 & 0.3600723 & 12671.08 & 12717.57\\
+\hline
+\textbf{\cellcolor{gray!10}{One Variable}} & \cellcolor{gray!10}{1009.9926} & \cellcolor{gray!10}{673.3609} & \cellcolor{gray!10}{0.2746980} & \cellcolor{gray!10}{0.2728116} & \cellcolor{gray!10}{12763.81} & \cellcolor{gray!10}{12782.40}\\
+\hline
+\end{tabular}
+\end{table}
 
 As we can see from the models' two error metrics (*MSE and RMSE*), the models trained with more variables have a slightly better performance on the test data. The R-Squared and Adjusted R-Squared values indicate how well the model can explain variance in the data, and the two initial models have performed better in this sense as well. As far as AIC and BIC, we can see that though there is not much difference, the model trained only on relevant variables slightly outperforms the other two, indicating a better trade-off between model fit and simplicity.
 
@@ -688,59 +465,7 @@ It is also made clear in our findings, that although the number of rooms is a go
 
 # GLM - Generalised Linear - Binomial
 
-```{r GLM Binomial, echo=FALSE, warning=FALSE}
-# Read data
-enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
-enc_data <- enc_data %>%
-  mutate(fast.sale = ifelse(Days_Difference <= 17, 1, 0))
 
-# Split the data into training and testing sets
-set.seed(71)
-split_ratio <- 0.8
-training_indices <- sample(1:nrow(enc_data), size = nrow(enc_data) * split_ratio, replace = FALSE)
-train_set <- enc_data[training_indices, ]
-test_set <- enc_data[-training_indices, ]
-
-# Fit a binomial logistic regression model to predict fast sale
-binomial.model <- glm(fast.sale ~ Price_Gross + Nr_rooms + Size_m2 + Canton_num + Customer_Segment_num + Category_num, family = binomial, data = train_set)
-
-# Calculate and print odds ratios from the model coefficients
-coef <- coef(binomial.model)
-odds_ratios <- exp(coef)
-
-# Get and display fitted values (predicted probabilities) for the training set
-fitted_values_train <- fitted(binomial.model)
-train_set$fitted_values <- fitted_values_train
-
-# Predict probabilities for the test set and display the first few predictions
-predicted_probabilities_test <- predict(binomial.model, test_set, type = "response")
-test_set$fitted_values <- predicted_probabilities_test
-
-# Convert predicted probabilities to binary outcomes using a 0.5 threshold
-predicted_classes <- ifelse(predicted_probabilities_test > 0.5, 1, 0)
-actual_classes <- test_set$fast.sale
-
-# Create and print the confusion matrix
-conf_matrix <- table(Predicted = predicted_classes, Actual = actual_classes)
-conf_matrix_percent <- prop.table(conf_matrix) * 100
-
-# Calculate precision, recall, and accuracy and print them
-precision <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(predicted_classes == 1)
-recall <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(actual_classes == 1)
-accuracy <- sum(predicted_classes == actual_classes) / length(actual_classes)
-
-# Fit a quasi-Poisson regression model to predict the number of rooms (Nr_rooms)
-modelo_quasi_poisson <- glm(Nr_rooms ~ Price_Gross + Size_m2, family = quasipoisson, data = train_set)
-
-# Predict values for the test set and calculate mean squared error (MSE)
-predicted_values_test_quasi <- predict(modelo_quasi_poisson, newdata = test_set, type = "response")
-test_set$fitted_values_quasi <- predicted_values_test_quasi
-
-mse_test_quasi <- mean((test_set$Nr_rooms - test_set$fitted_values_quasi)^2)
-
-# Calculate and print root mean squared error (RMSE)
-rmse_test_quasi <- sqrt(mse_test_quasi)
-```
 
 ## Purpose and Target
 
@@ -756,8 +481,9 @@ Before jumping into the model, we needed to do some adjustments to the data:
 
 <summary>*Click to see the results*</summary>
 
-```{r GLM Binomial 1, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-mean(enc_data$Days_Difference)  
+
+```
+## [1] 16.04944
 ```
 
 </details>
@@ -788,10 +514,14 @@ Properties in Canton_num3 and Canton_num4 have significantly higher odds of quic
 
 <summary>*Click to see the results*</summary>
 
-```{r GLM Binomial 2, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-coef <- coef(binomial.model)
-odds_ratios <- exp(coef)
-print(odds_ratios)  
+
+```
+##           (Intercept)           Price_Gross              Nr_rooms 
+##             3.9771674             0.9994328             1.1155637 
+##               Size_m2           Canton_num2           Canton_num3 
+##             1.0007269             0.5348910            17.4591650 
+##           Canton_num4 Customer_Segment_num2         Category_num2 
+##             2.2731286             0.3451728             2.3769725
 ```
 
 </details>
@@ -804,10 +534,17 @@ Later we have added to the original dataset a new column named fitted_values to 
 
 <summary>*Click to see the results*</summary>
 
-```{r GLM Binomial 3, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-fitted_values_train <- fitted(binomial.model) 
-train_set$fitted_values <- fitted_values_train 
-head(train_set[, c("fast.sale", "fitted_values")]) 
+
+```
+## # A tibble: 6 x 2
+##   fast.sale fitted_values
+##       <dbl>         <dbl>
+## 1         1         0.615
+## 2         1         0.882
+## 3         1         0.620
+## 4         0         0.962
+## 5         1         0.892
+## 6         1         0.849
 ```
 
 </details>
@@ -818,10 +555,17 @@ Finally, we have made Predictions on the Test Set. The interpretation is the int
 
 <summary>*Click to see the results*</summary>
 
-```{r GLM Binomial 4, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-predicted_probabilities_test <- predict(binomial.model, test_set, type = "response") 
-test_set$fitted_values <- predicted_probabilities_test 
-head(test_set[, c("fast.sale", "fitted_values")]) 
+
+```
+## # A tibble: 6 x 2
+##   fast.sale fitted_values
+##       <dbl>         <dbl>
+## 1         1         0.785
+## 2         0         0.431
+## 3         1         0.792
+## 4         1         0.790
+## 5         1         0.676
+## 6         1         0.785
 ```
 
 </details>
@@ -832,13 +576,19 @@ To measure the quality of the model so that Zug Estates can make adequate predic
 
 <summary>*Click to see the results*</summary>
 
-```{r GLM Binomial 5, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-predicted_classes <- ifelse(predicted_probabilities_test > 0.5, 1, 0) 
-actual_classes <- test_set$fast.sale 
-conf_matrix <- table(Predicted = predicted_classes, Actual = actual_classes) 
-conf_matrix_percent <- prop.table(conf_matrix) * 100 
-print(round(conf_matrix_percent, 2)) 
-print(conf_matrix) 
+
+```
+##          Actual
+## Predicted     0     1
+##         0  5.70  7.77
+##         1 19.69 66.84
+```
+
+```
+##          Actual
+## Predicted   0   1
+##         0  11  15
+##         1  38 129
 ```
 
 </details>
@@ -857,13 +607,17 @@ Finally, with respect to performance metrics that are standard in Machine Learni
 
 <summary>*Click to see the results*</summary>
 
-```{r GLM Binomial 6, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-precision <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(predicted_classes == 1) 
-recall <- sum(predicted_classes == actual_classes & actual_classes == 1) / sum(actual_classes == 1) 
-accuracy <- sum(predicted_classes == actual_classes) / length(actual_classes) 
-print(paste("Precision:", precision)) 
-print(paste("Recall:", recall)) 
-print(paste("Accuracy:", accuracy)) 
+
+```
+## [1] "Precision: 0.772455089820359"
+```
+
+```
+## [1] "Recall: 0.895833333333333"
+```
+
+```
+## [1] "Accuracy: 0.725388601036269"
 ```
 
 </details>
@@ -892,12 +646,7 @@ We decided to perform a logarithmic transformation on specific columns within tw
 
 <summary>*Click to see the code*</summary>
 
-```{r GLM Poisson 1, echo=FALSE, class.source = "fold-show"}
-train_set$log_Price_Gross <- log(train_set$Price_Gross + 1) 
-train_set$log_Size_m2 <- log(train_set$Size_m2 + 1) 
-test_set$log_Price_Gross <- log(test_set$Price_Gross + 1) 
-test_set$log_Size_m2 <- log(test_set$Size_m2 + 1) 
-```
+
 
 </details>
 
@@ -907,9 +656,7 @@ Here the **model**:
 
 <summary>*Click to see the code*</summary>
 
-```{r GLM Poisson 2, echo=FALSE, class.source = "fold-show"}
-quasipoisson.model <- glm(Nr_rooms ~ log_Price_Gross + log_Size_m2 + Category_num + Canton_num, family = quasipoisson, data = train_set) 
-```
+
 
 </details>
 
@@ -921,23 +668,7 @@ When interpreting the price, for example, we can see that a 1% increase in Size_
 
 -   The red line is the line of perfect prediction, where the predicted values would exactly equal the actual values (i.e., [Ecuación]y=x). Ideally, all points would lie on this line if the model predictions were perfect.
 
-```{r GLM Poisson 3, echo=FALSE, warning=FALSE}
-predicted_values_test_quasi_log <- predict(quasipoisson.model, newdata = test_set, type = "response") 
-test_set$fitted_values_quasi_log <- predicted_values_test_quasi_log 
-
-ggplot(test_set, aes(x = Nr_rooms, y = fitted_values_quasi_log)) +
-  geom_point(alpha = 0.7, color = "#9C8AE6") +  
-  geom_abline(intercept = 0, slope = 1, color = "black") +  
-  labs(title = "Actual vs Predicted Values for Nr. of Rooms (Log Transformed Quasi-Poisson)",
-       x = "Actual Nr. of Rooms",
-       y = "Predicted Nr. of Rooms") +
-  theme_minimal() +
-  coord_cartesian(ylim = c(0, 8)) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
-    axis.title = element_text(size = 10)
-  )
-```
+![](2024_groupXX_report_files/figure-latex/GLM Poisson 3-1.pdf)<!-- --> 
 
 This scatter plot demonstrates that the Quasi-Poisson model with log-transformed predictors effectively captures the overall trend. As the actual number of rooms increases, the predicted values also rise correspondingly, indicating that the model successfully identifies the general relationship between the predictors and the target variable.
 
@@ -949,10 +680,7 @@ Despite some deviations from the line of perfect prediction (in red,), the model
 
 # GAM - Generalised Additive Model
 
-```{r GAM code 0, echo=FALSE, warning=FALSE}
-d.properties <- read_excel("data/data_cleaned/data_total_model.xlsx")
 
-```
 
 ## Purpose and Target
 
@@ -982,22 +710,7 @@ The graph shows the relationship between Size_m2 and Price_Gross using a quadrat
 
 -   **Data Distribution.** Most of the data points are clustered below 300 m², with few data points for larger properties. The fit of the model is more certain where there are more data points, and less certain where data points are sparse.
 
-```{r GAM code 1 , echo=FALSE, warning=FALSE}
-gg.density.site <- ggplot(data = d.properties, mapping = aes(y = Price_Gross, x = Size_m2)) + 
-  geom_point(alpha = 0.6, size = 0.8, color = "#9C8AE6") +
-  labs(title = "Effect of Size on Gross Price", x = "Size (m²)", y = "Gross Price (CHF)") +  
-  theme_minimal() +  
-  theme(legend.position = "none",
-        plot.title = element_text(size = 11),
-        axis.title.x = element_text(size = 9),
-        axis.title.y = element_text(size = 9),
-        axis.text.x = element_text(size = 8),
-        axis.text.y = element_text(size = 8)) +
-  geom_smooth(color = "black")  
-
-print(gg.density.site)
-
-```
+![](2024_groupXX_report_files/figure-latex/GAM code 1 -1.pdf)<!-- --> 
 
 **Next Steps for the GAM**
 
@@ -1021,10 +734,29 @@ Starting with fitting a basic GAM to capture more complex non-linear relationshi
 
 <summary>Click to see the summary</summary>
 
-```{r GAM code 4, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 
-gam.properties <- gam(Price_Gross ~ s(Size_m2), data = d.properties)
-summary(gam.properties)
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(Size_m2)
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  1700.68      27.82   61.13   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##              edf Ref.df     F p-value    
+## s(Size_m2) 8.907  8.997 68.76  <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## R-sq.(adj) =  0.389   Deviance explained = 39.5%
+## GCV = 7.5459e+05  Scale est. = 7.4684e+05  n = 965
 ```
 
 </details>
@@ -1039,10 +771,37 @@ To account for additional factors, a GAM including multiple predictors was fitte
 
 <summary>Click to see the summary</summary>
 
-```{r GAM code 5, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 
-gam.properties.full <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density, data = d.properties)
-summary(gam.properties.full)
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + 
+##     Population + Area_km2 + Density
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)     -2.429e-03  1.726e-03  -1.407   0.1597    
+## Days_Difference  6.473e+00  8.729e-01   7.415 2.68e-13 ***
+## Nr_rooms         2.704e+02  5.213e+01   5.188 2.60e-07 ***
+## GDP_per          5.979e-03  3.404e-03   1.757   0.0793 .  
+## Population       9.380e-04  4.846e-04   1.936   0.0532 .  
+## Area_km2         1.054e-01  1.457e-01   0.723   0.4698    
+## Density         -1.579e+00  1.068e+00  -1.479   0.1395    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##              edf Ref.df    F p-value    
+## s(Size_m2) 5.146  5.981 32.5  <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Rank: 13/16
+## R-sq.(adj) =  0.413   Deviance explained = 41.9%
+## GCV = 7.2697e+05  Scale est. = 7.1857e+05  n = 965
 ```
 
 </details>
@@ -1057,11 +816,37 @@ To focus on properties with Size_m2 less than 300, a filtered GAM was fitted:
 
 <summary>Click to see the summary</summary>
 
-```{r GAM code 6, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 
-d.properties.filtered <- d.properties %>% filter(Size_m2 < 300)
-gam.properties.filtered <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density, data = d.properties.filtered)
-summary(gam.properties.filtered)
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + 
+##     Population + Area_km2 + Density
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)     -2.343e-03  1.684e-03  -1.392   0.1643    
+## Days_Difference  6.003e+00  8.577e-01   6.999 4.88e-12 ***
+## Nr_rooms         2.495e+02  5.169e+01   4.827 1.62e-06 ***
+## GDP_per          6.803e-03  3.316e-03   2.051   0.0405 *  
+## Population       8.362e-04  4.731e-04   1.767   0.0775 .  
+## Area_km2         1.708e-01  1.433e-01   1.192   0.2336    
+## Density         -1.550e+00  1.041e+00  -1.489   0.1367    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##              edf Ref.df    F p-value    
+## s(Size_m2) 7.514  7.916 35.2  <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Rank: 14/16
+## R-sq.(adj) =  0.431   Deviance explained = 43.9%
+## GCV = 6.8502e+05  Scale est. = 6.754e+05  n = 962
 ```
 
 </details>
@@ -1076,11 +861,37 @@ A log transformation of Size_m2 was applied to improve model fit:
 
 <summary>Click to see the summary</summary>
 
-```{r GAM code 7, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 
-d.properties <- d.properties %>% mutate(log_Size_m2 = log(Size_m2))
-gam.properties.log <- gam(Price_Gross ~ s(log_Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density, data = d.properties)
-summary(gam.properties.log)
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(log_Size_m2) + Days_Difference + Nr_rooms + GDP_per + 
+##     Population + Area_km2 + Density
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)     -3.466e-03  1.763e-03  -1.966   0.0496 *  
+## Days_Difference  5.769e+00  8.992e-01   6.415 2.22e-10 ***
+## Nr_rooms         3.492e+02  5.224e+01   6.684 3.96e-11 ***
+## GDP_per          6.650e-03  3.482e-03   1.910   0.0565 .  
+## Population       1.260e-03  4.943e-04   2.548   0.0110 *  
+## Area_km2        -6.384e-02  1.472e-01  -0.434   0.6646    
+## Density         -2.169e+00  1.091e+00  -1.988   0.0471 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##                  edf Ref.df     F p-value    
+## s(log_Size_m2) 7.438  7.877 23.15  <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Rank: 14/16
+## R-sq.(adj) =  0.388   Deviance explained = 39.6%
+## GCV = 7.5932e+05  Scale est. = 7.4874e+05  n = 965
 ```
 
 </details>
@@ -1095,10 +906,38 @@ To explore interactions, a GAM including interaction terms was fitted:
 
 <summary>Click to see the summary</summary>
 
-```{r GAM code 8, echo=FALSE, warning = FALSE, class.source = "fold-show"}
 
-gam.properties.interaction <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by=Nr_rooms), data = d.properties)
-summary(gam.properties.interaction)
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + 
+##     Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms)
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)     -1.592e-03  1.683e-03  -0.946   0.3445    
+## Days_Difference  6.204e+00  8.492e-01   7.305 5.87e-13 ***
+## Nr_rooms         2.072e+02  1.668e+02   1.242   0.2144    
+## GDP_per          5.362e-03  3.310e-03   1.620   0.1056    
+## Population       6.345e-04  4.724e-04   1.343   0.1795    
+## Area_km2         2.345e-01  1.419e-01   1.652   0.0989 .  
+## Density         -1.099e+00  1.041e+00  -1.056   0.2912    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##                       edf Ref.df     F  p-value    
+## s(Size_m2)          2.226  2.360 11.13 0.000302 ***
+## s(Size_m2):Nr_rooms 7.018  7.463 38.82  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Rank: 16/26
+## R-sq.(adj) =  0.449   Deviance explained = 45.7%
+## GCV = 6.8369e+05  Scale est. = 6.7338e+05  n = 965
 ```
 
 </details>
@@ -1113,26 +952,25 @@ As can be seen in the table and in the summaries of each model, based on the adj
 
 This model explains 44.9% of the variability in Price_Gross and includes significant interactions between **Size_m2** and **Nr_rooms**.
 
-```{r Table GAMs Comparison, echo=FALSE, warning = FALSE}
-# Load the kableExtra library
-library(kableExtra)
-
-# Create the data frame for model comparison
-model_comparison <- data.frame(
-  Model = c("GAM - Size_m2", "GAM - Full", "GAM - Filtered", "GAM - Log", "GAM - Interaction"),
-  `R_squared_Adj` = c(0.389, 0.413, 0.431, 0.388, 0.449),
-  `Deviance_Explained` = c("39.5%", "41.9%", "43.9%", "39.6%", "45.7%"),
-  `GCV_Score` = c(754590, 726970, 685020, 759320, 683690)
-)
-
-# Create the table with styling
-kbl(model_comparison, align = "l") %>%
-  kable_classic(full_width = F, html_font = "Segoe UI") %>%
-  kable_styling(latex_options = c("striped", "hold_position"), position = "center", font_size = 10) %>%
-  column_spec(1, bold = TRUE, width = "3cm") %>%
-  column_spec(2:4, width = "2cm") %>%
-  row_spec(0, background = "#9C8AE6", color = "white", bold = TRUE)
-```
+\begin{table}[!h]
+\centering\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{2cm}}
+\hline
+\cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Model}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{R\_squared\_Adj}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Deviance\_Explained}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{GCV\_Score}}}\\
+\hline
+\textbf{\cellcolor{gray!10}{GAM - Size\_m2}} & \cellcolor{gray!10}{0.389} & \cellcolor{gray!10}{39.5\%} & \cellcolor{gray!10}{754590}\\
+\hline
+\textbf{GAM - Full} & 0.413 & 41.9\% & 726970\\
+\hline
+\textbf{\cellcolor{gray!10}{GAM - Filtered}} & \cellcolor{gray!10}{0.431} & \cellcolor{gray!10}{43.9\%} & \cellcolor{gray!10}{685020}\\
+\hline
+\textbf{GAM - Log} & 0.388 & 39.6\% & 759320\\
+\hline
+\textbf{\cellcolor{gray!10}{GAM - Interaction}} & \cellcolor{gray!10}{0.449} & \cellcolor{gray!10}{45.7\%} & \cellcolor{gray!10}{683690}\\
+\hline
+\end{tabular}
+\end{table}
 
 ### Next Steps
 
@@ -1162,128 +1000,7 @@ The analysis aims to forecast rental prices for houses and apartments. Noticing 
 
 <br>
 
-```{r GAM Plot, echo=FALSE, warning = FALSE}
-# Train Best model: GAM with interaction | Test Data with Cross Validation
-# Define the number of folds for cross-validation
-set.seed(123)
-folds <- createFolds(d.properties$Price_Gross, k = 10, list = TRUE)
-
-# Initialize vectors
-all_predictions <- c()
-all_actuals <- c()  
-rmse_values <- c()
-
-
-# Perform cross-validation
-for(i in 1:length(folds)) {
-  # Split the data into training and testing sets
-  test_indices <- folds[[i]]
-  train_data <- d.properties[-test_indices, ]
-  test_data <- d.properties[test_indices, ]
-  
-  # Fit the model on the training data
-  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
-  
-  # Predict on the test data
-  predictions <- predict(gam_model, newdata = test_data)
-  
-  # Store the predictions and actual values
-  all_predictions <- c(all_predictions, predictions)
-  all_actuals <- c(all_actuals, test_data$Price_Gross)
-  
-  # Calculate RMSE for the current fold
-  rmse <- sqrt(mean((predictions - test_data$Price_Gross)^2))
-  rmse_values <- c(rmse_values, rmse)
-}
-
-# Calculate the average RMSE across all folds
-average_rmse <- mean(rmse_values)
-
-# Print the average RMSE
-#print(average_rmse)
-
-# Create a data frame with predictions and actual values
-results_df <- data.frame(Predicted = all_predictions, Actual = all_actuals)
-
-# Create an index for each test instance
-results_df <- results_df %>%
-  mutate(Index = 1:nrow(results_df))
-
-# Plot the predicted vs. actual prices as lines
-line_plot <- ggplot(results_df, aes(x = Index)) +
-  geom_line(aes(y = Actual, color = "Actual Price"), size = 0.5, alpha = 0.7) +
-  geom_line(aes(y = Predicted, color = "Predicted Price"), size = 0.75, alpha = 0.7) +
-  labs(title = "Comparison of Prices",
-       subtitle = paste("Average RMSE across 10 folds:", round(average_rmse, 2)),
-       x = "Size (m²)",
-       y = "Rental Price (CHF)",
-       color = "Legend") +
-  theme_minimal() +
-  coord_cartesian(xlim = c(0, 150), ylim = c(0, 8000)) +
-  scale_color_manual(values = c("Actual Price" = "black", "Predicted Price" = "#9C8AE6")) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 10),
-    axis.title = element_text(size = 10),
-    legend.text = element_text(size = 8),
-    legend.position = c(0.85, 0.9), 
-    legend.background = element_rect(fill = "white", colour = "black", size = 0.2), 
-    legend.title = element_blank(),
-    legend.margin = margin(t = 5, r = 20, b = 5, l = 10)
-  )
-
-# Limit the data to properties with sizes up to 500 m²
-limited_data <- d.properties %>%
-  filter(Size_m2 <= 150)
-
-# Initialize vectors to store predictions and actual prices for limited data
-limited_predictions <- c()
-limited_actuals <- c()
-
-# Perform cross-validation for limited data
-for(i in 1:length(folds)) {
-  # Split the data into training and testing sets
-  test_indices <- folds[[i]]
-  train_data <- limited_data[-test_indices, ]
-  test_data <- limited_data[test_indices, ]
-  
-  # Fit the model on the training data
-  gam_model <- gam(Price_Gross ~ s(Size_m2) + Days_Difference + Nr_rooms + GDP_per + Population + Area_km2 + Density + s(Size_m2, by = Nr_rooms), data = train_data)
-  
-  # Predict on the test data
-  predictions <- predict(gam_model, newdata = test_data)
-  
-  # Store the predictions and actual values
-  limited_predictions <- c(limited_predictions, predictions)
-  limited_actuals <- c(limited_actuals, test_data$Price_Gross)
-}
-
-# Create a data frame with predictions and actual values for limited data
-limited_results_df <- data.frame(Predicted = limited_predictions, Actual = limited_actuals)
-
-# Combine the predicted and actual prices into a single column for plotting
-long_results_df <- limited_results_df %>%
-  pivot_longer(cols = c("Predicted", "Actual"), names_to = "Type", values_to = "Price")
-
-# Plot box plots of the predicted and actual prices
-box_plot <- ggplot(long_results_df, aes(x = Type, y = Price, fill = Type)) +
-  geom_boxplot(alpha = 0.7) +
-  labs(title = "Distribution Prices",
-       x = "Type",
-       y = "Rental Price (CHF)") +
-  scale_fill_manual(values = c("Actual" = "grey", "Predicted" = "#9C8AE6")) +
-  theme_minimal() +
-  coord_cartesian(ylim = c(0, 6000)) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 10),
-    axis.title = element_text(size = 10),
-    legend.position = "none"
-  )
-
-# Arrange both plots side by side with specific widths and padding
-grid.arrange(line_plot, box_plot, ncol = 2, widths = c(3, 2), padding = unit(1, "lines"))
-```
+![](2024_groupXX_report_files/figure-latex/GAM Plot-1.pdf)<!-- --> 
 
 **Results**
 
@@ -1307,52 +1024,7 @@ This foundational analysis helps Zug Estates refine rental price predictions to 
 
 # Neural Network
 
-```{r NeuralNet - Base, echo=FALSE}
-# Reading in data
-enc_data <- read_excel("data/data_cleaned/data_total_model.xlsx")
-enc_data <- enc_data[, !(names(enc_data) %in% "X"), drop = TRUE]
 
-# Feature Engineering
-enc_data$Price_per_m2 <- enc_data$Price_Gross / enc_data$Size_m2
-q3 <- median(enc_data$Price_per_m2) + IQR(enc_data$Price_per_m2) / 2
-enc_data$High_Ticket <- enc_data$Price_per_m2 > q3
-enc_data$High_Ticket <- ifelse(enc_data$High_Ticket, 1, 0)
-
-# Declaring Categorical Variables
-enc_data$Canton_num <- as.numeric(as.factor(enc_data$Canton_num))
-enc_data$Customer_Segment_num <- as.numeric(as.factor(enc_data$Customer_Segment_num))
-enc_data$Category_num <- as.numeric(as.factor(enc_data$Category_num))
-enc_data$Nr_rooms <- as.numeric(enc_data$Nr_rooms) # Treating Nr_rooms as continuous
-enc_data$Package_Product_num <- as.numeric(as.factor(enc_data$Package_Product_num))
-
-# Normalizing the data
-normalize <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
-}
-
-features <- subset(enc_data, select = -High_Ticket)
-maxmindf_features <- as.data.frame(lapply(features, normalize))
-
-High_Ticket <- enc_data$High_Ticket
-maxmindf <- cbind(High_Ticket, maxmindf_features)
-
-# Split into train and test sets
-set.seed(36)
-smpl <- sample.int(n = nrow(maxmindf), size = floor(0.8 * nrow(maxmindf)), replace = FALSE)
-train_maxmin <- maxmindf[smpl, ]
-test_maxmin <- maxmindf[-smpl, ]
-
-# Modeling
-model_maxmin <- neuralnet(High_Ticket ~ ., data = train_maxmin, hidden = c(3, 8, 5), linear.output = FALSE)
-
-
-# Predicting
-pred_maxmin <- predict(model_maxmin, test_maxmin)
-
-# Testing the Accuracy of the models
-maxmin_results <- data.frame(actual = test_maxmin$High_Ticket, prediction = pred_maxmin)
-
-```
 
 ## Purpose and Target
 
@@ -1365,100 +1037,36 @@ With this transformation, we had created a binary classification problem: is thi
 After classifying the properties into either category, we were able to analyze the model's performance on the dataset. If successful, this Neural Network will be a great tool in the future to predict a possible acquisition's performance over time. Properties may be acquired at lower prices, and may not be very attractive at the time of purchase, but with some remodeling and updating the living space, its perceived value may be brought to a new high. This is what we try to predict with this model: the potential of a specific property and to discern if it could be a lucrative investment for Zug Estates.
 
 
-```{r NN Confusion Matrix, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-predicted_classes <- ifelse(pred_maxmin > 0.5, 1, 0)
-actual_classes <- test_maxmin$High_Ticket
-conf_matrix <- table(predicted_classes, actual_classes)
-
-dimnames(conf_matrix) <- list(Predicted = c("Predicted: Non-High Ticket", "Predicted: High Ticket"),
-                              Actual = c("Actual: Non-High Ticket", "Actual: High-Ticket"))
-
-conf_matrix_df_nn <- as.data.frame.matrix(conf_matrix)
-
-kbl(conf_matrix_df_nn, align="c") %>%
-  kable_classic(full_width=F, html_font="Segoe UI") %>%
-  kable_styling(latex_options = c("striped", "hold_position"), position="center", font_size=10) %>%
-  column_spec(2:ncol(conf_matrix_df_nn), width="4cm") %>%
-  row_spec(0, background = "#9C8AE6", color="white", bold=TRUE)
-```
+\begin{table}[!h]
+\centering\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{l|>{\centering\arraybackslash}p{4cm}|c}
+\hline
+\cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{ }}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Actual: Non-High Ticket}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Actual: High-Ticket}}}\\
+\hline
+\cellcolor{gray!10}{Predicted: Non-High Ticket} & \cellcolor{gray!10}{142} & \cellcolor{gray!10}{7}\\
+\hline
+Predicted: High Ticket & 0 & 44\\
+\hline
+\end{tabular}
+\end{table}
 *Confusion Matrix of the Neural Network's performance.*
 
 As seen in the previous matrix, the model's performance on categorizing properties into possible high-ticket or not is quite good, with only a total of 7 (3.6%) incorrect classifications. This tool will help in the future, when looking at new properties, to have an idea of more or less how lucrative a specific property could be to Zug Estates' portfolio.
 
-```{r NN Predictions Chart, echo=FALSE}
-# Convert to a data frame for ggplot2
-rounded_predictions <- round(pred_maxmin)
-data <- data.frame(predictions = factor(rounded_predictions, levels = c(0, 1), labels = c("Non-High Ticket", "High-Ticket")))
-
-# Histogram
-ggplot(data, aes(x = predictions, fill = predictions)) +
-  geom_bar(stat = "count", color = "black", width = 0.5) +  # Use 'stat = "count"' to ensure it counts occurrences
-  scale_x_discrete(name = "Predicted Class") +
-  ylab("Frequency") +
-  ggtitle("Rounded Predictions") +
-  scale_fill_manual(values = c("Non-High Ticket" = "skyblue", "High-Ticket" = "#9C8AE6")) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
-    axis.title = element_text(size = 10)
-  )
-
-```
+![](2024_groupXX_report_files/figure-latex/NN Predictions Chart-1.pdf)<!-- --> 
 
 *Predictions have been rounded because some values fell into decimal places, due to the nature of the Neural Networks' activation function (sigmoid curve)*
 
 As we can see, not many values actually fall into the category of High-Ticket properties, so having a tool like this network will be beneficial in catching such opportunities early on and maximizing added value and profits for the real estate company.
 
-```{r NN Predictions Visual, echo=FALSE}
-ggplot(maxmin_results, aes(x = actual, y = prediction)) +
-  geom_jitter(width = 0.1, height = 0.1, color = "#9C8AE6", alpha = 0.5) +  # Jitter to avoid overplotting
-  labs(title = "Test Data | Actual vs Predicted", 
-       x = "Actual", 
-       y = "Predicted") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
-    axis.title = element_text(size = 10)
-  )
-```
+![](2024_groupXX_report_files/figure-latex/NN Predictions Visual-1.pdf)<!-- --> 
 
 *In this visual we can better appreciate the behavior of the model's predictions. Jitter has been added to the values to avoid overplotting (All values on a single coordinate)*
 
 As we can see, the clusters near (0,0) and (1,1) show us correct predictions made by the model. The small cluster on the bottom right (near (1,0)) shows us the mistakes. This graph gives us a similar representation to the confusion matrix, but also represents a visual estimate to prediction errors. We can see from the clearly defined clusters that our model is very confident in its predictions, and not many incorrect predictions were made.
 
-```{r NN Decision Boundary, echo = FALSE}
-# Define the range for Size_m2 and Price_Gross
-size_m2_range <- seq(min(train_maxmin$Size_m2), max(train_maxmin$Size_m2), length.out = 100)
-price_gross_range <- seq(min(train_maxmin$Price_Gross), max(train_maxmin$Price_Gross), length.out = 100)
-
-# Create a grid of points
-grid <- expand.grid(Size_m2 = size_m2_range, Price_Gross = price_gross_range)
-
-# Add other features with their mean values
-for (col in setdiff(colnames(train_maxmin), c("Size_m2", "Price_Gross", "High_Ticket"))) {
-  grid[[col]] <- mean(train_maxmin[[col]])
-}
-
-# Predict the class for each point in the grid using the trained model
-grid$prediction <- predict(model_maxmin, grid)
-grid$prediction_class <- ifelse(grid$prediction > 0.5, 1, 0)
-
-# Plot the actual data points and the decision boundary
-ggplot() +
-  geom_point(data = train_maxmin, aes(x = Size_m2, y = Price_Gross, color = as.factor(High_Ticket)), alpha = 0.6) +
-  scale_color_manual(values = c("0" = "skyblue", "1" = "#9C8AE6"), name = "Property Type",
-                     labels=c("Non-High Ticket", "High-Ticket")) +
-  labs(title = "Decision Boundary of the Neural Network Model",
-       x = "Size (m^2)", 
-       y = "Rental Price (CHF)") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
-    axis.title = element_text(size = 10)
-  )
-
-
-```
+![](2024_groupXX_report_files/figure-latex/NN Decision Boundary-1.pdf)<!-- --> 
 _Values have been normalized between 0 and 1 to allow for better visualization_
 
 Here we can more clearly appreciate where the model has drawn its decision boundary. With this information, we conclude that the neural network model has clearly understood how to separate the properties between High-Ticket and not. In the purple section, we see the models classified as High-Ticket, which as is displayed, tend to be those with a higher "density" of price per square meter. For Zug Estates, this line represents the boundary between properties that may yield better financial results (purple) and those that may not be so profitable (blue). The fact that we can clearly distinguish them means that the model can as well, and that it can recognize a clear difference between possible high-ticket properties and those that may be more mediocre.
@@ -1479,154 +1087,71 @@ Though the Neural Network presented great results, we wanted to make sure to val
 
 In short, we want to make sure we offer Zug Estates the best option when it comes to predicting performance of possible acquisitions. Our effort comes to life by being thorough with our research, and comparing different models to suggest the better one for the problem. In this case, we compare the ability of a Neural Network and a SVM to recognize potential high-value properties.
 
-```{r SVM Intro, echo=FALSE, results='hide'}
 
-# Reading in data
-ohe_data <- read_excel("data/data_cleaned/data_total_model_one_hot_encoded.xlsx")
-
-#Feature Engineering
-ohe_data$Price_per_m2 <- ohe_data$Price_Gross / ohe_data$Size_m2
-q3 <- median(ohe_data$Price_per_m2) + IQR(ohe_data$Price_per_m2) / 2
-ohe_data$High_Ticket <- ohe_data$Price_per_m2 > q3
-ohe_data$High_Ticket <- ifelse(ohe_data$High_Ticket, 1, 0)
-
-# Price_per_m2 causes collinearity issues
-# Nr_rooms.8 has only one positive value, so we remove the row
-# Nr_rooms.10 is constant, so we remove it as well
-ohe_data <- ohe_data[, !names(ohe_data) %in% c("Price_per_m2","Nr_rooms.8",
-                                               "Nr_rooms.10")]
-
-# Convert target to factor since this is a classification problem (binary)
-ohe_data$High_Ticket <- as.factor(ohe_data$High_Ticket)
-
-# Random seed for reproducibility
-set.seed(123) # same seed as NN for reproduction/comparison
-
-# Split the data into training and test sets
-train_index <- sample(seq_len(nrow(ohe_data)), size = floor(0.8 * nrow(ohe_data)))
-train_data <- ohe_data[train_index, ]
-test_data <- ohe_data[-train_index, ]
-
-# Set up train control for cross-validation
-train_control <- trainControl(
-  method = "cv",         # Cross-validation
-  number = 10,           # Number of folds
-  savePredictions = "final",
-  classProbs = TRUE,     # If you want class probabilities
-  summaryFunction = twoClassSummary
-)
-
-
-# Train the SVM model
-svm_model <- svm(High_Ticket ~ ., data = train_data,trControl=train_contor,
-                 kernel = "radial",
-                 cost = 10, scale = TRUE,
-                 probability=TRUE)
-
-# Exclude the target variable from the test set
-test_data_without_target <- test_data[, !names(test_data) %in% 'High_Ticket']
-
-
-# Make predictions
-svm_predictions <- predict(svm_model, newdata = test_data_without_target)
-
-```
 <br>
 
 ## Interpretation
 
 **Neural Network Performance**
 
-```{r Re-NN Performance, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-kbl(conf_matrix_df_nn, align="c") %>%
-  kable_classic(full_width=F, html_font="Segoe UI") %>%
-  kable_styling(latex_options = c("striped", "hold_position"), position="center", font_size=10) %>%
-  column_spec(2:ncol(conf_matrix_df_nn), width="4cm") %>%
-  row_spec(0, background = "#9C8AE6", color="white", bold=TRUE)
-```
+\begin{table}[!h]
+\centering\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{l|>{\centering\arraybackslash}p{4cm}|c}
+\hline
+\cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{ }}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Actual: Non-High Ticket}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Actual: High-Ticket}}}\\
+\hline
+\cellcolor{gray!10}{Predicted: Non-High Ticket} & \cellcolor{gray!10}{142} & \cellcolor{gray!10}{7}\\
+\hline
+Predicted: High Ticket & 0 & 44\\
+\hline
+\end{tabular}
+\end{table}
 
 
 
 **SVM Performance**
 
-```{r SVM Confusion Matrix, echo=FALSE, warning = FALSE, class.source = "fold-show"}
-
-conf_matrix_svm <- table(Predicted = svm_predictions, Actual = test_data$High_Ticket)
-
-dimnames(conf_matrix_svm) <- list(Predicted = c("Predicted: Non-High Ticket", "Predicted: High Ticket"),
-                              Actual = c("Actual: Non-High Ticket", "Actual: High-Ticket"))
-
-conf_matrix_df_svm <- as.data.frame.matrix(conf_matrix_svm)
-
-kbl(conf_matrix_df_svm, align="c") %>%
-  kable_classic(full_width=F, html_font="Segoe UI") %>%
-  kable_styling(latex_options = c("striped", "hold_position"), position="center", font_size=10) %>%
-  column_spec(2:ncol(conf_matrix_df_svm), width="4cm") %>%
-  row_spec(0, background = "#9C8AE6", color="white", bold=TRUE)
-
-```
+\begin{table}[!h]
+\centering\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{l|>{\centering\arraybackslash}p{4cm}|c}
+\hline
+\cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{ }}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Actual: Non-High Ticket}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Actual: High-Ticket}}}\\
+\hline
+\cellcolor{gray!10}{Predicted: Non-High Ticket} & \cellcolor{gray!10}{143} & \cellcolor{gray!10}{8}\\
+\hline
+Predicted: High Ticket & 2 & 40\\
+\hline
+\end{tabular}
+\end{table}
 
 As we can see, comparing the two confusion matrices of both models, the Neural Network has  slightly better accuracy than the SVM. Though at first glance it may seem like the better option, there are several advantages and disadvantages between the models, which we will go over shortly.
 
-```{r SVM ROC Curve, echo=FALSE, warning=FALSE}
-svm_probabilities <- attr(predict(svm_model, newdata = test_data_without_target, probability = TRUE), "probabilities")[,2]
-
-roc_curve <- roc(test_data$High_Ticket, svm_probabilities)
-
-# Extract AUC value
-auc_value <- auc(roc_curve)
-auc_text <- paste("AUC:", round(auc_value, 4))
-
-# Creating data frame for ROC curve
-roc_data <- data.frame(
-  fpr = 1 - rev(roc_curve$specificities),
-  tpr = rev(roc_curve$sensitivities)
-)
-
-# Plotting the ROC curve
-ggplot(roc_data, aes(x = fpr, y = tpr)) +
-  geom_line(color = "#9C8AE6", size = 1) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "skyblue") +
-  labs(title = "ROC Curve for SVM Model",
-       x = "False Positive Rate",
-       y = "True Positive Rate") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
-    axis.title = element_text(size = 11)
-  ) +
-  annotate("text", x = 0.6, y = 0.1, label = auc_text, color = "black", size = 5, hjust = 0)
-```
+![](2024_groupXX_report_files/figure-latex/SVM ROC Curve-1.pdf)<!-- --> 
 
 An SVM is particularly effective when working with higher-dimensional data, and has better memory efficiency. It is also more robust to over-fitting, but are less efficient with larger datasets because of the training complexity. In our case however, we interpret the ROC Curve's shape as well as the are-under-curve (AUC = 0.9885) to be excellent. The SVM is adapting very well to the data, and has very strong discriminative power.
 
 Neural networks on the other hand, are more flexible and powerful when it comes to approximating trends. They can also learn and extract features that are not present in the data, finding new relationships that may not be obvious, but can be very computationally intensive.
 
 
-```{r SVM Metrics Table, echo=FALSE}
-conf_matrix_svm <- confusionMatrix(svm_predictions, test_data$High_Ticket, positive="1")
-
-# Extract Metrics
-acc <- conf_matrix_svm$overall["Accuracy"]
-prec <- conf_matrix_svm$byClass["Pos Pred Value"]
-rec <- conf_matrix_svm$byClass["Sensitivity"]
-f1_score <- conf_matrix_svm$byClass["F1"]
-
-metrics_df <- data.frame(
-  Metric = c("Accuracy", "Precision", "Recall", "F1-Score"),
-  Value = c(acc, prec, rec, f1_score)
-)
-
-metrics_tibble <- as_tibble(metrics_df)
-
-kbl(metrics_tibble, align="c") %>%
-  kable_classic(full_width=F, html_font = "Segoe UI") %>%
-  kable_styling(latex_options = c("striped", "hold_position"), position = "center", font_size=10) %>%
-  column_spec(1, bold=TRUE, width="3cm") %>%
-  column_spec(2, width="2cm")%>%
-  row_spec(0, background = "#9C8AE6", color = "white", bold=TRUE)
-
-```
+\begin{table}[!h]
+\centering\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{>{\centering\arraybackslash}p{3cm}|>{\centering\arraybackslash}p{2cm}}
+\hline
+\cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Metric}}} & \cellcolor[HTML]{9C8AE6}{\textcolor{white}{\textbf{Value}}}\\
+\hline
+\textbf{\cellcolor{gray!10}{Accuracy}} & \cellcolor{gray!10}{0.9481865}\\
+\hline
+\textbf{Precision} & 0.9523810\\
+\hline
+\textbf{\cellcolor{gray!10}{Recall}} & \cellcolor{gray!10}{0.8333333}\\
+\hline
+\textbf{F1-Score} & 0.8888889\\
+\hline
+\end{tabular}
+\end{table}
 _SVM Metrics_
 
 In the table above, we are able to see how the model is performing in a more numerical sense. The high accuracy (94.82%) and precision (95.24%) values suggest that our model is not making many mistakes when predicting on the test data, and is very good a recognizing positive values (High Ticket). The recall score (83.33%) and F1 score (88.89%) suggest that the model is capturing most of the positive instances, and also has a good balance between precision and recall, which suggests the model is effective at minimizing false positives.
@@ -1663,13 +1188,11 @@ While we have pointed out that various stakeholders can gain from these models, 
 
 # Personal Learnings
 
-This project was a great opportunity for us to implement our knowledge of machine learning and develop our skills. We really enjoyed experimenting with different models, which is why our report is so long - we had a lot of work to cut down. 
+This project was a great opportunity for us to learn about machine learning and develop our skills. We really enjoyed experimenting with different models, which is why our report is so long - we had a lot of work to cut down.
 
-Our models are of solid quality, but we didn’t get to explore every detail or use all the methods perfectly. For example, our early graphical analysis could be improved by using methods better suited to different types of data than only correlation coefficients, and our validation of different models is not fully implemented (CSV).
+Our models are of solid quality, but we didn’t get to explore every detail or use all the methods perfectly. For example, our early graphical analysis could be improved by using methods better suited to different types of data than just correlation coefficients, or validation of different models is not fully implemented (CSV). The neural network component, in particular, posed significant challenges. Our results here were not as robust as we had hoped, possibly due to limitations in the amount of data available. This experience highlighted the importance of having a substantial dataset for neural network models to truly excel.
 
-The neural network model, in particular, posed significant challenges, as hyper parameter tuning can be a real challenge, and needs a balance between efficiency and simplicity to ensure good results as well as memory efficiency. Our results here were not as robust as we had hoped, possibly due to limitations in the amount of data available. This experience highlighted the importance of having a substantial dataset for neural network models to truly excel. 
-
-An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing which metrics to analyze. In our case, relying solely on accuracy as a metric wasn’t appropriate due to the unbalanced nature of the dataset.
+An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing metrics. In our case, relying solely on accuracy as a metric wasn’t appropriate due to the unbalanced nature of the dataset.
 
 ## Implementation of Generative AI
 
