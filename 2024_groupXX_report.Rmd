@@ -1,22 +1,26 @@
 ---
 title: |
-  ![](images/LogoZugEstates.png){width=4in}   
-  <span class="real-estate-pricing">Real Estate Pricing</span>
+ 
+  ![](images/LogoZugEstates.png){width=4in}
+  Real Estate Pricing 
 author: "Victor Anton, Rodrigo Gonzalez & Carlos Leon"
 date: "Machine Learning 1 - 05 June 2024"
-output: 
+output:
   prettydoc::html_pretty:
     theme: hpstr
     highlight: github
-    toc: yes
+    toc: true
     toc_depth: 1
-    number_sections: yes
+    number_sections: true
+  html_document:
+    toc: true
+    toc_depth: '1'
+    df_print: paged
   pdf_document:
-    toc: yes
+    toc: true
     toc_depth: 3
-
 knit:
-  citations: yes
+  citations: true
 ---
 
 ```{=html}
@@ -41,42 +45,12 @@ img {
   margin: auto;
 }
 
+
 table {
   font-size: 16px;
   line-height: 0.8;
 }
 
-/* New Styles for the header */
-header {
-  background: linear-gradient(to right,#7A6CBF, #675A9E);
-  padding: 20px;
-  text-align: center;
-  color: white;
-}
-
-.real-estate-pricing {
-  font-size: 18pt;
-  font-weight: normal;
-  display: block;
-  margin-top: 10px;
-}
-
-header h1 {
-  font-size: 30pt;
-  margin: 0;
-}
-
-header h2 {
-  font-size: 16pt;
-  margin: 5px 0;
-  font-weight: normal;
-}
-
-header h3 {
-  font-size: 14pt;
-  margin: 5px 0;
-  font-weight: normal;
-}
 
 </style>
 ```
@@ -1680,18 +1654,6 @@ The study underscored the delicate balance between model complexity and performa
 
 While we have pointed out that various stakeholders can gain from these models, it’s crucial to note that the personal data used here, such as marital status, is highly sensitive in non-fictional datasets. Companies should thoughtfully consider which data points to utilize about their employees. Relying on certain predictors can potentially introduce significant bias, particularly against underrepresented groups within the organization.
 
-<br>
-
-# Personal Learnings
-
-This project was a great opportunity for us to implement our knowledge of machine learning and develop our skills. We really enjoyed experimenting with different models, which is why our report is so long - we had a lot of work to cut down. 
-
-Our models are of solid quality, but we didn’t get to explore every detail or use all the methods perfectly. For example, our early graphical analysis could be improved by using methods better suited to different types of data than only correlation coefficients, and our validation of different models is not fully implemented (CSV).
-
-The neural network model, in particular, posed significant challenges, as hyper parameter tuning can be a real challenge, and needs a balance between efficiency and simplicity to ensure good results as well as memory efficiency. Our results here were not as robust as we had hoped, possibly due to limitations in the amount of data available. This experience highlighted the importance of having a substantial dataset for neural network models to truly excel. 
-
-An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing which metrics to analyze. In our case, relying solely on accuracy as a metric wasn’t appropriate due to the unbalanced nature of the dataset.
-
 ## Implementation of Generative AI
 
 It’s important to note that OpenAI’s Chat-GPT and Google’s Gemini LLMs were valuable resources when we were faced with difficult debugging problems.
@@ -1702,6 +1664,57 @@ These LLMs were also a great aid when creating interesting visual aids and clari
 
 In the end, we’re happy with the end result of our report, and even happier with how much we learned along the way.
 
+## Conclusion
+
+In summary, both the NN and SVM are good options for our purpose. In the future, if considering to use either one, the size, shape and complexity of the available dataset will play a pivotal role in the selection of the best model to use for finding possible "golden goose" properties. This is not, however, meant to be interpreted as: "There is only one right answer". As a suggestion, when faced with a list of properties to choose from, both models may be used to gain valuable insight, and both would provide similar results with some slight variations, which can only be interpreted then.
+
+<br>
+
+# Outlook
+
+We would like to highlight our top four recommendations for improvements in future endeavors related to this project and more broadly in the field of employee attrition.
+
+## Data Quality and Amount 
+ 
+The dataset is somewhat limited due to the niche nature of the listings market, which is not massive by any means. Moreover, our focus has been concentrated on a few select cantons, further restricting the breadth of data available. Additionally, the data exhibited imbalances in several respects, such as the proportion of houses versus apartments, and disparities among different cantons. Despite these limitations, we have managed to overcome these challenges to a considerable extent, ensuring that our analyses remain robust and insightful. 
+
+## Enhanced Validation of Models 
+
+Due to time constraints and the project's scope, we couldn't conduct extensive validation and testing for all models. Implementing more techniques during the training phase would be essential to improve the overall quality and performance of the developed models. Additionally, testing interactions was limited in this project. 
+
+##  Model Complexity vs. Performance 
+
+In our project, we tested many different machine learning models to find the best ones. While more complex models can sometimes perform better, they can also overfit the data, meaning they work well on training data but not on new, unseen data. 
+
+To avoid overfitting, we decided to use models that are better at generalizing to new data in the long term. These models might not capture every tiny detail in the training data, but they are more reliable and work better in real-world situations. 
+
+By carefully selecting models that balance complexity and performance, we ensure that our results are accurate and useful over time. This approach helps us achieve strong, dependable outcomes for our analyses. 
+
+
+## Personal Learnings
+
+This project was a great opportunity for us to implement our knowledge of machine learning and develop our skills. We really enjoyed experimenting with different models, which is why our report is so long - we had a lot of work to cut down. 
+
+Our models are of solid quality, but we didn’t get to explore every detail or use all the methods perfectly. For example, our early graphical analysis could be improved by using methods better suited to different types of data than only correlation coefficients, and our validation of different models is not fully implemented (CSV).
+
+The neural network model, in particular, posed significant challenges, as hyper parameter tuning can be a real challenge, and needs a balance between efficiency and simplicity to ensure good results as well as memory efficiency. Our results here were not as robust as we had hoped, possibly due to limitations in the amount of data available. This experience highlighted the importance of having a substantial dataset for neural network models to truly excel. 
+
+An important lesson we learned was the need to establish common measures in advance for effective model comparison. This ensures that a meaningful comparison can be made using the measures. We also learned the importance of considering the data set when choosing which metrics to analyze. In our case, relying solely on accuracy as a metric wasn’t appropriate due to the unbalanced nature of the dataset.
+
+<br>
+
+# Implementation of Generative AI
+
+It’s important to note that OpenAI’s Chat-GPT and Google’s Gemini LLMs were valuable resources when we were faced with difficult debugging problems.
+
+However, we made a point of understanding, modifying and correcting the suggested code independently to ensure that our final work was truly our own and not a mere replication of the solutions provided.
+
+These LLMs were also a great aid when creating interesting visual aids and clarifying insights. Their help not only made our understanding of machine learning models better, but furthered our understanding and use of R as a statistical programming language and tool.
+
+In the end, we’re happy with the end result of our report, and even happier with how much we learned along the way.
+
+<br>
+
 # Conclusion  
 
 This project has provided a comprehensive analysis of the real estate market in Central Switzerland, specifically tailored to the needs of Zug Estates. By leveraging various machine learning models, we have developed robust methods for predicting rental prices, understanding market trends, and identifying high-value properties. Our exploration included linear models, Generalized Linear Models (GLM), Generalized Additive Models (GAM), neural networks, and support vector machines (SVM), each offering unique insights and validating our predictions. Despite the limitations in our dataset and time constraints, we have successfully demonstrated the potential for advanced data-driven strategies to enhance real estate investment decisions and improve overall market understanding. 
@@ -1711,7 +1724,7 @@ Our findings underscore the importance of balancing model complexity with perfor
 This project represents a significant step towards more informed, data-driven decision-making in the real estate sector, aligning with Zug Estates' strategic goals and expanding their competitive edge in the market while it also aligns with our desire to keep learning. 
 
   
-# Following our Journey with Zug Estates
+# Follow our Journey with Zug Estates
 
 After completing our work, we considered that it could be interesting to share our project with Zug Estates due to our passion for the subject and its relevance to them. We believe that our findings and efforts align well with the interests of Zug Estates, making it a valuable collaboration opportunity. 
 
@@ -1723,4 +1736,12 @@ Looking forward to their response.
 
 <br>
 
-# References
+# References 
+
+- [1] Homegate. (n.d.). Retrieved June 4, 2024, from https://www.homegate.ch/en
+
+- [2] Swissinfo. (2023, April 25). Residential property prices continue to rise in Switzerland. Retrieved June 4, 2024, from https://www.swissinfo.ch/eng/business/residential-property-prices-continue-to-rise-in-switzerland/49166334
+
+- [3] OpenAI. (n.d.). Retrieved June 4, 2024, from https://openai.com/es-ES/
+
+- [4] Google. (n.d.). Gemini. Retrieved June 4, 2024, from https://gemini.google.com/app
