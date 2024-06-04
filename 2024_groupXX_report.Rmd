@@ -5,6 +5,9 @@ title: |
 author: "Victor Anton, Rodrigo Gonzalez & Carlos Leon"
 date: "Machine Learning 1 - 05 June 2024"
 output: 
+  pdf_document:
+    toc: yes
+    toc_depth: 3
   prettydoc::html_pretty:
     theme: hpstr
     highlight: github
@@ -13,9 +16,6 @@ output:
     # toc_float: yes
     number_sections: yes
     #code_folding: hide
-  pdf_document:
-    toc: yes
-    toc_depth: 3
   # html_document:
   #   toc: yes
   #   toc_depth: 2
@@ -1372,7 +1372,7 @@ conf_matrix_df_nn <- as.data.frame.matrix(conf_matrix)
 kbl(conf_matrix_df_nn, align="c") %>%
   kable_classic(full_width=F, html_font="Segoe UI") %>%
   kable_styling(latex_options = c("striped", "hold_position"), position="center", font_size=10) %>%
-  column_spec(2:ncol(conf_matrix_df_nn), width="2cm") %>%
+  column_spec(2:ncol(conf_matrix_df_nn), width="4cm") %>%
   row_spec(0, background = "#9C8AE6", color="white", bold=TRUE)
 ```
 *Confusion Matrix of the Neural Network's performance.*
@@ -1535,7 +1535,7 @@ svm_predictions <- predict(svm_model, newdata = test_data_without_target)
 kbl(conf_matrix_df_nn, align="c") %>%
   kable_classic(full_width=F, html_font="Segoe UI") %>%
   kable_styling(latex_options = c("striped", "hold_position"), position="center", font_size=10) %>%
-  column_spec(2:ncol(conf_matrix_df_nn), width="2cm") %>%
+  column_spec(2:ncol(conf_matrix_df_nn), width="4cm") %>%
   row_spec(0, background = "#9C8AE6", color="white", bold=TRUE)
 ```
 
@@ -1555,7 +1555,7 @@ conf_matrix_df_svm <- as.data.frame.matrix(conf_matrix_svm)
 kbl(conf_matrix_df_svm, align="c") %>%
   kable_classic(full_width=F, html_font="Segoe UI") %>%
   kable_styling(latex_options = c("striped", "hold_position"), position="center", font_size=10) %>%
-  column_spec(2:ncol(conf_matrix_df_svm), width="2cm") %>%
+  column_spec(2:ncol(conf_matrix_df_svm), width="4cm") %>%
   row_spec(0, background = "#9C8AE6", color="white", bold=TRUE)
 
 ```
