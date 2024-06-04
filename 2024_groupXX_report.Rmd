@@ -5,31 +5,16 @@ title: |
 author: "Victor Anton, Rodrigo Gonzalez & Carlos Leon"
 date: "Machine Learning 1 - 05 June 2024"
 output: 
-  pdf_document:
-    toc: yes
-    toc_depth: 3
   prettydoc::html_pretty:
     theme: hpstr
     highlight: github
     toc: yes
     toc_depth: 1
     number_sections: yes
-<<<<<<< HEAD
   pdf_document:
     toc: yes
     toc_depth: 3
 
-=======
-    #code_folding: hide
-  # html_document:
-  #   toc: yes
-  #   toc_depth: 2
-  #   toc_float: true
-  #   number_sections: yes
-  #   code_folding: hide
-  #   theme: cerulean
-  #   highlight: tango
->>>>>>> 218ed8bd0582170adaec9f35b35b0e013382a9a2
 knit:
   citations: yes
 ---
@@ -616,7 +601,7 @@ lm_plot2 <- data.frame(rel_data$Category_num, rel_data$Price_Gross)
 
 colors <- ifelse(rel_data$Category_num<1.5, "#9C8AE6", "skyblue")
 
-plot(rel_data$Category_num, rel_data$Price_Gross, xlab="", ylab="Rental Price of Property", main="Price of a Rental Property as a Result of the Customer Category", col=colors, pch=19, xlim=c(0.5,2.5), xaxt="n")
+plot(rel_data$Category_num, rel_data$Price_Gross, xlab="", ylab="Price_Gross", main="Price of a Rental Property as a Result of the Customer Category", col=colors, pch=19, xlim=c(0.5,2.5), xaxt="n")
 axis(1, at=c(1,2), labels = c("Category 1", "Category 2"))
 ```
 
@@ -624,8 +609,7 @@ In this diagram we can observe that, though there are fewer instances of Categor
 
 ```{r LM First Model Plot, echo=FALSE}
 
-plot(lm_plot1, xlab="Number of Rooms", ylab="Rental Price of Property", main="Price of a Rental Property as a result of the Number of Rooms", col="#9C8AE6", xlim=c(0,8), ylim=c(0,10000),
-     cex=0.8)
+plot(lm_plot1, xlab="Nr_Rooms", ylab="Price_Gross", main="Price of a Rental Property as a result of the Number of Rooms", col="#9C8AE6")
 
 ```
 
@@ -633,8 +617,7 @@ In the illustration above, we depict the relationship between the number of room
 
 ```{r 3LM Plots, echo=FALSE}
 # Plot
-plot(rel_data$Nr_rooms, rel_data$Price_Gross, pch=19, main="Multiple Linear Models", xlab="Number of Rooms", ylab="Rental Price of Property", cex=0.8, xlim=c(0,8), ylim=c(0,10000),
-     col="#9C8AE6")
+plot(rel_data$Nr_rooms, rel_data$Price_Gross, pch=19, main="Multiple Linear Models", xlab="Number of Rooms", ylab="Price_Gross", cex=0.5)
 
 # Lines
 abline(all_lm_model, col=rgb(156/255, 138/255, 230/255, 0.7), lwd=2, lty=1)
@@ -1431,7 +1414,7 @@ conf_matrix_df_nn <- as.data.frame.matrix(conf_matrix)
 kbl(conf_matrix_df_nn, align="c") %>%
   kable_classic(full_width=F, html_font="Segoe UI") %>%
   kable_styling(latex_options = c("striped", "hold_position"), position="center", font_size=10) %>%
-  column_spec(2:ncol(conf_matrix_df_nn), width="4cm") %>%
+  column_spec(2:ncol(conf_matrix_df_nn), width="2cm") %>%
   row_spec(0, background = "#9C8AE6", color="white", bold=TRUE)
 ```
 *Confusion Matrix of the Neural Network's performance.*
@@ -1503,7 +1486,7 @@ ggplot() +
                      labels=c("Non-High Ticket", "High-Ticket")) +
   labs(title = "Decision Boundary of the Neural Network Model",
        x = "Size (m^2)", 
-       y = "Rental Price (CHF)") +
+       y = "Price Gross") +
   theme_minimal() +
   theme(
     plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
@@ -1594,7 +1577,7 @@ svm_predictions <- predict(svm_model, newdata = test_data_without_target)
 kbl(conf_matrix_df_nn, align="c") %>%
   kable_classic(full_width=F, html_font="Segoe UI") %>%
   kable_styling(latex_options = c("striped", "hold_position"), position="center", font_size=10) %>%
-  column_spec(2:ncol(conf_matrix_df_nn), width="4cm") %>%
+  column_spec(2:ncol(conf_matrix_df_nn), width="2cm") %>%
   row_spec(0, background = "#9C8AE6", color="white", bold=TRUE)
 ```
 
@@ -1614,7 +1597,7 @@ conf_matrix_df_svm <- as.data.frame.matrix(conf_matrix_svm)
 kbl(conf_matrix_df_svm, align="c") %>%
   kable_classic(full_width=F, html_font="Segoe UI") %>%
   kable_styling(latex_options = c("striped", "hold_position"), position="center", font_size=10) %>%
-  column_spec(2:ncol(conf_matrix_df_svm), width="4cm") %>%
+  column_spec(2:ncol(conf_matrix_df_svm), width="2cm") %>%
   row_spec(0, background = "#9C8AE6", color="white", bold=TRUE)
 
 ```
@@ -1709,6 +1692,7 @@ In our project, we tested many different machine learning models to find the bes
 To avoid overfitting, we decided to use models that are better at generalizing to new data in the long term. These models might not capture every tiny detail in the training data, but they are more reliable and work better in real-world situations. 
 
 By carefully selecting models that balance complexity and performance, we ensure that our results are accurate and useful over time. This approach helps us achieve strong, dependable outcomes for our analyses. 
+
 
 ## Personal Learnings
 
